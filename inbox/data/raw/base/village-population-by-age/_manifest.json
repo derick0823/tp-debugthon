@@ -1,0 +1,48 @@
+{
+ "slug": "village-population-by-age",
+ "title": "臺北市各里人口數按年齡分",
+ "mode": "data_taipei",
+ "manual": null,
+ "run_at": "2026-10-17T13:35:47+08:00",
+ "files": [
+  {
+   "url": "https://data.taipei/api/dataset/a6394e3f-3514-4542-87bd-de4310a40db3/resource/c8f5b53d-ef3d-4321-ae8e-58cd2a5ee73c/download",
+   "fetched_at": "2026-10-17T13:35:30+08:00",
+   "file": "r002-c8f5b53d.csv",
+   "bytes": 20821765,
+   "sha256": "a478cb4d3cdf509eec3453285bf0c1c542b7f53268608348ced4bafa7150bed3",
+   "content_type": "text/csv;charset=BIG-5",
+   "status": "ok",
+   "resource_name": "112年迄今-每月各里人口數按年齡分",
+   "declared_format": "CSV",
+   "declared_encoding": "Big5",
+   "rid": "c8f5b53d-ef3d-4321-ae8e-58cd2a5ee73c"
+  },
+  {
+   "url": "https://data.taipei/api/dataset/a6394e3f-3514-4542-87bd-de4310a40db3/resource/a92f4f08-9c3c-4122-98ce-00a3c38ece06/download",
+   "fetched_at": "2026-10-17T13:35:33+08:00",
+   "file": "r001-a92f4f08.csv",
+   "bytes": 5550015,
+   "sha256": "ac0eb3b4e7a7a0288ebaf138a0c53e6bdd882852de9437f3d6a0393151f4482d",
+   "content_type": "text/csv;charset=BIG-5",
+   "status": "ok",
+   "resource_name": "111年每月各里人口數按年齡分",
+   "declared_format": "CSV",
+   "declared_encoding": "Big5",
+   "rid": "a92f4f08-9c3c-4122-98ce-00a3c38ece06"
+  },
+  {
+   "url": "https://data.taipei/api/dataset/a6394e3f-3514-4542-87bd-de4310a40db3/resource/09c661ed-368c-44cb-8d1e-cbe7ececf2ec/download",
+   "fetched_at": "2026-10-17T13:35:46+08:00",
+   "file": "r000-09c661ed.csv",
+   "bytes": 5564358,
+   "sha256": "24fdee2b6d17b18ad185403e54be48dc07a60f578ee22cea5970bf34901adaf3",
+   "content_type": "text/csv;charset=BIG-5",
+   "status": "ok",
+   "resource_name": "110年每月各里人口數按年齡分",
+   "declared_format": "CSV",
+   "declared_encoding": "big5",
+   "rid": "09c661ed-368c-44cb-8d1e-cbe7ececf2ec"
+  }
+ ]
+}

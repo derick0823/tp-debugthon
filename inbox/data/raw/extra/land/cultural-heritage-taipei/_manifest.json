@@ -1,0 +1,22 @@
+{
+ "slug": "cultural-heritage-taipei",
+ "title": "臺北市文化資產（含直轄市定古蹟及國定古蹟）",
+ "mode": "data_taipei",
+ "manual": null,
+ "run_at": "2026-10-18T11:57:33+08:00",
+ "files": [
+  {
+   "url": "https://data.taipei/api/dataset/46119295-2534-4ac9-82d5-5f4653ba15bb/resource/7ddefbf9-01e5-4365-b5b6-db0a28043108/download",
+   "fetched_at": "2026-10-18T11:57:33+08:00",
+   "file": "r000-7ddefbf9.csv",
+   "bytes": 60582,
+   "sha256": "94776ded07817b8e45ba44cb5913a9e379b2a0273557fea1210ff58367363b32",
+   "content_type": "text/csv;charset=UTF-8",
+   "status": "ok",
+   "resource_name": "臺北市文化資產(包含直轄市定古蹟及國定古蹟)",
+   "declared_format": "CSV",
+   "declared_encoding": "UTF-8",
+   "rid": "7ddefbf9-01e5-4365-b5b6-db0a28043108"
+  }
+ ]
+}

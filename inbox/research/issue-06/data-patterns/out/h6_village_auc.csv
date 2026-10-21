@@ -1,0 +1,15 @@
+,auc_sea_sand,auc_quake_listed
+share_65plus,0.402,0.509
+share_80plus,0.283,0.445
+lvr_share_pre1982_est,0.385,0.503
+lvr_share_pre1999,0.472,0.576
+lvr_share_1972_1992,0.492,0.543
+lvr_share_walkup,0.523,0.591
+new2001_units_share,0.54,0.458
+town_share_age_30plus,0.271,0.423
+liq_city_score,0.46,0.508
+liq_nat_score,0.409,0.507
+lanes_total,0.533,0.528
+road_markers_lt6m_share,0.421,0.492
+pop_density_per_km2,0.478,0.495
+composite_equal,0.37,0.504

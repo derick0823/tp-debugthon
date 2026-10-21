@@ -1,0 +1,133 @@
+{
+ "success": true,
+ "code": 200,
+ "s_message": "",
+ "payload": {
+  "pid": "d9d1140b-c2c3-405f-8dd1-7b87b00f6f53",
+  "name": "00000322",
+  "title": "臺北市受保護樹木",
+  "publish_status": "2",
+  "type": "dataset",
+  "description": "受保護樹木",
+  "url": "",
+  "author": "李欣蘋",
+  "author_email": "bt-99118@gov.taipei",
+  "author_phone": "02-27208889#3570",
+  "maintainer": "蔡宜臻",
+  "maintainer_email": "bt-jen20656@mail.taipei.gov.tw",
+  "maintainer_phone": "(02) 2720-8889 #3529",
+  "maintainer_organization_name": "臺北市政府文化局",
+  "org_id": "a3236da5-7e86-4b15-a390-68e4b90278cb",
+  "org_name": "文化局",
+  "sub_org_id": "",
+  "sub_org_name": "",
+  "check_freq_tid": "8c5f3bd6-ec30-4996-bfd5-46ccb03fe022",
+  "check_freq_name": "每季",
+  "update_freq_desc": "不定期更新",
+  "license_id": "4550e68f-6812-4a15-a2e2-f954eee779c5",
+  "license_name": "依政府資料開放授權條款-第1版",
+  "charge": "free",
+  "charge_url": "",
+  "charge_law": "無",
+  "publish_date": "2012-01-09",
+  "category_name": "公共資訊",
+  "theme_name": "其他",
+  "topic_name": "文化",
+  "creation_type": "原始資料",
+  "language": "zh",
+  "notes": "",
+  "coverage_temporal_start": "2011-09-01",
+  "coverage_temporal_end": "2023-04-11",
+  "coverage_spatial": "",
+  "field_description": "樹木編號、樹種名稱、樹種學名、樹胸徑寬度公尺、樹胸圍長度公尺、地址、緯度、經度、地理位置名稱、管理單位、英文名",
+  "number_of_data": 1768,
+  "quality_badge_type": "",
+  "ndc_quality": "G",
+  "created": "2014-12-31 11:56:39",
+  "changed": "2026-06-17 09:52:17",
+  "metadata_changed": "2026-06-17 09:52:02",
+  "status": "c50",
+  "resources": [
+   {
+    "rid": "a7c2db0d-8b6e-42b2-bdcc-ae69a6797e1d",
+    "url": "/api/dataset/d9d1140b-c2c3-405f-8dd1-7b87b00f6f53/resource/a7c2db0d-8b6e-42b2-bdcc-ae69a6797e1d/download",
+    "url_type": "upload",
+    "position": 0,
+    "name": "樹木基本資料",
+    "description": "",
+    "encoding": "UTF-8",
+    "file_name": "樹籍資料匯出-202603201657.csv",
+    "mimetype": "text/csv",
+    "size": 784519,
+    "meta_url": "",
+    "amount": "",
+    "field_desc": [
+     {
+      "name": "樹木編號",
+      "desc": ""
+     },
+     {
+      "name": "樹種名稱",
+      "desc": ""
+     },
+     {
+      "name": "樹種學名",
+      "desc": ""
+     },
+     {
+      "name": "樹胸徑寬度公尺",
+      "desc": ""
+     },
+     {
+      "name": "樹胸圍長度公尺",
+      "desc": ""
+     },
+     {
+      "name": "地址",
+      "desc": ""
+     },
+     {
+      "name": "緯度",
+      "desc": ""
+     },
+     {
+      "name": "經度",
+      "desc": ""
+     },
+     {
+      "name": "地理位置名稱",
+      "desc": ""
+     },
+     {
+      "name": "管理單位",
+      "desc": ""
+     },
+     {
+      "name": "英文名",
+      "desc": ""
+     }
+    ],
+    "notes": "",
+    "file_format_tid": "32fe643b-f623-4770-9aae-cb49ccb6dcb8",
+    "file_format": "CSV",
+    "request_method": "",
+    "request_parameters": [],
+    "extras": {
+     "qc_level": ""
+    },
+    "resource_type": "",
+    "has_datastore": true,
+    "download_count": 1946,
+    "last_modified": "2026-03-23 14:10:40"
+   }
+  ],
+  "tags": [
+   {
+    "name": "臺北市受保護樹木"
+   }
+  ],
+  "textual_status": "1",
+  "authorized": "0",
+  "use_count": 6585
+ }
+}

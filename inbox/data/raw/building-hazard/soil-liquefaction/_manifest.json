@@ -1,0 +1,35 @@
+{
+ "slug": "soil-liquefaction",
+ "title": "臺北市土壤液化潛勢圖",
+ "mode": "data_taipei",
+ "manual": null,
+ "run_at": "2026-10-17T13:35:30+08:00",
+ "files": [
+  {
+   "url": "https://soil.taipei/Taipei2019/Main/pages/TPLiquid_84.GeoJSON",
+   "fetched_at": "2026-10-17T13:35:29+08:00",
+   "file": "r001-119043a6.geojson",
+   "bytes": 703720,
+   "sha256": "0d49ecbf7ab702ba35d3ba7c52765d4ba9952d12b2f9e3c003c71b38fe40f32c",
+   "content_type": "application/vnd.geo+json",
+   "status": "ok",
+   "resource_name": "WGS84座標",
+   "declared_format": "GEOJSON",
+   "declared_encoding": "UTF-8",
+   "rid": "119043a6-10f6-4b82-9f33-a5b686c96734"
+  },
+  {
+   "url": "https://soil.taipei/Taipei2019/Main/pages/TPLiquid_97.GeoJSON",
+   "fetched_at": "2026-10-17T13:35:30+08:00",
+   "file": "r000-980834a9.geojson",
+   "bytes": 826143,
+   "sha256": "edfa530d1bd8d5c5e1c2ef2332db58b7b1e0ed980da49ce45a812f682528ece0",
+   "content_type": "application/vnd.geo+json",
+   "status": "ok",
+   "resource_name": "TWD97座標",
+   "declared_format": "GEOJSON",
+   "declared_encoding": "UTF-8",
+   "rid": "980834a9-adcb-4b2f-b2e8-b8ad546da640"
+  }
+ ]
+}

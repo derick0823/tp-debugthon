@@ -1,0 +1,20 @@
+{
+ "slug": "fire-access-lanes",
+ "title": "臺北市消防通道清冊（搶救困難地區）",
+ "mode": "data_taipei",
+ "manual": null,
+ "run_at": "2026-10-17T13:35:47+08:00",
+ "files": [
+  {
+   "url": "https://data.taipei/api/dataset/7a800e92-eb22-461f-b29d-8def2127a1bc/resource/351307e4-ffda-4660-ac72-1c4ef3808c38/download",
+   "fetched_at": "2026-10-17T13:35:47+08:00",
+   "file": "r000-351307e4.csv",
+   "bytes": 20055,
+   "status": "kept",
+   "resource_name": "臺北市消防通道清冊",
+   "declared_format": "CSV",
+   "declared_encoding": "UTF-8",
+   "rid": "351307e4-ffda-4660-ac72-1c4ef3808c38"
+  }
+ ]
+}

@@ -1,0 +1,21 @@
+[project]
+name = "civic-debug-hackathon"
+version = "0.1.0"
+description = "Taipei civic debug hackathon: data pipelines and research"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.2",
+    "pyarrow>=17",
+    "geopandas>=1.0",
+    "shapely>=2.0",
+    "pyproj>=3.6",
+    "pyogrio>=0.9",
+    "pdfplumber>=0.11",
+    "pypdf>=5",
+    "matplotlib>=3.9",
+    "folium>=0.17",
+    "openpyxl>=3.1.5",
+]
+
+[tool.uv]
+package = false

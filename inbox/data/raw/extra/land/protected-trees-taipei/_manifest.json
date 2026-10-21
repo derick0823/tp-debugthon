@@ -1,0 +1,22 @@
+{
+ "slug": "protected-trees-taipei",
+ "title": "臺北市受保護樹木",
+ "mode": "data_taipei",
+ "manual": null,
+ "run_at": "2026-10-18T11:57:33+08:00",
+ "files": [
+  {
+   "url": "https://data.taipei/api/dataset/d9d1140b-c2c3-405f-8dd1-7b87b00f6f53/resource/a7c2db0d-8b6e-42b2-bdcc-ae69a6797e1d/download",
+   "fetched_at": "2026-10-18T11:57:33+08:00",
+   "file": "r000-a7c2db0d.csv",
+   "bytes": 784519,
+   "sha256": "9d5e16c859589f1a82bac6cfa7be998c8759841278e7848207607dad6cff7904",
+   "content_type": "text/csv;charset=UTF-8",
+   "status": "ok",
+   "resource_name": "樹木基本資料",
+   "declared_format": "CSV",
+   "declared_encoding": "UTF-8",
+   "rid": "a7c2db0d-8b6e-42b2-bdcc-ae69a6797e1d"
+  }
+ ]
+}

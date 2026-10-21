@@ -1,0 +1,137 @@
+{
+ "success": true,
+ "code": 200,
+ "s_message": "",
+ "payload": {
+  "pid": "7889e8a0-a71e-44e0-95c7-2213a7db1474",
+  "name": "00002727",
+  "title": "臺北市現有營造建築物棟數",
+  "publish_status": "2",
+  "type": "dataset",
+  "description": "臺北市現有營造建築物棟數時間數列統計資料\r\n",
+  "url": "無",
+  "author": "吳蔓麗",
+  "author_email": "ta-e620021@gov.taipei",
+  "author_phone": "02-27287626",
+  "maintainer": "翁O誠",
+  "maintainer_email": "ta-a620120@mail.taipei.gov.tw",
+  "maintainer_phone": "02-27287630",
+  "maintainer_organization_name": "臺北市政府主計處",
+  "org_id": "f4c5786a-7808-4630-8b8e-d936ff17ae18",
+  "org_name": "主計處",
+  "sub_org_id": "",
+  "sub_org_name": "",
+  "check_freq_tid": "3e9ae519-5029-4961-a217-a61072ebc2e4",
+  "check_freq_name": "每年",
+  "update_freq_desc": "每1年",
+  "license_id": "4550e68f-6812-4a15-a2e2-f954eee779c5",
+  "license_name": "依政府資料開放授權條款-第1版",
+  "charge": "free",
+  "charge_url": "",
+  "charge_law": "無",
+  "publish_date": "2022-01-27",
+  "category_name": "公共資訊",
+  "theme_name": "政府統計",
+  "topic_name": "統計",
+  "creation_type": "原始資料",
+  "language": "zh",
+  "notes": "",
+  "coverage_temporal_start": "1976-01-01",
+  "coverage_temporal_end": "2025-12-31",
+  "coverage_spatial": "",
+  "field_description": "統計期、總數量[棟]、樓層別/平房數量[棟]、樓層別/2層數量[棟]、樓層別/3層數量[棟]、樓層別/4層數量[棟]、樓層別/5~6層數量[棟]、樓層別/7~9層數量[棟]、樓層別/10~12層數量[棟]、樓層別/13~15層數量[棟]、樓層別/16層以上數量[棟]、屋齡別/未滿30年數量[棟]、屋齡別/30年以上數量[棟]",
+  "number_of_data": 46,
+  "quality_badge_type": "",
+  "ndc_quality": "G",
+  "created": "2020-11-04 14:30:02",
+  "changed": "2026-03-15 20:27:37",
+  "metadata_changed": "2026-02-26 10:05:18",
+  "status": "c50",
+  "resources": [
+   {
+    "rid": "53e04f4c-e546-462e-b509-0fc7225a3ebd",
+    "url": "https://tsis.dbas.gov.taipei/statis/webMain.aspx?sys=220&ymf=6500&kind=21&type=0&funid=a05019201&cycle=4&outmode=12&compmode=0&outkind=1&deflst=2&nzo=1",
+    "url_type": "",
+    "position": 0,
+    "name": "臺北市現有營造建築物棟數時間數列統計資料",
+    "description": "",
+    "encoding": "UTF-8",
+    "file_name": "",
+    "mimetype": "",
+    "size": "",
+    "meta_url": "",
+    "amount": 50,
+    "field_desc": [
+     {
+      "name": "統計期",
+      "desc": ""
+     },
+     {
+      "name": "總數量[棟]",
+      "desc": ""
+     },
+     {
+      "name": "樓層別/平房數量[棟]",
+      "desc": ""
+     },
+     {
+      "name": "樓層別/2層數量[棟]",
+      "desc": ""
+     },
+     {
+      "name": "樓層別/3層數量[棟]",
+      "desc": ""
+     },
+     {
+      "name": "樓層別/4層數量[棟]",
+      "desc": ""
+     },
+     {
+      "name": "樓層別/5~6層數量[棟]",
+      "desc": ""
+     },
+     {
+      "name": "樓層別/7~9層數量[棟]",
+      "desc": ""
+     },
+     {
+      "name": "樓層別/10~12層數量[棟]",
+      "desc": ""
+     },
+     {
+      "name": "樓層別/13~15層數量[棟]",
+      "desc": ""
+     },
+     {
+      "name": "樓層別/16層以上數量[棟]",
+      "desc": ""
+     },
+     {
+      "name": "屋齡別/未滿30年數量[棟]",
+      "desc": ""
+     },
+     {
+      "name": "屋齡別/30年以上數量[棟]",
+      "desc": ""
+     }
+    ],
+    "notes": "檔案更新時間以連結內資料內容更新時間為準",
+    "file_format_tid": "32fe643b-f623-4770-9aae-cb49ccb6dcb8",
+    "file_format": "CSV",
+    "request_method": "",
+    "request_parameters": [],
+    "extras": {
+     "qc_level": ""
+    },
+    "resource_type": "",
+    "has_datastore": false,
+    "download_count": 276,
+    "last_modified": "2026-02-26 10:04:37"
+   }
+  ],
+  "tags": [],
+  "textual_status": "0",
+  "authorized": "0",
+  "use_count": 6695
+ }
+}

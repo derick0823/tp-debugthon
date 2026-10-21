@@ -1,0 +1,9 @@
+一：TPLiquid_97.GeoJSON、TPLiquid_84.GeoJSON
+1、資料集描述:臺北市土壤液化潛勢圖層資料
+2、主要欄位說明：本資料為geojson格式，欄位包括液化類別,分類說明,網址,geometry("type": "Polygon", "coordinates":(座標範圍))
+3、資料集類型：原始資料
+
+二：Taipei_hole_97.GeoJSON、Taipei_hole_84.GeoJSON
+1、資料集描述:臺北市土壤液化分析鑽井圖層資料
+2、主要欄位說明：本資料為geojson格式，欄位包括專案編號,專案名稱,鑽井編號,地下水深,鑽井深度,土壤液化潛勢指數,geometry("type": "Point", "coordinates":(座標範圍))
+3、資料集類型：原始資料

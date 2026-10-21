@@ -1,0 +1,125 @@
+{
+ "generated": "2026-10-18",
+ "public": true,
+ "fields": [
+  "point_id",
+  "address",
+  "village_code",
+  "lon",
+  "lat",
+  "status",
+  "undetermined_reason",
+  "built_year",
+  "built_year_min",
+  "built_year_max",
+  "age_source",
+  "age_conf",
+  "code_generation",
+  "structure_class",
+  "floors",
+  "liq_level_city2019",
+  "soft_story_candidate",
+  "sea_sand",
+  "sea_sand_list_address",
+  "sea_sand_list_version",
+  "quake_listed",
+  "quake_listed_address",
+  "quake_listed_version",
+  "near_heritage_50m",
+  "heritage_n_50m"
+ ],
+ "data_dates": {
+  "house_numbers": "2026-10-02",
+  "use_permits": "ROC 90-115",
+  "real_price_registration": "101S4-115S3",
+  "liquefaction_city2019": "soil.taipei 2019",
+  "sea_sand_list": "115.3.25",
+  "quake_list": "115.3.18"
+ },
+ "towns": [
+  {
+   "town_code": "63000010",
+   "town_name": "松山區",
+   "file": "63000010.json",
+   "records": 12716,
+   "bytes": 4346054
+  },
+  {
+   "town_code": "63000020",
+   "town_name": "信義區",
+   "file": "63000020.json",
+   "records": 17236,
+   "bytes": 5780167
+  },
+  {
+   "town_code": "63000030",
+   "town_name": "大安區",
+   "file": "63000030.json",
+   "records": 18951,
+   "bytes": 6402704
+  },
+  {
+   "town_code": "63000040",
+   "town_name": "中山區",
+   "file": "63000040.json",
+   "records": 18578,
+   "bytes": 6308172
+  },
+  {
+   "town_code": "63000050",
+   "town_name": "中正區",
+   "file": "63000050.json",
+   "records": 12311,
+   "bytes": 4033087
+  },
+  {
+   "town_code": "63000060",
+   "town_name": "大同區",
+   "file": "63000060.json",
+   "records": 12951,
+   "bytes": 4194643
+  },
+  {
+   "town_code": "63000070",
+   "town_name": "萬華區",
+   "file": "63000070.json",
+   "records": 18424,
+   "bytes": 6004822
+  },
+  {
+   "town_code": "63000080",
+   "town_name": "文山區",
+   "file": "63000080.json",
+   "records": 20048,
+   "bytes": 6740183
+  },
+  {
+   "town_code": "63000090",
+   "town_name": "南港區",
+   "file": "63000090.json",
+   "records": 9561,
+   "bytes": 3175763
+  },
+  {
+   "town_code": "63000100",
+   "town_name": "內湖區",
+   "file": "63000100.json",
+   "records": 20165,
+   "bytes": 7024958
+  },
+  {
+   "town_code": "63000110",
+   "town_name": "士林區",
+   "file": "63000110.json",
+   "records": 26857,
+   "bytes": 8949013
+  },
+  {
+   "town_code": "63000120",
+   "town_name": "北投區",
+   "file": "63000120.json",
+   "records": 21552,
+   "bytes": 7198888
+  }
+ ]
+}

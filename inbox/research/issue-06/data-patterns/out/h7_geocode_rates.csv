@@ -1,0 +1,8 @@
+dataset,n,level_0,level_1,level_2,level_3,level_4,share_exact,share_village_ok,share_any
+fire-rescue-difficult-areas,411,1,352,20,16,22,0.8564,0.944,0.9976
+narrow-lanes-red-yellow,273,4,15,8,231,15,0.0549,0.9304,0.9853
+earthquake-listed-buildings,36,0,32,3,1,0,0.8889,1.0,1.0
+sea-sand-houses-full-list,158,0,147,3,4,4,0.9304,0.9747,1.0
+dangerous-old-building-rebuild-approved-cases,1059,39,2,0,0,1018,0.0019,0.0019,0.9632
+use-permit-summary (90-115),8946,128,8455,173,37,153,0.9451,0.9686,0.9857
+real-price-registration-lvr,18235,95,18125,7,0,8,0.994,0.9944,0.9948
