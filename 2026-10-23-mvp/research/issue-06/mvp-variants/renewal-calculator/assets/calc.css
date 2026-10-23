@@ -95,6 +95,8 @@ h3.sub:first-of-type { margin-top: 0; }
 .verdict.good { background: var(--gain-bg); color: var(--gain); }
 .verdict.mid { background: var(--warn-bg); color: var(--warn-fg); }
 .verdict.bad { background: var(--loss-bg); color: var(--loss); }
+.afford { margin: 8px 0 0; font-size: 17px; line-height: 1.5; color: var(--fg-2); }
+.afford .src { display: block; }
 
 /* ---------------------------------------------------------------- steps */
 .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0; }

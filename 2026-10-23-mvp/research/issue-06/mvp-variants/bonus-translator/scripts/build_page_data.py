@@ -15,8 +15,11 @@ data/marts/. It is a column subset of the marts plus URO site counts per village
 Personal data: no phone numbers or addresses. Company names (legal persons) are kept.
 """
 
+import csv
+import io
 import json
 import math
+import zipfile
 from pathlib import Path
 
 import pandas as pd
@@ -27,6 +30,7 @@ URO_CSV = ROOT / "research" / "issue-06" / "mvp-variants" / "uro-cases" / "out" 
 RAW = ROOT / "data" / "raw" / "extra" / "renewal" / "uro-review-cases"
 MARTS = ROOT / "data" / "marts"
 OUT = HERE / "data"
+SILVER_ZIP = ROOT / "data" / "raw" / "extra" / "base" / "segis-silver-index-113-village" / "140015-housing.zip"
 
 DF_COLS = ["dF1", "dF2", "dF3", "dF4", "dF4_1", "dF4_2", "dF4_3", "dF5", "dF5_1", "dF5_2",
            "dF5_3", "dF5_4", "dF5_5", "dF5_6", "dF6"]
@@ -155,14 +159,54 @@ def site_counts(uro):
     return {k: {"uro_sites": int(v.uro_sites), "uro_sites_approved": int(v.uro_sites_approved)} for k, v in g.iterrows()}
 
 
+def build_silver_housing():
+    """Silver-housing measure per Taipei village from the MOI statistics 113Y housing zip.
+
+    The zip holds person counts (not a ready-made index) in 21 cells: building age
+    (E11 <30 yr, E12 >=30 yr, E13 unknown) x walk-up flat (E21 no / E22 walk-up 2-5F / E23 unknown)
+    x structure (E31 steel/RC, E32 other, E33 unknown). Measure = people in E12+E22 cells
+    (30+ years, walk-up, 2-5F) / people in all cells. Blank cells count as 0.
+    Village code: V_ID "63000010-002" -> "63000010002". CSV is UTF-8 with BOM; row 2 is a Chinese header.
+    Returns {village_code: {silver_n, silver_total, silver_share, silver_rank, silver_top_pct}} and the match stats.
+    """
+    if not SILVER_ZIP.exists():
+        return {}, {}
+    with zipfile.ZipFile(SILVER_ZIP) as z:
+        name = [n for n in z.namelist() if n.lower().endswith(".csv")][0]
+        rows = list(csv.reader(io.StringIO(z.read(name).decode("utf-8-sig"))))
+    head = rows[0]
+    cells = [c for c in head if c.startswith("E1")]
+    hot = [c for c in cells if c.startswith("E12E22")]
+    recs = {}
+    for r in rows[2:]:
+        d = dict(zip(head, r))
+        if d["COUNTY"] != "臺北市":
+            continue
+        num = lambda c: float(d[c]) if d[c].strip() else 0.0  # noqa: E731
+        tot = sum(num(c) for c in cells)
+        n = sum(num(c) for c in hot)
+        recs[d["V_ID"].replace("-", "")] = (n, tot, n / tot if tot else None)
+    ranked = sorted((k for k, v in recs.items() if v[2] is not None), key=lambda k: -recs[k][2])
+    out = {}
+    for i, k in enumerate(ranked):
+        n, tot, sh = recs[k]
+        out[k] = {"silver_n": int(n), "silver_total": int(tot), "silver_share": round(sh, 4),
+                  "silver_rank": i + 1, "silver_top_pct": round((i + 1) / len(ranked), 4)}
+    return out, {"silver_villages": len(recs), "silver_ranked": len(ranked)}
+
+
 def build_villages(uro):
     ind = pd.read_csv(MARTS / "village_indicators.csv", dtype={"village_code": str, "town_code": str})
     rk = pd.read_csv(MARTS / "village_rankings.csv", dtype={"village_code": str})
     v = ind[VILLAGE_COLS].merge(rk[RANK_COLS], on="village_code", how="left")
     counts = site_counts(uro) if uro is not None else {}
+    silver, sstat = build_silver_housing()
+    matched = sum(1 for c in v["village_code"] if c in silver)
+    print(f"silver housing: {sstat.get('silver_villages', 0)} Taipei rows in zip, {matched}/{len(v)} marts villages matched")
     out = []
     for rec in v.to_dict("records"):
         rec = {k: clean(x) for k, x in rec.items()}
+        rec.update(silver.get(rec["village_code"], {}))
         rec.update(counts.get(rec["village_code"], {"uro_sites": 0, "uro_sites_approved": 0}))
         out.append(rec)
     return out
@@ -183,7 +227,8 @@ def main():
         print(f"skip cases.json: {URO_CSV} not found")
     villages = build_villages(uro)
     meta = {"generated_from": ["data/marts/village_indicators.csv", "data/marts/village_rankings.csv",
-                               "mvp-variants/uro-cases/out/uro-review-cases.csv"],
+                               "mvp-variants/uro-cases/out/uro-review-cases.csv",
+                               "data/raw/extra/base/segis-silver-index-113-village/140015-housing.zip"],
             "uro_rows": 0 if uro is None else int(len(uro)),
             "uro_rows_with_village": 0 if uro is None else int(uro["village_codes"].notna().sum())}
     (OUT / "villages.json").write_text(json.dumps({"meta": meta, "villages": deep_clean(villages)}, ensure_ascii=False, allow_nan=False), encoding="utf-8")

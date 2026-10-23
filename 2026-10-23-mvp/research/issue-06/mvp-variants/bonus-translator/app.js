@@ -404,7 +404,7 @@ function factorText(v, k) {
         "里人口統計，115 年 9 月。"];
     case "lv_old_stock":
       return [`約 ${pct(N(v.f_old_stock), 0)} 的房子是 1999 年以前申請建造（推估）。`, hi ? "用的是 921 以前的耐震規定，值得先做耐震初評。" : "",
-        `依 ${fmt(N(v.bld_age_known_n))} 棟查得到年份的房子推估（實價登錄、使用執照、海砂屋清冊）。`];
+        `依 ${fmt(N(v.bld_age_known_n))} 棟查得到年份的房子推估（實價登錄、使用執照、海砂屋清冊）。以申請建造日為準（推定：建成年減 2 年）。政府各制度用的日期不同：安檢用申請建造、公安申報用領得建照、住宅補助用取得建照、快篩用興建，所以不能直接拿使用執照年份對線。`];
     case "lv_liquefaction_city2019":
       return [`里面積有 ${pct(N(v.liq_high_share_city2019), 0)} 在液化高潛勢區、${pct(N(v.liq_medium_share_city2019), 0)} 在中潛勢區。`, hi ? "大地震時地面可能變軟，房子可能下陷。" : "",
         "臺北市液化潛勢圖 2019 版。這是區域尺度，不是單棟鑑定。"];
@@ -470,6 +470,7 @@ function renderVillage(code) {
     </div>
     <div class="legend"><span>1</span>${[1, 2, 3, 4, 5].map((i) => `<i style="background:var(--lv${i})"></i>`).join("")}<span>5＝全市最高約 7 個里</span></div>
     <div id="finfo" class="finfo"></div>
+    ${silverCard(v)}
     <div class="facts">${facts.map(([i, n, l]) => `<div class="fact"><div class="fi">${i}</div><div class="fn">${esc(n)}</div><div class="fl">${esc(l)}</div></div>`).join("")}</div>
     ${cases.length ? `<p>📋 本里的都更案：${cases.map((c) => `<a href="?case=${esc(c.case_id)}" data-case="${esc(c.case_id)}">${esc(c.case_id)} 看積木</a>`).join("、")}</p>` : ""}
     <div class="links">
@@ -478,6 +479,7 @@ function renderVillage(code) {
     </div>
     <details class="more"><summary>📋 資料來源</summary>
       <p class="meta">里的指標：data/marts/village_indicators.csv、village_rankings.csv（2026-10-18）。文資：文化部文資局。危老：清冊 1151002 版，依門牌比例分攤。海砂屋：115.3.25 清冊。黃單：115.3.18 版。</p>
+      <p class="meta">銀髮安居：內政部統計處銀髮安居資料（住宅狀況），113 年，村里別。原檔是分類人數，不是現成指數；比例與排序是本頁依分類人數推算。</p>
       <p class="meta">都更審議：都市更新審議服務平台（debug-e3）。目前 ${fmt(VMETA.uro_rows_with_village || 0)}／${fmt(VMETA.uro_rows || 0)} 案有里別，所以還不能算每里的案數。</p>
     </details>`;
 
@@ -493,6 +495,17 @@ function renderVillage(code) {
     const f = $(".gauge .fill");
     if (f) f.setAttribute("stroke-dashoffset", String(C * (1 - share)));
   });
+}
+
+// Silver-housing cell: share of people (MOI silver-housing data, 113Y) living in 30+ year old walk-ups, 2-5F.
+function silverCard(v) {
+  if (v.silver_share == null) return "";
+  const top = N(v.silver_top_pct) * 100;
+  const topTxt = top < 1 ? "前 1%" : "前 " + Math.ceil(top) + "%";
+  return `<div class="finfo silver">
+    <p><strong>🏚 銀髮住宅狀況：${topTxt}</strong>（456 里中第 ${fmt(v.silver_rank)} 名，相對於臺北其他里）</p>
+    <p>銀髮安居資料裡，約 ${pct(N(v.silver_share), 0)} 的人住在 30 年以上、沒電梯的 2～5 樓公寓。</p>
+    <details><summary>數字與來源</summary><p class="meta">出處：內政部統計處 銀髮安居資料，113 年。原檔是各類住宅的人數（${fmt(v.silver_n)}／${fmt(v.silver_total)} 人），不是現成指數；比例與排序是本頁推算。人數少的里，比例容易大起大落。</p></details></div>`;
 }
 
 function showFactor(v, k) {

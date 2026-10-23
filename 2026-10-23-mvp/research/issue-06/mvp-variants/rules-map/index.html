@@ -109,7 +109,7 @@
 
   <div id="detail" aria-live="polite"></div>
 
-  <h2>8 條法規，各一句話</h2>
+  <h2>8 條法規與 1 項補助，各一句話</h2>
   <p class="muted">大數字是這條法規最關鍵的門檻。按鈕連到用到它的 MVP。</p>
   <div class="cards" id="cards"></div>
 
@@ -213,6 +213,9 @@
     { art: "危老條例施行細則 §7", url: MOJ + "D0070256&flno=7", big: "180 天", h: "核准後要趕快申請建照",
       p: "重建計畫核准後 180 天內沒申請建照，核准就失效。可以延一次 180 天。",
       to: [["priority-ranking/", "老屋健檢順序"]] },
+    { art: "耐震弱層補強補助（一般方案）", url: "https://www.grb.gov.tw/search/planDetail?id=16583227", big: "450 萬", h: "不拆也能先補強",
+      p: "集合住宅每棟最高 450 萬元、透天每件最高 50 萬元，補助至多 85%。1,500 萬元只限 113 年 4 月 3 日花蓮震災的專案作業規定，不是一般上限。行政流程可能很長：花蓮案震後一年仍未施工。",
+      to: [["renewal-calculator/", "划不划算試算"], ["priority-ranking/", "老屋健檢順序"]], ev: "【文件，GRB 16583227 p.78～79、p.88】" },
   ];
 
   const $ = (s) => document.querySelector(s);

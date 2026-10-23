@@ -160,3 +160,4 @@ footer p { margin: 2px 0; }
 @media (prefers-reduced-motion: reduce) {
   #tower .blk, #tower .lab, .tile, .gauge .fill { transition: none; }
 }
+.finfo.silver { border-left: 4px solid var(--lv3, #e0a030); }

@@ -19,6 +19,14 @@
  *                  Added for the "快截止" rule; not part of the source table.
  *
  * Rule 5 of the source: cells marked 【待確認】 render as 「請洽窗口確認」.
+ *
+ * Local edits on 2026-10-24 (debug-7b, review fixes; not yet in next-step-card.md):
+ *   order 2  peer M1 (初評 1.2 萬 / 1.5 萬 + 審查費), M2 (過半同意 marked 待確認), M4 (詳評 30%, 40 萬)
+ *   order 3  r3-7b #4 (乾式鋼板補強 cost reference)
+ *   order 4  r3-7b #1 (透天 50 萬), #2 (花蓮 113-04-03 專案 1,500 萬 only), #3 (central cap 待確認)
+ *   order 10 peer M5 (電梯補助作業規範第四點第 1、4、6 款)
+ * Sources: gov-reports/verify/r3-7b.md "MVP 影響"; peer-analysis/2026-10-23-etblue-issue-analysis.md §4.
+ * The upstream card table must be synced by its owner before the next verbatim copy.
  */
 
 'use strict';
@@ -42,40 +50,40 @@ const NEXT_STEPS = [
   {
     order: 2,
     title: '耐震初評',
-    what: '專業機構看你這棟樓的耐震能力，給一個分數',
-    who: '1999 年底前申請建照的合法建物；整棟過半所有權人同意；住宅占 2/3 以上',
-    general: '市府每棟補 1.2 萬元；你大約自付 3,000～8,000 元（整棟分攤）',
+    what: '專業機構看你這棟樓的耐震能力，給一個分數。初評有疑慮時做詳評：市府補評估費 30%，每棟最高 40 萬元',
+    who: '1999 年底前申請建照的合法建物；是否要整棟過半所有權人同意、住宅占 2/3 以上【待確認】，依中央與北市補助規定',
+    general: '市府每棟最高補 1.2 萬元（3,000 m² 以上 1.5 萬元），另補審查費 1,000 元；你大約自付 3,000～8,000 元（整棟分攤）',
     elderly: '同左',
     deadline: '受理中',
     entry_text: '建管處使用科，同上頁；1999',
     entry_url: 'https://cmo.gov.taipei/cp.aspx?n=023341AF71C3812D',
-    source: '[5][7] 北市危老辦法（112-07-21）、評估收費標準（115 年版）',
+    source: '[5][7] 北市危老辦法（112-07-21）§9 第 2 項第 1、2 款、評估收費標準（115 年版）',
     deadline_date: null,
   },
   {
     order: 3,
     title: '臺北市補強補助',
-    what: '初評顯示需要補強、而且補強划算時，市府補一半工程費',
+    what: '初評顯示需要補強、而且補強划算時，市府補一半工程費。工程費參考：乾式鋼板補強約每平方公尺 1 萬 8,000 元（試驗研究的參考值，依個案而異）',
     who: '住宅占 1/3 以上；初評結果「需補強但具改善效益」，或貼黃單；不是海砂屋',
     general: '補 50%，每案最高 1,200 萬元',
     elderly: '同左（策略地區、整建住宅等：補 80%，最高 2,000 萬元）',
     deadline: '2026-12-31，經費用完提前停',
     entry_text: '臺北市都市更新處；(02)2781-5696 #3093',
     entry_url: 'https://uro.gov.taipei/News_Content.aspx?n=9CAC69257CFAC70E&sms=1635F69C7777535B&s=8860150E93FF8321',
-    source: '[11][12][13] 補助規範（114-12-08）、115 年度公告（115-07-01）',
+    source: '[11][12][13] 補助規範（114-12-08）、115 年度公告（115-07-01）；工程費參考：GRB 12879484 p.82、p.84',
     deadline_date: '2026-12-31',
   },
   {
     order: 4,
     title: '中央弱層補強',
-    what: '中央的補強補助，針對一樓等弱層',
+    what: '中央的補強補助，針對一樓等弱層。113 年 4 月 3 日花蓮震災張貼危險標誌的住宅另有專案規定，上限提高到每棟 1,500 萬元（特殊個案最高 2,250 萬元）；一般申請不適用',
     who: '公寓大廈或住商混合；初評 R＞30，或詳評須補強，或貼危險標誌',
-    general: '補 45%，最高 450 萬元；初評 R＞45：補 85%',
+    general: '集合住宅每棟最高 450 萬元、透天每件最高 50 萬元；補 45%，初評 R＞45 補到至多 85%',
     elderly: '同左',
-    deadline: '制度持續；臺北本年度受理期間【待確認】',
+    deadline: '制度持續；臺北本年度受理期間、中央 115 年起的計畫是否調整上限【待確認】',
     entry_text: '私有建築物耐震弱層補強資訊網；建管處使用科',
     entry_url: 'https://privatebuilding.ncree.org.tw/',
-    source: '[8][9][10] 主動輔導要點（111-10-17）、資訊網（2026-07-29 公告）',
+    source: '[8][9][10] 主動輔導要點（111-10-17）、資訊網（2026-07-29 公告）；GRB 16583227 p.78～79',
     deadline_date: null,
   },
   {
@@ -147,13 +155,13 @@ const NEXT_STEPS = [
     order: 10,
     title: '公寓加裝電梯',
     what: '6 樓以下沒電梯的公寓，加裝電梯的工程補助',
-    who: '屋齡 20 年以上；已領增設電梯建築許可；管委會或過半住戶推派代表申請',
+    who: '屋齡 20 年以上；住宅使用達全棟一半以上；整棟不是單一所有權人；不是列管須拆除的海砂屋；已領增設電梯建築許可；管委會或過半住戶推派代表申請',
     general: '補 50%，每座最高 300 萬元',
     elderly: '補 80%，每座最高 480 萬元（戶內有 65 歲以上即可）',
     deadline: '2026-12-31 或經費用完',
     entry_text: '電梯補助專區；(02)2781-5696',
     entry_url: 'https://uro.gov.taipei/News_Content.aspx?n=9CAC69257CFAC70E&s=E06839FCF0BC62E8&sms=1635F69C7777535B',
-    source: '[S20][S21][S22] 作業規範（114-10-31）、115 年度公告（115-07-01）',
+    source: '[S20][S21][S22] 作業規範（114-10-31）第四點、115 年度公告（115-07-01）',
     deadline_date: '2026-12-31',
   },
   {

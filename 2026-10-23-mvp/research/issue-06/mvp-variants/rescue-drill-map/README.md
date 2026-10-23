@@ -16,10 +16,11 @@
 
 ```sh
 uv run python -X utf8 research/issue-06/mvp-variants/rescue-drill-map/scripts/build_data.py
+uv run python -X utf8 research/issue-06/mvp-variants/rescue-drill-map/scripts/build_extra.py
 cd research/issue-06 && python -X utf8 -m http.server 8778 --bind 127.0.0.1
 ```
 
-開 http://127.0.0.1:8778/mvp-variants/rescue-drill-map/ 。伺服器要從 `research/issue-06` 起，因為頁面引用 `../../solutions/prototype/assets/vendor/` 的 Leaflet。`data/` 由程式產生，不進 git（約 4 MB）。底圖 OpenStreetMap。
+開 http://127.0.0.1:8778/mvp-variants/rescue-drill-map/ 。伺服器要從 `research/issue-06` 起，因為頁面引用 `../../solutions/prototype/assets/vendor/` 的 Leaflet。`data/` 由程式產生，不進 git（約 4 MB，`.gitignore` 已排除）。`build_extra.py` 產生 `data/drill_extra.json`（收容所與消防栓兩項）；沒有這個檔，頁面照樣跑，只是少兩項。底圖 OpenStreetMap。
 
 ## 驗證紀錄（不需要人按鍵）
 
@@ -29,6 +30,7 @@ cd research/issue-06 && python -X utf8 -m http.server 8778 --bind 127.0.0.1
 | 2026-10-22 00:58 | 375 寬：開 `/mvp-variants/_test/iframe.html?u=/mvp-variants/rescue-drill-map/` 再截圖（無頭 Edge 視窗最小約 500 px，直接開 375 量不準） | 單欄，無橫向溢出【實測】 |
 | 2026-10-22 00:57 | `--dump-dom` 加 `#debug`，讀 `<footer>` 的 `data-scrollw`、`data-wide` | scrollWidth＝clientWidth，只有地圖磚超出（在 overflow hidden 內）【實測】 |
 
+| 2026-10-24 00:35 | 查核修正 M1～M4（r3-b9，M1 補助數字照 Day 2 計畫第 1 節：集合住宅 450 萬、透天 50 萬、至多 85%，1,500 萬只限花蓮專案）；檢核表新增「確認震後去哪裡」「量窄巷到消防栓」兩項。無頭 Edge 1400×2000 截圖、`--dump-dom` 讀檢核表文字；504 寬 `#debug` 只有地圖磚超出；375 寬用 `_test/iframe.html` 截圖 | 民炤里：收容所「1 處主要、2 處備用」、消防栓「最遠一條約 40 m（建國南路1段318巷）」；補助句出現 450 萬；無橫向溢出【實測】 |
 | 2026-10-22 01:09 | 照 design-kit/REVIEW.md 改：刪數字堆疊句、說明收進 details、檢核表一行一動詞、徽章與副標 15 px、小標 20 px、小人數字 36 px、清單長條加圖示、手機版改成「下拉選里 → 地圖 → 卡片 → 清單」。無頭 Edge 桌面與 375 寬重截，#debug 自檢無溢出 | 通過【實測】 |
 
 `app.js` 末尾有 `#debug` 的版面自檢：開網址加 `#debug`，1.5 秒後 `<footer>` 會帶 `data-scrollw`、`data-clientw`、`data-wide`（超出視窗的元素）。
@@ -41,6 +43,9 @@ cd research/issue-06 && python -X utf8 -m http.server 8778 --bind 127.0.0.1
 | 狹小巷道紅黃區 | data.taipei 消防局清冊 | 同上 | 只有巷名，位置是該巷門牌中心（推估）；273 條中 254 條落到里 |
 | 消防通道清冊 | data.taipei | 同上 | 沒有座標，只列文字 |
 | 文資點 | 文化部文資局開放資料 v2 | 政府資料開放授權第 1 版 | 是代表點，不是保存範圍 |
+| 震災收容所（服務里別） | 臺北市政府教育局「臺北市可供避難收容處所一覽表」115-02-24 版（data.taipei，2026-10-23 下載） | 政府資料開放授權第 1 版 | 只取震災欄「是／備用」與服務里別；聯絡人、管理人姓名電話**不讀進產品**。服務里別有 5 個寫法對不到里名，`build_extra.py` 的 `FIX` 手動對應 |
+| 適合避難弱者收容所 | 內政部消防署「避難收容處所」（data.gov.tw 12849，2026-10-23 下載） | 政府資料開放授權第 1 版 | 原檔臺北市 1,422 列其實是 476 處重複列（多數三次），去重後適合避難弱者且含震災 121 處（119 處有座標）；依經緯度落里 |
+| 消防栓 | 臺北自來水事業處「大臺北地區消防栓清冊」115-09-15 版（data.taipei，2026-10-23 下載） | 政府資料開放授權第 1 版 | 30,481 支（含新北市側 8,541 支，最近的可能在市界外）。窄巷到消防栓是直線距離、巷子用門牌中心，推估 |
 | 液化高潛勢 | 臺北市土壤液化潛勢圖（城市版 2019，data.taipei） | 政府資料開放授權 | class 1＝高是推論（鑽孔驗證）。**沒有用全國 2026 版幾何**，所以可以公開 |
 
 ## 候選門檻（和 `data/marts/README.md` 的 `s5_candidate` 一致）
@@ -53,3 +58,5 @@ cd research/issue-06 && python -X utf8 -m http.server 8778 --bind 127.0.0.1
 2. 80 歲以上的「名冊」不在開放資料裡，頁面只給人數。
 3. 軟弱層是候選，不是判定；文字已標。
 4. 手機寬度用 CSS 斷點處理，沒有真機測。
+5. 消防栓距離只算紅黃區巷道（254 條有位置）；消防通道清冊沒有座標，沒算。全市最遠約 150 m，中位數約 20 m。
+6. 收容所的「主要／備用」照教育局一覽表的震災欄；開不開設以區公所當下公告為準。

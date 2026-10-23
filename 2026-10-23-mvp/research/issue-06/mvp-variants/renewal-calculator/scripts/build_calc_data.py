@@ -22,6 +22,8 @@ Input:   data/staged/housing-stats/real-price-registration-lvr-all.parquet
          data/marts/building_points.parquet
          data/marts/village_indicators.csv
          research/issue-06/mvp-variants/consent-simulator/decision-tree/decision-tree.json (optional)
+         data/raw/extra/housing-stats/income-tax-village-taipei-109-112/112年度綜稅各類所得金額各縣市鄉鎮村里統計表-臺北市.csv
+           (財政部財政資訊中心; optional; gives prices.json "income")
 Output:  research/issue-06/mvp-variants/data/{village,town,building}_unit_prices_net.csv  (in git; same
          columns as debug-6f's tables plus a `filters` column)
          research/issue-06/mvp-variants/renewal-calculator/data/prices.json
@@ -244,6 +246,46 @@ def uro_district():
     return out
 
 
+INCOME_YEAR = 112
+INCOME_CSV = (RAW / "extra" / "housing-stats" / "income-tax-village-taipei-109-112"
+              / f"{INCOME_YEAR}年度綜稅各類所得金額各縣市鄉鎮村里統計表-臺北市.csv")
+
+
+def income_tables(villages):
+    """Average income per tax unit (合計 ÷ 納稅單位) per village and per district, in NTD per year.
+
+    合計 is in thousand NTD. Villages are matched on district + village name to
+    village_indicators.csv; district rows are the file's 合計 rows. This is a mean, not a median,
+    and a tax unit is not a household; the page labels it 推估.
+    """
+    if not INCOME_CSV.exists():
+        return None
+    d = pd.read_csv(INCOME_CSV, dtype=str, encoding="utf-8-sig")
+    d.columns = [c.strip().lstrip(chr(0xFEFF)) for c in d.columns]  # BOM sits inside the first quoted name
+    d["town_name"] = d["縣市別"].str.replace("臺北市", "", regex=False).str.strip()
+    d["units"] = pd.to_numeric(d["納稅單位(戶)"], errors="coerce")
+    d["total"] = pd.to_numeric(d["合計"], errors="coerce") * 1000
+    d = d[d.units > 0]
+    vil = d[~d["村里"].isin(["合計", "其他"])].merge(
+        villages[["village_code", "town_code", "town_name", "village_name"]],
+        left_on=["town_name", "村里"], right_on=["town_name", "village_name"], how="inner")
+    tw = d[d["村里"].eq("合計")].merge(villages[["town_code", "town_name"]].drop_duplicates(), on="town_name")
+
+    def row(r):
+        return {"avg": int(round(r.total / r.units)), "units": int(r.units)}
+
+    out = {
+        "year": INCOME_YEAR,
+        "source": f"財政部財政資訊中心，{INCOME_YEAR} 年度綜稅各類所得金額各縣市鄉鎮村里統計表",
+        "file": str(INCOME_CSV.relative_to(ROOT)).replace("\\", "/"),
+        "village": {r.village_code: row(r) for r in vil.itertuples()},
+        "town": {r.town_code: row(r) for r in tw.itertuples()},
+    }
+    out["matched"] = len(out["village"])
+    out["villages_total"] = int(villages.village_code.nunique())
+    return out
+
+
 def main():
     lv = clean_sales()
     recent = lv[lv.trade_date >= RECENT_FROM]
@@ -263,7 +305,10 @@ def main():
         "uro_district": uro_district(),
         "village_names": dict(zip(towns.village_code, towns.village_name)),
         "town_names": dict(zip(towns.town_code, towns.town_name)),
+        "income": income_tables(towns),
     }
+    inc = prices["income"]
+    print("income villages matched:", None if inc is None else f"{inc['matched']}/{inc['villages_total']}")
     OUT.mkdir(parents=True, exist_ok=True)
     with open(OUT / "prices.json", "w", encoding="utf-8") as fh:
         json.dump(prices, fh, ensure_ascii=False, separators=(",", ":"))

@@ -24,7 +24,7 @@
 
   const PARAMS = {
     rounds: { v: 5, src: '假設：約 5 次說明會或協調會' },
-    peerLogOR: { v: Math.log(0.347), src: '文件：同棟反對比例 勝算比 0.347（gov-reports 1888939 p.40～44，補強意願研究，借用到重建）' },
+    peerLogOR: { v: Math.log(0.347), src: '假設（數值取自文件）：同棟反對比例 勝算比 0.347（gov-reports 1888939 p.40～44，補強意願研究，借用到重建）。假設：原文（GRB 1888939 p.42）只寫「增加一個單位」，未定義單位，本模擬假設一個單位＝未簽比例從 0 到 1，未經驗證' },
     damageLogOR: { v: Math.log(7.166), src: '文件：住宅已有損壞 勝算比 7.166（同上研究）' },
     riskInfo: { v: 0.1, src: '文件：風險知覺不顯著（同上研究），所以只給很小的效果' },
     elevator: { v: 1.2, src: '假設：三樓以上的高齡或行動不便住戶想要電梯' },
@@ -120,6 +120,7 @@
     for (let i = pre; i < pre + ref; i++) u[i] -= P('refusedPenalty');
     let notSigned = ref / hh.length;  // before the first meeting, neighbours only see explicit refusals
     for (let k = 0; k < P('rounds'); k++) {
+      // ASSUMPTION: unit of OR 0.347 is undefined in the source (GRB 1888939 p.42); treated as 0..1 share
       const peer = P('peerLogOR') * notSigned;
       for (let i = 0; i < hh.length; i++) {
         if (signed[i] || hh[i].unreachable) continue;

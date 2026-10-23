@@ -33,7 +33,7 @@ const lessons = getStaticFiles()
   .map((f) => f.name.replace(/\\/g, "/"))
   .filter((n) => /^[^/]+\/timeline\.json$/.test(n))
   .map((n) => ({ file: n, id: n.split("/")[0].replace(/[^a-zA-Z0-9-]/g, "-") }))
-  .filter((l) => l.id !== "Demo");
+  .filter((l) => l.id !== "Demo" && l.id !== "demo-en");
 
 export const Root: React.FC = () => (
   <>
@@ -46,6 +46,17 @@ export const Root: React.FC = () => (
       durationInFrames={150}
       defaultProps={{ timeline: EMPTY }}
       calculateMetadata={fromTimeline("timeline.json")}
+    />
+    {/* English voice-over with Chinese + English captions (tools/build_en.py). */}
+    <Composition
+      id="DemoEn"
+      component={Demo}
+      fps={30}
+      width={1280}
+      height={720}
+      durationInFrames={150}
+      defaultProps={{ timeline: EMPTY }}
+      calculateMetadata={fromTimeline("demo-en/timeline.json")}
     />
     {lessons.map((l) => (
       <Composition

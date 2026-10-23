@@ -19,7 +19,8 @@
   .handle::before{content:"";position:absolute;top:0;bottom:0;left:-2px;width:4px;background:#fff;box-shadow:0 0 6px rgba(0,0,0,.4)}
   .knob{position:absolute;top:50%;left:-24px;width:48px;height:48px;margin-top:-24px;border-radius:50%;background:#fff;color:#1f2328;display:grid;place-items:center;font-size:22px;font-weight:900;box-shadow:0 2px 8px rgba(0,0,0,.35);pointer-events:auto;outline-offset:3px}
   .note{font-size:var(--fs-s);color:var(--muted);margin:8px 0 0}
-  .adds{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .adds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .adds label{white-space:normal;padding:8px 8px}
   .adds label{display:flex;align-items:center;gap:6px;border-radius:12px;padding:8px 10px}
   .adds input{width:22px;height:22px;accent-color:var(--green)}
   .adds label:has(input:checked){border-color:var(--green);background:color-mix(in srgb,var(--green) 18%,var(--panel))}
@@ -68,21 +69,42 @@
   <h2 class="k-h2" style="margin-top:24px">我想加的</h2>
   <p>勾一個，圖上就會出現。</p>
   <div class="adds">
-    <label><input type="checkbox" value="balcony"><span class="ic">🪴</span>陽台綠化</label>
     <label><input type="checkbox" value="lift"><span class="ic">♿</span>無障礙電梯</label>
+    <label><input type="checkbox" value="balcony"><span class="ic">🪴</span>陽台綠化</label>
     <label><input type="checkbox" value="garden"><span class="ic">🥬</span>社區菜園</label>
     <label><input type="checkbox" value="rain"><span class="ic">💧</span>雨水回收</label>
   </div>
+  <p class="note">電梯排第一：調查的 20 棟集合住宅裡，有 18 棟「無障礙設施設置過少」，是最常見的老化態樣【文件】。</p>
 
   <h2 class="k-h2" style="margin-top:28px">你喜歡哪一種？</h2>
   <p>點卡片看圖，按愛心投一票。</p>
   <div class="cards" id="cards"></div>
   <button class="reset" id="reset">清除這台裝置的票數</button>
 
+  <h2 class="k-h2" style="margin-top:28px">不重建，也有路</h2>
+  <article class="k-card">
+    <p>老屋如果被張貼紅單或黃單，或耐震力初步評估的危險度總分大於 45 分，可以申請耐震弱層補強補助【文件】。</p>
+    <ul class="pc">
+      <li><span class="i" aria-hidden="true">🏢</span>集合住宅：最高 450 萬元</li>
+      <li><span class="i" aria-hidden="true">🏠</span>單一透天住宅：每件最高 50 萬元</li>
+      <li><span class="i" aria-hidden="true">💰</span>最多補助總經費的 85%</li>
+    </ul>
+    <p>流程冗長。花蓮案震後一年，仍未開始施工。</p>
+    <details class="k-more"><summary>出處和限制</summary>
+      <div>
+        <p>出處：政府研究計畫報告 GRB 16583227，第 78 至 79 頁【文件】。</p>
+        <p>這是一般方案的上限。另有 113 年 4 月 3 日花蓮震災張貼危險標誌住宅的專案作業規定，金額不同，只適用那次震災，不能當一般上限。</p>
+        <p>報告也說，用重建模擬推動災前重建認知，預期「較為理想化」。所以這頁的願景要接到可行動的下一步。</p>
+        <p>你家符不符合條件，要先做耐震評估才知道。</p>
+      </div>
+    </details>
+  </article>
+
   <details class="k-more"><summary>這頁怎麼做的</summary>
     <div>
       <p>插圖是自己畫的示意，不是任何一棟真實建物。</p>
-      <p>優缺點是一般常識的整理【推論】。補助、承重、法規都還沒查證【待確認】。</p>
+      <p>「現在」那一側畫了頂樓鐵皮加蓋，是因為加建會影響結構。延壽研究調查臺北、新北 20 棟集合住宅，其中一棟（大安區、屋齡 35 年）被評為「屋頂加建，結構安全堪慮」【文件】。只是一個案例，不代表多數。</p>
+      <p>優缺點是一般常識的整理【推論】。補助金額已查證，見「不重建，也有路」【文件】。承重、法規還沒查證【待確認】。</p>
       <p>票數只存在這台裝置。里民大會可以把平板傳著用，不會上傳。</p>
     </div>
   </details>
@@ -102,7 +124,8 @@ const SCHEMES = {
   solar: { icon: '☀️', name: '太陽能', say: '屋頂鋪滿板子，白天自己發電。',
     pc: [['⚡', '自己發電', 1], ['💰', '公共電費可以省一些', 1], ['🚫', '屋頂就不能當花園', 0]] },
   facade: { icon: '🎨', name: '統一色與立面', say: '拆掉鐵窗和加蓋，整排用同一套顏色。',
-    pc: [['👀', '整條街變好看', 1], ['🧱', '鐵窗、雜物一次清掉', 1], ['🗳️', '全體住戶要先講好顏色', 0]] }
+    pc: [['👀', '整條街變好看', 1], ['🧱', '鐵窗、雜物一次清掉', 1], ['🔧', '外牆一起整修：20 棟裡 14 棟屋齡 10 年以上的外牆沒有定期檢修', 1], ['🗳️', '全體住戶要先講好顏色', 0]],
+    more: ['外牆整修也可以走整建維護，不一定要整棟重建【推論】。', '集合住宅重建需要居民們凝聚共識，重建速度相較於獨棟住宅緩慢【文件】。'] }
 };
 
 // ---------- tiny SVG helpers ----------
@@ -296,6 +319,7 @@ cards.innerHTML = Object.entries(SCHEMES).map(([k, s]) => `
     <div class="big" aria-hidden="true">${s.icon}</div>
     <h3>${s.name}</h3><p>${s.say}</p>
     <ul class="pc">${s.pc.map(([i, t, ok]) => `<li><span class="i" aria-hidden="true">${i}</span><span class="${ok ? 'y' : 'n'}">${ok ? '✓' : '✗'}</span>${t}</li>`).join('')}</ul>
+    ${s.more ? `<details class="k-more"><summary>為什麼這樣說</summary><div>${s.more.map(t => `<p>${t}</p>`).join('')}</div></details>` : ''}
     <button class="like" data-s="${k}">❤ 我喜歡這個</button>
     <div class="k-bar" style="--k-c:var(--red)"><i></i><b></b></div>
   </article>`).join('');

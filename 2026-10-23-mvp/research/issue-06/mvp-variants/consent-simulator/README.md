@@ -99,6 +99,7 @@ uv run python -X utf8 research/issue-06/mvp-variants/consent-simulator/decision-
 
 | 時間 | 方法 | 結果 |
 |---|---|---|
+| 2026-10-24 | `validate_tree.py`；無頭 Edge `--dump-dom` 開 `index.html`（本機 http.server） | 0 錯誤 0 警告；頁面載入、基準危老仍 13.2%（改的只有說明文字與註解）；勝算比 0.347 標假設、決策樹「初評過半同意」標【待確認】【實測】 |
 | 2026-10-22 00:40 | `curl` 7 個檔（頁面、3 支 assets、2 支資料） | 全部 200【實測】 |
 | 2026-10-22 00:45 | Chrome（Claude in Chrome）載入、重新整理、讀主控台 | 沒有錯誤或警告【實測】 |
 | 2026-10-22 00:45 | 同上，用 JS 點三個分頁 | 小人亮 78 個；住戶卡 88 張，篩租客剩 16 張；流程圖點兩下出現 3 個選項；開個案經理後亮 84 個【實測】 |

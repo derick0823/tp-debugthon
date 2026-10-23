@@ -7,7 +7,7 @@ import Outro, { OutroCard } from "./ui/Outro";
 import Card from "./ui/Card";
 import { ThemeProvider, useTheme } from "./ui/theme";
 
-export type CaptionT = { text: string; file: string; from: number; frames: number };
+export type CaptionT = { text: string; en?: string; file: string; from: number; frames: number };
 export type SegmentT = {
   beat: number; kind: "title" | "clip" | "card" | "outro" | "outro-clip"; name: string | null; role: string; label: string;
   from: number; frames: number; src: string | null; playbackRate: number; captions: CaptionT[];
@@ -58,7 +58,7 @@ const Clip: React.FC<{ seg: SegmentT; total: number }> = ({ seg, total }) => {
       {/* The pages carry their own quest bar (design-kit/quest.js), so no second badge on clips. */}
       {seg.captions.map((c, i) => (
         <Sequence key={i} from={c.from} durationInFrames={c.frames + 10} layout="none">
-          <Caption text={c.text} from={0} durationInFrames={c.frames + 10} />
+          <Caption text={c.text} en={c.en} from={0} durationInFrames={c.frames + 10} />
           <Audio src={staticFile(c.file)} />
         </Sequence>
       ))}
@@ -84,7 +84,7 @@ const Captions: React.FC<{ seg: SegmentT }> = ({ seg }) => (
   <>
     {seg.captions.map((c, i) => (
       <Sequence key={i} from={c.from} durationInFrames={c.frames + 10} layout="none">
-        <Caption text={c.text} from={0} durationInFrames={c.frames + 10} />
+        <Caption text={c.text} en={c.en} from={0} durationInFrames={c.frames + 10} />
         <Audio src={staticFile(c.file)} />
       </Sequence>
     ))}
@@ -104,7 +104,7 @@ const Body: React.FC<{ timeline: TimelineT; frame: number; clips: number; titleP
               <Title durationInFrames={seg.frames} {...titleProps} />
               {seg.captions.map((c, i) => (
                 <Sequence key={i} from={c.from} durationInFrames={c.frames + 10} layout="none">
-                  <Caption text={c.text} from={0} durationInFrames={c.frames + 10} />
+                  <Caption text={c.text} en={c.en} from={0} durationInFrames={c.frames + 10} />
                   <Audio src={staticFile(c.file)} />
                 </Sequence>
               ))}
@@ -121,7 +121,7 @@ const Body: React.FC<{ timeline: TimelineT; frame: number; clips: number; titleP
               <Outro durationInFrames={seg.frames} {...(timeline.outro ?? {})} />
               {seg.captions.map((c, i) => (
                 <Sequence key={i} from={c.from} durationInFrames={c.frames + 10} layout="none">
-                  <Caption text={c.text} from={0} durationInFrames={c.frames + 10} />
+                  <Caption text={c.text} en={c.en} from={0} durationInFrames={c.frames + 10} />
                   <Audio src={staticFile(c.file)} />
                 </Sequence>
               ))}

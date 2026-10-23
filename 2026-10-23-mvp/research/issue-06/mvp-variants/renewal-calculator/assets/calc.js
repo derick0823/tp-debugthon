@@ -782,6 +782,7 @@ function compute() {
     v.innerHTML = `<span class="big">${signed(diff)}</span><span class="t">${say}</span>`;
   }
   v.className = `verdict ${verdict}`;
+  renderAfford(rec, relo);
 
   // section 3: floor area
   const base = x.landMode ? x.land * x.far * x.gross * (1 - x.burden) : x.ping * (1 - x.burden);
@@ -825,6 +826,27 @@ function compute() {
 
   renderConsent(rec);
   renderAlternatives(rec, { type: x.type, verdict, elderly: x.elderly });
+}
+
+/* One line next to the result: the village's average income per tax unit (財政部財政資訊中心,
+ * built into prices.json "income"), and the self-pay as years of that income. Self-pay here is
+ * the cash the household pays itself during rebuilding (rent + moving); 0 when the implementer pays.
+ * Falls back to the district when no building is matched. */
+function renderAfford(rec, selfPay) {
+  const el = $('afford');
+  const inc = state.prices && state.prices.income;
+  const town = rec ? rec.town_code : state.townCode;
+  const v = inc && rec ? inc.village[rec.village_code] : null;
+  const hit = v || (inc ? inc.town[town] : null);
+  if (!el || !hit || !(hit.avg > 0)) { if (el) el.hidden = true; return; }
+  const where = v ? `這個里（${esc(state.prices.village_names[rec.village_code] || '')}）` : `這個區（${esc(state.prices.town_names[town] || '')}）`;
+  let s = `${where}的平均所得約 <b>${Math.round(hit.avg / 1e4).toLocaleString('zh-TW')} 萬元／年</b>`;
+  if (selfPay > 0) {
+    const y = selfPay / hit.avg;
+    s += `，自備款約是 <b>${y < 0.1 ? '不到 0.1' : y.toFixed(1)} 年所得</b>`;
+  }
+  el.innerHTML = `${s}。<span class="src">【推估】每個納稅單位的平均所得，是平均不是中位數，少數高所得會拉高它。${selfPay > 0 ? `自備款＝重建期間自己付的房租與搬家（${wan(selfPay)}），不含找補與稅費。` : ''}財政部財政資訊中心 ${inc.year} 年度綜稅所得村里統計。</span>`;
+  el.hidden = false;
 }
 
 function renderFlip(rec, x, before, share, relo) {

@@ -341,6 +341,36 @@
     document.querySelectorAll(".rrow").forEach((el) => el.addEventListener("click", () => { select(el.dataset.code, true); quest("點一個里"); }));
   }
 
+  // market gap: share of buildings vs share of 危老 / 都更 cases, top level (4-5) of each house-side factor
+  function buildGap(meta) {
+    const G = meta.market_gap;
+    if (!G) return;
+    const top = (g) => g.levels.find((l) => l.level === "4-5");
+    const tops = G.groups.map((g) => ({ g, t: top(g) }));
+    const max = Math.ceil(Math.max(...tops.flatMap(({ t }) => [t.bld_share, t.weilao_share, t.uro_share])) * 20) / 20;
+    const x = (s) => ((s / max) * 100).toFixed(2) + "%";
+    const cityRate = G.cases_per_1k_bld_city;
+    const bar = (label, s, color, ref) => `<div class="gb"><span>${label}</span>
+      <svg role="img" aria-label="${label} ${pct(s, 1)}"><rect width="100%" height="20" rx="5" fill="var(--track)"></rect>
+      <rect width="${x(s)}" height="20" rx="5" fill="var(${color})"></rect>
+      ${ref == null ? "" : `<line x1="${x(ref)}" x2="${x(ref)}" y1="-3" y2="23" stroke="var(--ink)" stroke-width="2" stroke-dasharray="3 2"></line>`}</svg>
+      <b>${pct(s, 1)}</b></div>`;
+    $("#gap").innerHTML = tops.map(({ g, t }) => `<div class="gapg">
+      <h3>${g.name}最高的 ${t.villages} 個里<small>等級 4～5</small></h3>
+      ${bar("房子棟數", t.bld_share, "--muted")}
+      ${bar("危老案", t.weilao_share, "--c3", t.bld_share)}
+      ${bar("都更案", t.uro_share, "--c1", t.bld_share)}
+      <p>每千棟分到 ${t.cases_per_1k_bld.toFixed(1)} 件（全市 ${cityRate.toFixed(1)} 件）</p></div>`).join("");
+    const o = tops[0].t, others = tops.slice(1).filter(({ t }) => t.cases_share > t.bld_share);
+    $("#gapLead").innerHTML = `${tops[0].g.name}比例最高的 <b>${o.villages}</b> 個里，有全市 ${pct(o.bld_share, 1)} 的房子，` +
+      `只分到 <b>${pct(o.cases_share, 1)}</b> 的危老與都更案。` +
+      (others.length ? `${others.map(({ g }) => g.name).join("、")}最高的里沒有這個落差，分到的案比房子占比多。` : "");
+    $("#gapWl").textContent = G.weilao_period;
+    $("#gapWlN").textContent = Math.round(G.weilao_total).toLocaleString();
+    $("#gapUro").textContent = G.uro_period;
+    $("#gapUroN").textContent = Math.round(G.uro_total);
+  }
+
   function setTab(t) {
     tab = t;
     document.body.dataset.tab = t;
@@ -368,8 +398,9 @@
       "rank_p05", "rank_p50", "rank_p95", "share_top46"].concat(FACTORS.map((f) => "lv_" + f.k));
     const lines = rerank().map((v) => [v.rank, v.village_code, v.town_name, v.village_name, v.score.toFixed(4),
       v.rank_eq, v.r05, v.r50, v.r95, v.top46].concat(FACTORS.map((f) => v["lv_" + f.k])).join(","));
+    const use = "# 給市府排程用，不是逐棟鑑定（相對於臺北其他里；老屋、軟弱層為推估）/ for city scheduling, not a building-by-building assessment";
     const note = `# weights ${FACTORS.map((f, i) => f.k + "=" + weights[i]).join(" ")}; relative to other Taipei villages; old_stock and soft_story are estimates`;
-    const blob = new Blob(["﻿" + [note, head.join(",")].concat(lines).join("\n")], { type: "text/csv" });
+    const blob = new Blob(["﻿" + [use, note, head.join(",")].concat(lines).join("\n")], { type: "text/csv" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = `village-priority-${weights.join("-")}.csv`;
@@ -392,6 +423,7 @@
     buildStable();
     buildAging(meta);
     buildRenew(meta);
+    buildGap(meta);
     document.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("click", () => {
       setTab(b.dataset.tab);
       if (b.dataset.tab === "renew") quest("看公辦分頁");
@@ -419,6 +451,7 @@
     window.addEventListener("resize", () => { sizeRows(); update(); });
     setTab(tab);
     if (wantMore) $("#more").scrollIntoView();
+    if (/gap/.test(location.hash)) setTimeout(() => $("#gapTitle").scrollIntoView(), 300);
   }
 
   init().catch((e) => {

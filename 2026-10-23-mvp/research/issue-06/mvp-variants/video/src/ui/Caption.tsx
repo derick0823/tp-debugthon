@@ -5,6 +5,8 @@ import { FONT, useTheme } from "./theme";
 export type CaptionProps = {
   /** One subtitle line. Wrap keywords in 【】 to color them and pop them to 1.15x, e.g. "賺【539 萬】". */
   text: string;
+  /** Optional English line shown under the Chinese one (bilingual version). */
+  en?: string;
   /** First frame (relative to the parent Sequence) when the caption shows. */
   from: number;
   /** How many frames it stays, fade-out included. */
@@ -12,7 +14,7 @@ export type CaptionProps = {
 };
 
 /** Bottom subtitle: fades in while moving up 12 px; 【keyword】 turns primary and springs to 1.15x. */
-const Caption: React.FC<CaptionProps> = ({ text, from, durationInFrames }) => {
+const Caption: React.FC<CaptionProps> = ({ text, en, from, durationInFrames }) => {
   const frame = useCurrentFrame() - from;
   const { fps } = useVideoConfig();
   const t = useTheme();
@@ -34,6 +36,7 @@ const Caption: React.FC<CaptionProps> = ({ text, from, durationInFrames }) => {
             <span key={i}>{p}</span>
           ),
         )}
+        {en && <div style={{ marginTop: 4, fontSize: 26, fontWeight: 500, lineHeight: 1.3, color: "#f1e6e1" }}>{en}</div>}
       </div>
     </div>
   );

@@ -76,7 +76,7 @@ async function run() {
     { name: 'quake flag', q: '?q=大安區信義路4段60號', expect: (d) => d.getElementById('flags').textContent.includes('黃單') },
     { name: 'similar addresses', q: '?t=63000030&q=信義路二段86巷', expect: (d) => d.querySelectorAll('#suggest button').length > 0 },
     { name: 'not found', q: '?t=63000030&q=火星路1號', expect: (d) => d.getElementById('status').classList.contains('err') && d.getElementById('h-now-val').textContent.includes('萬') },
-    { name: 'no address', q: '', expect: (d) => d.getElementById('h-now-val').textContent.includes('萬') },
+    { name: 'no address', q: '', expect: (d) => d.getElementById('h-now-val').textContent.includes('萬') && d.getElementById('afford').textContent.includes('這個區'), detail: (d) => d.getElementById('afford').textContent },
   ];
   for (const c of cases) {
     await load(c.q);
@@ -106,6 +106,12 @@ async function run() {
       ok('relocation section: 2 bars, cost in flow', doc.querySelectorAll('#relo-bars .bar').length === 2 && doc.querySelector('#flow [data-card="relo"] .num').textContent !== '—', doc.querySelector('#flow [data-card="relo"] .eq').textContent);
       const badges = doc.querySelectorAll('.q-bar .q-badges span');
       ok('quest bar: 3 badges, "找到你家" on after the address match', badges.length === 3 && badges[0].classList.contains('on'), [...badges].map((x) => x.className || '-').join(','));
+      const af = doc.getElementById('afford');
+      ok('afford line: village income and years of self-pay', !af.hidden && af.textContent.includes('這個里') && af.textContent.includes('年所得') && af.textContent.includes('平均不是中位數'), af.textContent);
+      const rp = doc.getElementById('relo-paid');
+      rp.checked = true; rp.dispatchEvent(new Event('input'));
+      ok('afford line: no self-pay when the implementer pays', !af.hidden && !af.textContent.includes('自備款'), af.textContent);
+      rp.checked = false; rp.dispatchEvent(new Event('input'));
       ok('flip chart has two bars', doc.querySelectorAll('#flip .dv').length === 2, doc.getElementById('flip').textContent.replace(/\s+/g, ' ').trim());
       const h = doc.getElementById('house-new');
       ok('hero house animates (CSS transition)', w.getComputedStyle(h).transitionDuration !== '0s', w.getComputedStyle(h).transition);

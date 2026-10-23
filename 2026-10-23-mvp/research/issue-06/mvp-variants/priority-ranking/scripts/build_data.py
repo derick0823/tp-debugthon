@@ -9,6 +9,7 @@ Input:   data/marts/village_rankings.geojson, data/marts/village_indicators.csv,
          data/marts/building_points.parquet (50+ year share by year, the issue's first sentence)
          mvp-variants/data/village_unit_prices_net.csv (renewal-calculator; net of new builds and odd deals)
          mvp-variants/uro-cases/out/uro-review-case-villages.csv (E3; the 168-project cases only)
+         mvp-variants/uro-cases/out/uro-review-cases.csv (approved first plans, for the market-gap chart)
 Output:  research/issue-06/mvp-variants/priority-ranking/data/
            villages.geojson, meta.json
          (generated, not committed; run this script)
@@ -97,6 +98,45 @@ def renewal_flags(v):
     return th
 
 
+HOUSE = {"old_stock": "老屋", "soft_story": "軟弱層", "liquefaction": "液化"}
+
+
+def market_gap(v):
+    """Market-gap chart: do the villages whose houses look worst get their share of rebuild cases?
+
+    Groups villages by each house-side factor level (top = level 4-5, the page's top 7%) and
+    compares their share of buildings with their share of active 危老 approvals (expected count,
+    spread over the road's villages) and of approved first-plan 168 URO cases (village weights).
+    Both counts are village-level estimates; the URO list is the 168 fast track only."""
+    c = pd.read_csv(VARIANTS / "uro-cases" / "out" / "uro-review-cases.csv", dtype=str,
+                    usecols=["case_id", "revision", "approve_date"])
+    c = c[(c.revision == "擬訂") & c.approve_date.notna()]
+    cv = pd.read_csv(VARIANTS / "uro-cases" / "out" / "uro-review-case-villages.csv", dtype={"village_code": str, "case_id": str})
+    cv = cv[cv.case_id.isin(c.case_id)]
+    uro = v.village_code.map(cv.groupby("village_code")["village_weight"].sum()).fillna(0)
+    wl = v.weilao_active_est.fillna(0)
+    bld = v.doorplate_buildings.fillna(0)
+    tot = {"bld": float(bld.sum()), "weilao": float(wl.sum()), "uro": float(uro.sum())}
+    groups = []
+    for k, name in HOUSE.items():
+        lv = v[f"lv_{k}"].clip(upper=4)
+        rows = []
+        for g in [4, 3, 2, 1]:
+            m = lv == g
+            b, w, u = float(bld[m].sum()), float(wl[m].sum()), float(uro[m].sum())
+            rows.append({"level": "4-5" if g == 4 else str(g), "villages": int(m.sum()),
+                         "bld_share": round(b / tot["bld"], 4), "weilao_share": round(w / tot["weilao"], 4),
+                         "uro_share": round(u / tot["uro"], 4),
+                         "cases_share": round((w + u) / (tot["weilao"] + tot["uro"]), 4),
+                         "cases_per_1k_bld": round((w + u) / b * 1000, 2)})
+        groups.append({"factor": k, "name": name, "levels": rows})
+    return {"groups": groups,
+            "weilao_total": round(tot["weilao"], 1), "uro_total": round(tot["uro"], 1),
+            "cases_per_1k_bld_city": round((tot["weilao"] + tot["uro"]) / tot["bld"] * 1000, 2),
+            "weilao_period": "107-07～115-09 核准、仍有效（危老核准清冊 1151002 版，截至 115-09-30）",
+            "uro_period": f"{c.approve_date.min()[:7]}～{c.approve_date.max()[:7]} 核定的第一次擬訂案（168 專案，2026-10-22 擷取）"}
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     r = gpd.read_file(MARTS / "village_rankings.geojson")
@@ -147,6 +187,7 @@ def main():
             "renewal": {**th, "candidates": int((v.c_n == 4).sum()), "one_short": int(((v.c_n == 3) & v.c_risk).sum()),
                         "uro_villages": int((v.uro_cases > 0).sum()),
                         "uro_cases_total": round(float(v.uro_cases.sum()))},
+            "market_gap": market_gap(v),
             "elderly_share_city": round(float((v.share_65plus * v.pop_total).sum() / v.pop_total.sum()), 3),
             "sources": {"rankings": "data/marts/village_rankings（R1b，2026-10-18；權重敏感度 2,000 次 Dirichlet 抽樣，種子 20261018）",
                         "indicators": "data/marts/village_indicators（人口 115/9；液化 soil.taipei 2019 城市版；逐棟屋齡與軟弱層為推估）",

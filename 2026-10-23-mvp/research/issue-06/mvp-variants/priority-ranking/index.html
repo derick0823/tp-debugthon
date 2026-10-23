@@ -124,6 +124,19 @@
   .yes{color:var(--c1)} .no{color:var(--muted)}
   table.rules{border-collapse:collapse;width:100%;font-size:16px;margin:6px 0 10px}
   table.rules th,table.rules td{border-bottom:1px solid var(--line);padding:6px;text-align:left;vertical-align:top}
+  .lead{font-size:19px;margin:4px 0 8px}
+  .lead b{color:var(--c1)}
+  .gapkey{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:14px;color:var(--muted);margin:0 0 6px}
+  .gapkey i{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:5px}
+  .gapkey i.ref{width:0;height:16px;border-left:2px dashed var(--ink);border-radius:0;margin-left:6px}
+  .gap{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px 22px;margin:4px 0 8px}
+  .gapg{border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+  .gapg h3{font-size:17px;margin:0 0 4px}
+  .gapg h3 small{font-weight:400;color:var(--muted);font-size:14px;margin-left:4px}
+  .gb{display:grid;grid-template-columns:68px minmax(0,1fr) 52px;gap:8px;align-items:center;font-size:15px}
+  .gb svg{display:block;width:100%;height:20px;overflow:visible}
+  .gb b{text-align:right;font-variant-numeric:tabular-nums}
+  .gapg p{margin:4px 0 0;font-size:14px;color:var(--muted)}
   footer{padding:0 20px 30px;color:var(--muted);font-size:15px}
   @media (max-width:1100px){
     main{grid-template-columns:1fr;height:auto}
@@ -203,7 +216,7 @@
   </div>
   <div id="rank" class="only-check">
     <h2>目前權重的前 20 名 <button type="button" id="csv" class="dl">下載 456 里排名 CSV</button></h2>
-    <div class="cap">細線＝隨機權重下的名次範圍，圓點＝目前名次，虛線＝第 46 名。</div>
+    <div class="cap">細線＝隨機權重下的名次範圍，圓點＝目前名次，虛線＝第 46 名。<br><b>CSV 給市府排程用，不是逐棟鑑定。</b></div>
     <div class="axis"><span></span><span></span><span>分數（超出第 46 名）</span><div class="ticks" id="ticks"></div></div>
     <div id="rows"></div>
   </div>
@@ -216,12 +229,28 @@
 </main>
 
 <section class="more only-renew">
+  <h2 id="gapTitle">市場錯位：老屋最多的里，案子最少</h2>
+  <p id="gapLead" class="lead">–</p>
+  <div class="gapkey"><span><i style="background:var(--muted)"></i>房子棟數占比</span><span><i style="background:var(--c3)"></i>危老案占比</span><span><i style="background:var(--c1)"></i>都更案占比</span><span><i class="ref"></i>和房子占比一樣多</span></div>
+  <div id="gap" class="gap"></div>
+  <details>
+    <summary>這張圖怎麼算</summary>
+    <ul>
+      <li>分組：用本頁既有的因子等級（相對於臺北其他里）。每個因子取 4～5 級的里，也就是全市最高的 7%。</li>
+      <li>危老案：<span id="gapWl">–</span>，共 <span id="gapWlN">–</span> 件。96% 的案只寫到路段，依路段上各里的門牌棟數分攤，是彙總到里的<b>推估</b>。</li>
+      <li>都更案：<span id="gapUro">–</span>，共 <span id="gapUroN">–</span> 案，跨里的案依權重拆分。只含 168 專案，不是全部都更案。</li>
+      <li>房子棟數用門牌棟數（同路、巷、弄、號算一棟）【推估】。</li>
+      <li>老屋比例高的里案子少，也可能是反過來：已經改建過的里，老屋比例自然變低。這張圖只說兩者對不上，不說誰造成誰【推論】。</li>
+      <li>程式：<code>scripts/build_data.py</code> 的 <code>market_gap()</code>。</li>
+    </ul>
+  </details>
+
   <h2>4 項條件與理由</h2>
   <div class="tablewrap"><table class="rules">
     <tr><th>條件</th><th>門檻</th><th>為什麼</th></tr>
     <tr><td>風險</td><td>等權合成排名前 <span data-th="risk_top"></span> 名</td><td>先確定這裡值得處理。用等權，不隨第一頁的滑桿變</td></tr>
     <tr><td>房價低</td><td>每坪單價中位數在全市後 1/3（≤ <span data-th="price_p33"></span> 萬）</td><td>房價低，改建後能賣的錢少，建商誘因低</td></tr>
-    <tr><td>高齡</td><td>65 歲以上比例在全市前 1/3（≥ <span data-th="elderly_p67"></span>）</td><td>住戶老，自己找建商、湊同意書比較難</td></tr>
+    <tr><td>高齡</td><td>65 歲以上比例在全市前 1/3（≥ <span data-th="elderly_p67"></span>）</td><td>住戶老，自己找建商、湊同意書比較難。集合住宅重建「需要居民們凝聚共識」【文件，GRB 16583227 p.46；原文講震後重建，屬間接支持】</td></tr>
     <tr><td>市場沒動</td><td>危老核准案期望件數低於全市中位數（<span data-th="weilao_median"></span> 件），而且近一年沒有新成屋成交</td><td>民間已經在改建的里，市府先輔導就好，不必公辦</td></tr>
   </table></div>
   <details>
@@ -263,7 +292,7 @@
     <div class="tablewrap"><table>
       <tr><th>因子</th><th>算法</th><th>資料</th></tr>
       <tr><td>高齡</td><td>65 歲以上人口比例</td><td>各里人口按年齡，115 年 9 月【原始】</td></tr>
-      <tr><td>老屋</td><td>1999 政策線（88-12-31 申請建造）以前的戶數比例。已知屋齡的棟少於 20 的里，用所在區中位數</td><td>使照、實價登錄、海砂屋清冊推出的逐棟屋齡【推估】</td></tr>
+      <tr><td>老屋</td><td>1999 政策線（88-12-31 申請建造）以前的戶數比例。用的是耐震規範世代，不是屋齡。已知屋齡的棟少於 20 的里，用所在區中位數</td><td>使照、實價登錄、海砂屋清冊推出的逐棟屋齡【推估】</td></tr>
       <tr><td>液化</td><td>高潛勢面積比例＋0.5×中潛勢面積比例，分母是整個里</td><td>臺北市土壤液化潛勢圖，城市版 2019【原始】。只畫平地，山區的里是 0</td></tr>
       <tr><td>救災</td><td>（窄巷與消防通道條數的百分位＋道路寬度標註小於 6 m 比例的百分位）÷2</td><td>狹小巷道清冊、消防通道清冊、計畫道路寬度【推估：以巷名比對落里】</td></tr>
       <tr><td>軟弱層</td><td>一樓軟弱層候選棟數 ÷ 門牌棟數</td><td>逐棟表的 A 型（騎樓街屋）、B 型（底層開放）規則【候選，不是鑑定結果】</td></tr>
@@ -284,7 +313,8 @@
   <details>
     <summary>這份順序怎麼用在老屋健檢與公辦都更</summary>
     <ul>
-      <li><b>老屋健檢</b>：排在前面的里，先主動通知住戶申請耐震初評。這是「先去哪裡敲門」的順序，不是逐棟鑑定。</li>
+      <li><b>老屋健檢</b>：排在前面的里，先主動通知住戶申請耐震初評。這是「先去哪裡敲門」的順序，不是逐棟鑑定。下載的 CSV 也一樣：給市府排程用，不是逐棟鑑定。</li>
+      <li><b>為什麼看里、不看單棟</b>：國震中心的救援路線研究也以街廓、不以單棟評估，因為單棟倒塌機率通常遠低於 1%、不確定性高，而且稅籍資料有個資風險【文件，GRB 15435084 p.6～7】。</li>
       <li><b>公辦都更</b>：這份順序只是第一層篩選。公辦都更還要看公有土地、更新地區劃定、文資與住戶意願，本頁沒有算這些。</li>
       <li>老屋與軟弱層是推估。市府若開放逐棟屋齡與構造，換掉這兩個因子即可，方法不變。</li>
     </ul>

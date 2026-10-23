@@ -202,6 +202,8 @@ def main():
         caps, ct = [], 0.4
         for x in vo:
             caps.append({"text": x["text"], "file": f"assets/{vo_rel}/{x['file']}", "from": round(ct * FPS), "frames": round(x["seconds"] * FPS)})
+            if x.get("text_en"):  # bilingual version (tools/build_en.py): English line under the Chinese one
+                caps[-1]["en"] = x["text_en"]
             ct += x["seconds"] + GAP
         seg = {
             "beat": beat, "kind": kind, "name": name, "role": role, "label": label,
