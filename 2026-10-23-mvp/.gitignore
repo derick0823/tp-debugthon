@@ -1,0 +1,8 @@
+# Local rebuilds stay out of git. Everything exported in this folder is tracked.
+__pycache__/
+node_modules/
+research/issue-06/mvp-variants/video/recordings/
+research/issue-06/mvp-variants/video/public/
+research/issue-06/mvp-variants/video/.remotion/
+research/issue-06/mvp-variants/video/out/*
+!research/issue-06/mvp-variants/video/out/mvp-demo.mp4

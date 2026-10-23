@@ -1,0 +1,14 @@
+{
+  "url": "/mvp-variants/",
+  "viewport": [1280, 720],
+  "settle_ms": 1500,
+  "steps": [
+    {"do": "caption", "text": "六個工具，一份公開資料。你是住戶、里長還是市府，選一個，我們幫你排路線。"},
+    {"do": "hover", "sel": ".role-btns button[data-role='住戶']", "wait": 500},
+    {"do": "click", "sel": ".role-btns button[data-role='住戶']", "wait": 1800},
+    {"do": "click", "sel": ".role-btns button[data-role='里長']", "wait": 1500},
+    {"do": "click", "sel": ".role-btns button[data-role='市府']", "wait": 1500},
+    {"do": "scroll", "y": 420, "wait": 1800},
+    {"do": "wait", "ms": 800}
+  ]
+}

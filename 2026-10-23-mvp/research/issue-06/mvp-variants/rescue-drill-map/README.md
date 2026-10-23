@@ -1,0 +1,55 @@
+# MVP 變體 C：救災演練地圖（S5）
+
+- 給誰：里長、鄰長、消防分隊。
+- 回答什麼：**哪些里同時有窄巷、液化高、高齡多，地震後最難救？這個里要先演練什麼？**
+- 做法：一頁靜態網頁。左邊是 37 個候選里（可切區、搜里名、看全部 456 里），中間地圖，右邊一張可列印的「演練檢核表」。
+- 版面原則（使用者 10/22 00:45 要求「多圖少字」）：右欄第一眼是 100 格小人圖（每 100 人幾位 80 歲以上），接著五條水平長條（相對全市最高里）、五因子柱狀等級。數字 22 px 以上、body 17 px。長條、小人、柱狀在選里時用 CSS transition 長出來；地圖框線用虛線流動動畫。說明文字收進「這些數字怎麼來」。
+- 作者：MVP專案經理（c8），2026-10-22 夜。設計原型，不是交件產品。
+
+## 為什麼做這個
+
+1. R2 查 12 國 30 案，處理「救災進不去」的案例最少（7 案）。這是本隊的差異化。
+2. R1 發現窄巷和液化在里層級互相獨立，加權總分會把它們混掉。這一頁不給總分，只列事實與檢核項。
+3. R1d 發現 37 個候選里有 24 個含文資（170 處），所以檢核表把文資列進去：重建不是選項，先補強與演練。
+
+## 跑起來
+
+```sh
+uv run python -X utf8 research/issue-06/mvp-variants/rescue-drill-map/scripts/build_data.py
+cd research/issue-06 && python -X utf8 -m http.server 8778 --bind 127.0.0.1
+```
+
+開 http://127.0.0.1:8778/mvp-variants/rescue-drill-map/ 。伺服器要從 `research/issue-06` 起，因為頁面引用 `../../solutions/prototype/assets/vendor/` 的 Leaflet。`data/` 由程式產生，不進 git（約 4 MB）。底圖 OpenStreetMap。
+
+## 驗證紀錄（不需要人按鍵）
+
+| 時間 | 方法 | 結果 |
+|---|---|---|
+| 2026-10-22 00:55 | 無頭 Edge 截圖 1400×900：`msedge.exe --headless=new --disable-gpu --hide-scrollbars --window-size=1400,900 --virtual-time-budget=8000 --screenshot=<png> <url>` | 三欄都渲染，小人圖、長條、柱狀都有【實測】 |
+| 2026-10-22 00:58 | 375 寬：開 `/mvp-variants/_test/iframe.html?u=/mvp-variants/rescue-drill-map/` 再截圖（無頭 Edge 視窗最小約 500 px，直接開 375 量不準） | 單欄，無橫向溢出【實測】 |
+| 2026-10-22 00:57 | `--dump-dom` 加 `#debug`，讀 `<footer>` 的 `data-scrollw`、`data-wide` | scrollWidth＝clientWidth，只有地圖磚超出（在 overflow hidden 內）【實測】 |
+
+| 2026-10-22 01:09 | 照 design-kit/REVIEW.md 改：刪數字堆疊句、說明收進 details、檢核表一行一動詞、徽章與副標 15 px、小標 20 px、小人數字 36 px、清單長條加圖示、手機版改成「下拉選里 → 地圖 → 卡片 → 清單」。無頭 Edge 桌面與 375 寬重截，#debug 自檢無溢出 | 通過【實測】 |
+
+`app.js` 末尾有 `#debug` 的版面自檢：開網址加 `#debug`，1.5 秒後 `<footer>` 會帶 `data-scrollw`、`data-clientw`、`data-wide`（超出視窗的元素）。
+
+## 資料與授權
+
+| 圖層 | 來源 | 授權 | 注意 |
+|---|---|---|---|
+| 里界、人口、五因子等級、候選理由 | `data/marts/village_rankings.geojson`、`village_indicators.csv` | 內政部、data.taipei，政府資料開放授權 | 等級是相對於臺北其他里 |
+| 狹小巷道紅黃區 | data.taipei 消防局清冊 | 同上 | 只有巷名，位置是該巷門牌中心（推估）；273 條中 254 條落到里 |
+| 消防通道清冊 | data.taipei | 同上 | 沒有座標，只列文字 |
+| 文資點 | 文化部文資局開放資料 v2 | 政府資料開放授權第 1 版 | 是代表點，不是保存範圍 |
+| 液化高潛勢 | 臺北市土壤液化潛勢圖（城市版 2019，data.taipei） | 政府資料開放授權 | class 1＝高是推論（鑽孔驗證）。**沒有用全國 2026 版幾何**，所以可以公開 |
+
+## 候選門檻（和 `data/marts/README.md` 的 `s5_candidate` 一致）
+
+三項都成立：有列管窄巷，或 <6 m 道路標註比例在全市前 10%；任一版液化高潛勢面積 ≥25%；80 歲以上比例在全市中位數以上。門檻是 R1 定的，不是官方標準。
+
+## 已知限制
+
+1. 紅黃區巷道沒有線形，只能畫成點。
+2. 80 歲以上的「名冊」不在開放資料裡，頁面只給人數。
+3. 軟弱層是候選，不是判定；文字已標。
+4. 手機寬度用 CSS 斷點處理，沒有真機測。

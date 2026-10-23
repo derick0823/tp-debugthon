@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>我家都更划不划算</title>
+<meta name="description" content="輸入地址與坪數，用圖看現在的家和分回的家差多少。設計原型，數字都是推估。">
+<!-- design-kit (debug-66) first, so calc.css tokens win -->
+<link rel="stylesheet" href="../design-kit/kit.css">
+<link rel="stylesheet" href="assets/calc.css">
+<!-- shared warm palette (puma.taipei, design-kit), then this page's token mapping -->
+<link rel="stylesheet" href="../design-kit/theme-puma.css">
+<link rel="stylesheet" href="assets/theme-puma-map.css">
+</head>
+<body>
+<header class="top wrap">
+  <p class="kicker">市政 debug 松・第 6 題・MVP 變體 A（設計原型）</p>
+  <h1>我家都更划不划算？</h1>
+  <p class="lede">房子畫得越大，坪數越多。拉下面的滑桿，看分回的家怎麼變。</p>
+</header>
+
+<main class="wrap">
+  <!-- Hero: the two homes, size = floor area -->
+  <section class="hero card" aria-label="現在的家與分回的家">
+    <svg id="hero" viewBox="0 0 340 190" role="img" aria-labelledby="hero-title hero-desc">
+      <title id="hero-title">現在的家與分回的家</title>
+      <desc id="hero-desc">兩棟房子，面積代表坪數。</desc>
+      <line x1="8" y1="160" x2="332" y2="160" class="ground"/>
+      <g class="house-wrap" transform="translate(30 20)">
+        <g id="house-now" class="house now">
+          <path d="M0 55 L60 0 L120 55 Z" class="roof"/>
+          <rect x="12" y="55" width="96" height="85" class="body"/>
+          <rect x="26" y="72" width="22" height="20" class="win"/>
+          <rect x="72" y="72" width="22" height="20" class="win"/>
+          <rect x="50" y="102" width="20" height="38" class="door"/>
+        </g>
+      </g>
+      <g transform="translate(170 85)">
+        <path d="M0 0 H24 M16 -8 L26 0 L16 8" class="arrow"/>
+      </g>
+      <g class="house-wrap" transform="translate(190 20)">
+        <g id="house-new" class="house new">
+          <path d="M0 55 L60 0 L120 55 Z" class="roof"/>
+          <rect x="12" y="55" width="96" height="85" class="body"/>
+          <rect x="26" y="72" width="22" height="20" class="win"/>
+          <rect x="72" y="72" width="22" height="20" class="win"/>
+          <rect x="26" y="102" width="22" height="20" class="win"/>
+          <rect x="72" y="102" width="22" height="20" class="win"/>
+        </g>
+      </g>
+      <text x="90" y="178" class="cap">現在的家</text>
+      <text x="250" y="178" class="cap">分回的家</text>
+    </svg>
+    <div class="hero-nums">
+      <div><b id="h-now-ping">—</b><span id="h-now-val">—</span></div>
+      <div><b id="h-new-ping">—</b><span id="h-new-val">—</span></div>
+    </div>
+    <div id="verdict" class="verdict" aria-live="polite"></div>
+  </section>
+
+  <!-- Step flow -->
+  <nav class="steps" aria-label="步驟">
+    <a href="#s1"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg></span><b>1</b> 找到你家</a>
+    <a href="#s2"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 6h10M17 6h4M3 12h4M11 12h10M3 18h12M19 18h2"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg></span><b>2</b> 調假設</a>
+    <a href="#s3"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><b>3</b> 看結果</a>
+  </nav>
+
+  <section id="s1" class="card" aria-labelledby="h-s1">
+    <h2 id="h-s1"><span class="n">1</span>找到你家</h2>
+    <div class="row">
+      <label class="field"><span>行政區</span><select id="town"></select></label>
+      <label class="field grow"><span>地址（到「號」）</span>
+        <input id="addr" type="text" autocomplete="off" placeholder="例：信義路2段86巷40號"></label>
+      <button id="go" class="btn" type="button">查這棟</button>
+    </div>
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+    <ul id="suggest" class="suggest" hidden></ul>
+    <div id="bldg" hidden>
+      <div id="flags"></div>
+      <div id="chips" class="chips"></div>
+      <details class="more"><summary>這棟的資料從哪來</summary><div id="bldg-src" class="src"></div></details>
+    </div>
+  </section>
+
+  <section id="s2" class="card" aria-labelledby="h-s2">
+    <h2 id="h-s2"><span class="n">2</span>調假設</h2>
+    <div class="row">
+      <label class="field"><span>你家幾坪（權狀）</span><input id="ping" type="number" min="5" max="200" step="0.1" value="28"></label>
+    </div>
+    <details class="more"><summary>改型態、建成年代（查到地址會自動填）</summary>
+    <div class="row">
+      <label class="field"><span>型態</span>
+        <select id="btype">
+          <option value="walkup">公寓（無電梯）</option>
+          <option value="midrise">電梯華廈</option>
+          <option value="tower">大樓（11 樓以上）</option>
+          <option value="townhouse">透天厝</option>
+        </select></label>
+      <label class="field"><span>建成年代</span>
+        <select id="decade">
+          <option value="pre1974">1974 以前</option>
+          <option value="1974-1981" selected>1974～1981</option>
+          <option value="1982-1989">1982～1989</option>
+          <option value="1990-1998">1990～1998</option>
+          <option value="1999-2009">1999～2009</option>
+          <option value="2010plus">2010 以後</option>
+        </select></label>
+    </div>
+    </details>
+
+    <div class="slider">
+      <label for="bonus"><span>容積獎勵</span><output id="bonus-out"></output></label>
+      <input id="bonus" type="range" min="0" max="100" step="1" value="30">
+      <div id="bonus-meter" class="k-meter" aria-hidden="true"></div>
+      <p class="say" id="bonus-say">政府多給的樓地板。過了黑線，坪數就不會變少。</p>
+      <details class="more"><summary>預設值從哪來</summary>
+        <p class="src">預設 30%：防災型都更的危險建物獎勵【文件：都更處懶人包 114-05-09】。危老最多 1.3 倍基準容積，都更一般上限 1.5 倍。</p></details>
+    </div>
+    <div class="slider">
+      <label for="burden"><span>共同負擔</span><output id="burden-out"></output></label>
+      <input id="burden" type="range" min="15" max="65" step="1" value="40">
+      <div id="burden-grid" class="grid100" aria-hidden="true"></div>
+      <p class="say" id="burden-say">蓋房子的錢，用房子折給建商。</p>
+      <details class="more"><summary>預設值從哪來</summary><p class="src" id="burden-src"></p></details>
+    </div>
+    <div class="slider">
+      <label for="after"><span>新房每坪</span><output id="after-out"></output></label>
+      <input id="after" type="range" min="40" max="250" step="0.1" value="100">
+      <div class="seg" role="radiogroup" aria-label="新房每坪的來源">
+        <label><input type="radio" name="after-src" value="newbuild" checked><span>同區新成屋</span></label>
+        <label><input type="radio" name="after-src" value="uro"><span>都更案核定</span></label>
+      </div>
+      <details class="more"><summary>預設值從哪來</summary><p class="src" id="after-src"></p></details>
+    </div>
+
+    <details class="more">
+      <summary>改用「土地持分」算（較接近實務）</summary>
+      <label class="check"><input id="mode-land" type="checkbox"> 用土地持分算分回坪數</label>
+      <div class="row">
+        <label class="field"><span>土地持分（坪）</span><input id="land" type="number" min="1" max="100" step="0.01" value="8.9"></label>
+        <label class="field"><span>使用分區</span>
+          <select id="far">
+            <option value="1.2">住二（120%）</option>
+            <option value="2.25" selected>住三（225%）</option>
+            <option value="3">住三之一、住四（300%）</option>
+            <option value="4">住三之二（400%）</option>
+            <option value="3.6">商一（360%）</option>
+            <option value="6.3">商二（630%）</option>
+          </select></label>
+        <label class="field"><span>權狀坪÷容積坪</span><input id="gross" type="number" min="1" max="2.5" step="0.05" value="1.6"></label>
+      </div>
+      <p class="src">分回坪＝持分 × 容積率 × (1＋獎勵) × 權狀坪÷容積坪 × (1－負擔)。容積率照臺北市土地使用分區管制自治條例【文件，本輪未重查】；1.6 是業界粗估【推論】。</p>
+    </details>
+  </section>
+
+  <section id="s3" class="card" aria-labelledby="h-s3">
+    <h2 id="h-s3"><span class="n">3</span>看結果</h2>
+
+    <h3 class="sub">坪數</h3>
+    <div class="bars" id="ping-bars"></div>
+
+    <h3 class="sub">價值</h3>
+    <div class="bars" id="money-bars"></div>
+
+    <h3 class="sub">換個新房價格算算看</h3>
+    <div id="flip" class="flip"></div>
+    <p class="say" id="flip-say"></p>
+    <details class="more"><summary>每個數字怎麼算</summary><div id="calc-src" class="src"></div></details>
+  </section>
+
+  <section id="s3m" class="card" aria-labelledby="h-s3m">
+    <h2 id="h-s3m">重建期間住哪裡</h2>
+    <p class="say">重建要搬出去好幾年。房租和搬家費，已經從差額裡扣掉。</p>
+    <div class="slider">
+      <label for="relo-years"><span>要搬出去幾年</span><output id="relo-years-out"></output></label>
+      <input id="relo-years" type="range" min="1" max="5" step="0.1" value="3">
+    </div>
+    <div class="slider">
+      <label for="relo-rent"><span>每月房租</span><output id="relo-rent-out"></output></label>
+      <input id="relo-rent" type="range" min="0.5" max="6" step="0.1" value="1.5">
+    </div>
+    <div class="slider">
+      <label for="relo-move"><span>搬家費（搬出＋搬回）</span><output id="relo-move-out"></output></label>
+      <input id="relo-move" type="range" min="0" max="20" step="0.5" value="4">
+    </div>
+    <label class="check"><input id="relo-paid" type="checkbox"> 實施者會付拆遷安置費（都更權利變換常見）</label>
+    <div class="bars" id="relo-bars"></div>
+    <p class="say">也可以申請<a href="https://laws.gov.taipei/Law/LawSearch/LawArticleContent/FL095061" target="_blank" rel="noopener">臺北市中繼住宅</a>：市價計租，由實施者申請。</p>
+    <details class="more"><summary>預設值從哪來</summary><div class="src">
+      <p>3 年：統籌指定的施工期 1.6～3 年取上緣【待確認來源】。對照：危老從建照到完工的中位數是 1,348 天（約 3.7 年）【實測，data-patterns/city-workflow-data.md】。</p>
+      <p>每月 1.5 萬元：6a 同意模擬器的情境假設；受訪住戶多半質疑「在臺北租不到」【推論，consent-simulator/report.md】。請照你家附近的行情改。</p>
+      <p>搬家費 4 萬元：兩次各 2 萬元【推論，沒有資料】。</p>
+      <p>拆遷安置費：都更權利變換時，實施者付給住戶的安置費算在共同負擔裡；勾選後不再另外扣房租與搬家【推論，待確認；危老不一定有】。</p>
+      <p>中繼住宅：市價計租，北北基桃沒有其他自有住宅的合法建物所有權人，由實施者或起造人向都發局申請【文件，next-step-card.md 第 17 列】。</p>
+    </div></details>
+  </section>
+
+  <section id="s3f" class="card" aria-labelledby="h-s3f">
+    <h2 id="h-s3f">怎麼算的</h2>
+    <p class="say">往右滑，看每一步。拉卡片裡的滑桿，後面的數字會跟著跳。</p>
+    <div id="flow" class="flow" tabindex="0" aria-label="計算流程"></div>
+  </section>
+
+  <section id="s4" class="card" aria-labelledby="h-s4">
+    <h2 id="h-s4"><span class="n">4</span>要幾戶同意</h2>
+    <div class="seg routes" id="routes" role="radiogroup" aria-label="走哪條路"></div>
+    <div class="consent-vis">
+      <div id="people" class="k-people" aria-hidden="true"></div>
+      <p class="say" id="consent-say"></p>
+    </div>
+    <div class="q"><div class="ql">你估計幾成鄰居願意？</div><div id="share-chips" class="seg" role="radiogroup" aria-label="估計幾成鄰居願意"></div></div>
+    <div id="share-meter" class="k-meter" aria-hidden="true"></div>
+    <div class="row">
+      <label class="field"><span>基地面積 m²（不知道可留空）</span><input id="site" type="number" min="50" max="20000" step="1" placeholder="留空＝只算這一棟"></label>
+    </div>
+    <details class="more"><summary>戶數怎麼估、法源</summary><div id="consent-src" class="src"></div></details>
+  </section>
+
+  <section id="s5" class="card" aria-labelledby="h-s5">
+    <h2 id="h-s5"><span class="n">5</span>你可以走的路</h2>
+    <p class="say">點選下面幾題，路會更準。不回答也可以。</p>
+    <div id="qs" class="qs"></div>
+    <label class="check"><input id="elderly" type="checkbox"> 家裡有 65 歲以上的人</label>
+    <details class="more" id="qs-more-box"><summary>更多題目（答了會更準）</summary><div id="qs-more" class="qs"></div></details>
+    <div id="cards" class="cards"></div>
+    <details class="more" id="cards-out-box" hidden><summary id="cards-out-sum"></summary><div id="cards-out" class="src"></div></details>
+    <details class="more" id="tree-path-box" hidden><summary>我們怎麼挑的</summary><ol id="tree-path" class="src"></ol></details>
+  </section>
+
+  <details class="card more method">
+    <summary>方法、資料來源、已知偏誤</summary>
+    <div id="method" class="src"></div>
+  </details>
+</main>
+
+<footer class="foot wrap">
+  <p><b>這是推估，實際以實施者計畫書與市府核定為準。</b></p>
+  <p id="tree-disclaimer" class="src"></p>
+  <p id="foot-data" class="src"></p>
+</footer>
+
+<script src="../design-kit/kit.js"></script>
+<script src="../design-kit/quest.js"></script>
+<script src="assets/nextsteps.js"></script>
+<script src="assets/calc.js"></script>
+</body>
+</html>

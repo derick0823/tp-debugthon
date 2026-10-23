@@ -1,0 +1,75 @@
+{
+  "url": "/mvp-variants/consent-simulator/",
+  "viewport": [
+    1280,
+    720
+  ],
+  "settle_ms": 2500,
+  "steps": [
+    {
+      "do": "caption",
+      "text": "100 棟老公寓，照現在的做法只有 13 棟過得了全體同意。"
+    },
+    {
+      "do": "wait",
+      "ms": 1500
+    },
+    {
+      "do": "hover",
+      "sel": "#rulepick button:nth-child(4)",
+      "wait": 400
+    },
+    {
+      "do": "click",
+      "sel": "#rulepick button:nth-child(4)",
+      "wait": 1100
+    },
+    {
+      "do": "hover",
+      "sel": "#rulepick button:nth-child(1)",
+      "wait": 400
+    },
+    {
+      "do": "click",
+      "sel": "#rulepick button:nth-child(1)",
+      "wait": 800
+    },
+    {
+      "do": "caption",
+      "text": "講清楚分回、派個案經理，可以到 45 棟。"
+    },
+    {
+      "do": "scroll_to",
+      "sel": "#transparency",
+      "wait": 800
+    },
+    {
+      "do": "slider_sweep",
+      "sel": "#transparency",
+      "from": 0.3,
+      "to": 0.9,
+      "steps": 12,
+      "ms": 110,
+      "wait": 600
+    },
+    {
+      "do": "hover",
+      "sel": "#manager",
+      "wait": 400
+    },
+    {
+      "do": "check",
+      "sel": "#manager",
+      "wait": 1600
+    },
+    {
+      "do": "scroll",
+      "y": -2000,
+      "wait": 1300
+    },
+    {
+      "do": "wait",
+      "ms": 1000
+    }
+  ]
+}

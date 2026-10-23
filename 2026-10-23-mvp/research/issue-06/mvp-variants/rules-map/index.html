@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>都更流程一頁看懂</title>
+<style>
+  :root{--ink:#1f2328;--muted:#59636e;--line:#d9dee3;--bg:#ffffff;--panel:#f6f8fa;--track:#e6eaee;--accent:#1c64b8;
+    --uro:#1c64b8;--board:#7048e8;--city:#c92a2a;--bld:#2b8a3e;--impl:#868e96;--uline:#e8590c;--wline:#2b8a3e}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--ink:#e6e9ec;--muted:#a7b1bb;--line:#3a424b;--bg:#14181c;--panel:#1d242b;--track:#2b333c;--accent:#6ea8fe;--uro:#4dabf7;--board:#9775fa;--city:#ff6b6b;--bld:#51cf66}}
+  :root[data-theme="dark"]{--ink:#e6e9ec;--muted:#a7b1bb;--line:#3a424b;--bg:#14181c;--panel:#1d242b;--track:#2b333c;--accent:#6ea8fe;--uro:#4dabf7;--board:#9775fa;--city:#ff6b6b;--bld:#51cf66}
+  *{box-sizing:border-box}
+  html,body{overflow-x:hidden}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif}
+  .wrap{max-width:1240px;margin:0 auto;padding:14px 20px 40px}
+  h1{font-size:27px;margin:0;line-height:1.3}
+  h2{font-size:22px;margin:26px 0 6px}
+  .muted{color:var(--muted)}
+  .kpi{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0 6px}
+  .kpi div{border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:var(--panel)}
+  .kpi b{display:block;font-size:34px;line-height:1.15;font-variant-numeric:tabular-nums}
+  .kpi .u b{color:var(--uline)} .kpi .w b{color:var(--wline)}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:15px;color:var(--muted);margin:8px 0}
+  .legend i{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:5px}
+  /* metro lines */
+  .line{position:relative;margin:14px 0 4px;padding:6px 0 0}
+  .line .tag{display:inline-block;font-weight:700;color:#fff;border-radius:6px;padding:1px 10px;margin-bottom:6px}
+  .line.u .tag{background:var(--uline)} .line.w .tag{background:var(--wline)}
+  .stops{list-style:none;margin:0;padding:0;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);position:relative}
+  .stops::before{content:"";position:absolute;left:4%;right:4%;top:23px;height:8px;border-radius:4px;background:var(--lc)}
+  .line.u{--lc:var(--uline)} .line.w{--lc:var(--wline)}
+  .stop{position:relative;text-align:center;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer;padding:0 2px 6px;width:100%}
+  .stop .dot{display:block;width:34px;height:34px;margin:10px auto 6px;border-radius:50%;background:var(--bg);border:7px solid var(--ag);transition:transform .25s ease,box-shadow .25s}
+  .stop:hover .dot,.stop[aria-expanded="true"] .dot{transform:scale(1.18);box-shadow:0 0 0 5px color-mix(in srgb,var(--ag) 25%,transparent)}
+  .stop .nm{display:block;font-weight:700;line-height:1.25}
+  .stop .ag{display:block;font-size:13.5px;color:var(--muted);line-height:1.3}
+  .stop .d{display:inline-block;margin-top:4px;font-size:14px;font-weight:700;border-radius:999px;padding:0 8px;background:var(--panel);border:1px solid var(--line)}
+  .stop .d.law{font-weight:400;color:var(--muted)}
+  /* time bar */
+  .tbar{display:flex;height:30px;border-radius:8px;overflow:hidden;margin:10px 0 2px;background:var(--track)}
+  .tbar span{display:flex;align-items:center;justify-content:center;font-size:13.5px;color:#fff;white-space:nowrap;overflow:hidden;width:0;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+  .go .tbar span{width:var(--w)}
+  .tbar .unk{background:repeating-linear-gradient(45deg,var(--track),var(--track) 6px,var(--line) 6px,var(--line) 12px);color:var(--muted)}
+  .tcap{font-size:14px;color:var(--muted)}
+  /* detail panel */
+  #detail{border:1px solid var(--line);border-left:6px solid var(--ag,var(--accent));border-radius:12px;padding:12px 16px;margin:14px 0;background:var(--panel)}
+  #detail h3{margin:0 0 4px;font-size:20px}
+  #detail dl{display:grid;grid-template-columns:96px minmax(0,1fr);gap:4px 12px;margin:6px 0 0}
+  #detail dt{font-weight:700;color:var(--muted)}
+  #detail dd{margin:0}
+  /* law cards */
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+  .card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--bg);display:flex;flex-direction:column;gap:4px}
+  .card .art{font-size:14px;color:var(--muted)}
+  .card .art a{color:inherit}
+  .card .big{font-size:34px;font-weight:800;line-height:1.1;color:var(--accent);font-variant-numeric:tabular-nums}
+  .card h3{margin:0;font-size:18px}
+  .card p{margin:0}
+  .card .links{margin-top:auto;padding-top:6px;display:flex;flex-wrap:wrap;gap:6px}
+  .card .links a{font-size:14px;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:1px 10px;color:var(--ink);background:var(--panel)}
+  .card .ev{font-size:13px;color:var(--muted)}
+  details{border:1px solid var(--line);border-radius:10px;padding:8px 14px;margin:10px 0;background:var(--panel)}
+  details summary{cursor:pointer;font-weight:600}
+  @media (max-width:760px){
+    .wrap{padding:12px 16px 30px}
+    h1{font-size:23px}
+    .kpi{grid-template-columns:1fr}
+    .stops{grid-auto-flow:row;grid-auto-columns:auto}
+    .stops::before{left:22px;right:auto;top:10px;bottom:10px;width:8px;height:auto}
+    .stop{display:grid;grid-template-columns:52px minmax(0,1fr);text-align:left;align-items:center;column-gap:8px;padding:2px 0}
+    .stop .dot{grid-row:1/4;margin:4px 0 4px 9px}
+    .stop .d{justify-self:start}
+    #detail dl{grid-template-columns:76px minmax(0,1fr)}
+  }
+</style>
+<link rel="stylesheet" href="../design-kit/theme-puma.css">
+<style>
+  /* page tokens on the puma theme: agencies keep distinct hues, lines use the brand orange and green */
+  html:root:not([data-theme="never"]){--accent:#ad4d2a;--uro:#2f6f8f;--board:#8a5a8f;--city:#a52f2f;--bld:#3d7d52;--impl:#6f6560;
+    --uline:#db6a41;--wline:#4f9a68}
+  /* white text needs 4.5:1: tags sit on the deep tones, the lines keep the brighter ones */
+  html:root:not([data-theme="never"]) .line.u .tag{background:#ad4d2a}
+  html:root:not([data-theme="never"]) .line.w .tag{background:#3d7d52}
+  html:root:not([data-theme="never"]) .card .big{color:#ad4d2a}
+  html:root:not([data-theme="never"]) .card{background:#fff}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>都更為什麼這麼久？一張捷運圖看懂</h1>
+  <p class="muted">每一站是一個關卡，顏色是哪個機關管。點一站，看要交什麼、誰審、法定期限。</p>
+
+  <div class="kpi">
+    <div class="u"><b>2.7～2.8 年</b>都更：事業計畫申請到核定（中位）</div>
+    <div class="w"><b>30～60 天</b>危老：重建計畫審查的法定期限</div>
+    <div><b>4 個機關</b>都更一路要經過；危老主要只有建管處</div>
+  </div>
+
+  <div class="legend" id="legend"></div>
+
+  <div class="line u" id="lineU"><span class="tag">都更線</span><ol class="stops"></ol>
+    <div class="tbar" id="tbarU"></div>
+    <div class="tcap">長度＝實際天數中位數（都更處 168 專案，日曆天，只算第一次擬訂，E3）。斜線＝沒有資料，長度只是示意。</div>
+  </div>
+  <div class="line w" id="lineW"><span class="tag">危老線</span><ol class="stops"></ol>
+    <div class="tbar" id="tbarW"></div>
+    <div class="tcap">危老沒有逐案時間資料，長度用法定期限上限，和上面同一個比例尺。</div>
+  </div>
+
+  <div id="detail" aria-live="polite"></div>
+
+  <h2>8 條法規，各一句話</h2>
+  <p class="muted">大數字是這條法規最關鍵的門檻。按鈕連到用到它的 MVP。</p>
+  <div class="cards" id="cards"></div>
+
+  <details>
+    <summary>資料與限制</summary>
+    <ul>
+      <li>實際天數來自都更處「168 專案」466 案（<code>uro-cases/out/stage-durations.csv</code>）【實測，E3】。168 專案是全體同意、無爭議的快速通道，一般案件可能更久【推論】。</li>
+      <li>法定期限與條文摘自 <code>city-workflow/2026-10-18-tw-rules-and-workflow.md</code>、<code>2026-10-18-g3-consent-and-parking.md</code>，原文查閱 2026-10-18（全國法規資料庫、臺北市法規查詢系統）【文件】。</li>
+      <li>拆遷、中繼、施工、完工沒有逐案時間資料【待確認】。</li>
+      <li>這頁是說明，不是法律意見。以主管機關最新公告為準。</li>
+    </ul>
+  </details>
+  <p class="muted" style="font-size:15px">debug-cc，2026-10-22。站名與 E 變體（同意書進度板）對齊：都更 U1～U8、危老 W1～W7，可用 #U3 這種錨點直接打開。</p>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  const AG = {
+    uro: { name: "都市更新處", v: "--uro" },
+    board: { name: "都更審議會", v: "--board" },
+    city: { name: "臺北市政府", v: "--city" },
+    bld: { name: "建築管理工程處", v: "--bld" },
+    impl: { name: "實施者／起造人", v: "--impl" },
+  };
+  const U = [
+    { id: "U1", nm: "事業概要", ag: "uro", d: "353 天", dd: 353,
+      give: "事業概要；私有土地、合法建物所有權人的人數與面積都超過 1/2 同意", who: "都更處受理，審議會審",
+      law: "受理後 3 個月，可延 3 個月（都更條例 §22；施行細則 §13）",
+      real: "劃定到事業計畫申請，中位 353 天（n＝188）【實測，E3】",
+      note: "同意比例已達 §37 時，可以跳過這站，直接擬事業計畫（§22 第 2 項後段）" },
+    { id: "U2", nm: "事業計畫", ag: "uro", d: "↘ 申請到核定 1,027 天", dd: 0,
+      give: "事業計畫書；同意書要達 §37 比例（公辦、迅行劃定過半；公劃 3/4；自劃 4/5）", who: "都更處受理",
+      law: "受理後 6 個月，可延 6 個月，扣補正時間（都更條例 §32、§33、§48；施行細則 §20）",
+      real: "只送事業計畫：申請到核定中位 1,027 天（n＝72）；和權變併送：981 天（n＝84）【實測，E3】" },
+    { id: "U3", nm: "公聽會", ag: "uro", d: "公展 30 日", law: true,
+      give: "公開展覽 30 日，並舉辦公聽會", who: "都更處公展；實施者辦公聽會",
+      law: "同意比例以公展期滿時為準。權利價值比原同意的低時，所有權人可在期滿前撤銷同意（§37 第 4 項）",
+      real: "包含在 U2 的 1,027 天裡" },
+    { id: "U4", nm: "權利變換", ag: "impl", d: "441 天", dd: 441,
+      give: "權利變換計畫：估價、誰分回哪一戶", who: "實施者擬；都更處受理",
+      law: "審議期限同事業計畫",
+      real: "可以和事業計畫併送。分送時：事業計畫核定到權變申請 140 天（n＝11），權變申請到核定 441 天（n＝16）【實測，E3】" },
+    { id: "U5", nm: "審議", ag: "board", d: "含在 U2", law: true,
+      give: "審議會開會審查；必要時舉行聽證", who: "臺北市都市更新及爭議處理審議會",
+      law: "聽證依都更條例 §33", real: "包含在 U2 的時間裡" },
+    { id: "U6", nm: "核定", ag: "city", d: "核定公告", law: true,
+      give: "市府核定並公告", who: "臺北市政府", law: "都更條例 §32", real: "U2 的終點" },
+    { id: "U7", nm: "拆遷與中繼", ag: "impl", d: "沒有資料", law: true, unk: true,
+      give: "拆除舊屋；住戶搬到中繼住宅或自己租屋", who: "實施者；不自行拆遷的，可由主管機關代為拆除（都更條例 §57）",
+      law: "中繼住宅的安排方式【待確認】", real: "沒有逐案資料【待確認】" },
+    { id: "U8", nm: "完工", ag: "bld", d: "沒有資料", law: true, unk: true,
+      give: "申請建照、施工、使照；依權變計畫分配房屋", who: "建管處核發建照與使照",
+      law: "建照審查 10 日，供公眾使用或構造複雜可延至 30 日（建築法 §33）。產權登記機關【待確認】",
+      real: "沒有逐案資料【待確認】" },
+  ];
+  const W = [
+    { id: "W1", nm: "耐震評估", ag: "impl", d: "沒有資料", law: true, unk: true,
+      give: "找評估機構做結構安全評估", who: "評估機構；結果未達標準才能走危老",
+      law: "評估標準的條號【待確認】", real: "—" },
+    { id: "W2", nm: "重建計畫申請", ag: "impl", d: "100% 同意", law: true,
+      give: "重建計畫；全體土地與合法建物所有權人同意", who: "起造人送件",
+      law: "危老條例 §5。申請期限到 116-05-31（§5 第 2 項）", real: "—" },
+    { id: "W3", nm: "審查", ag: "bld", d: "30～60 天", dd: 60,
+      give: "書面審查，通知補正", who: "建管處建照科",
+      law: "受理後 30 日，可延 30 日；補正後 15 日內審完（危老施行細則 §6）", real: "沒有逐案資料；長度用法定上限 60 天" },
+    { id: "W4", nm: "核准", ag: "bld", d: "180 天內申請建照", law: true,
+      give: "核准重建計畫", who: "建管處",
+      law: "核准次日起 180 日內要申請建照，否則失效，可延一次 180 日（危老施行細則 §7）",
+      real: "全市危老清冊 1,088 案中 189 案「失其效力」【文件，marts README】；是否多因 180 日期限，沒有查證【推論】" },
+    { id: "W5", nm: "建照", ag: "bld", d: "10～30 天", dd: 30,
+      give: "建造執照申請", who: "建管處", law: "10 日；供公眾使用或構造複雜可延至 30 日（建築法 §33）", real: "長度用法定上限 30 天" },
+    { id: "W6", nm: "拆除與施工", ag: "impl", d: "沒有資料", law: true, unk: true,
+      give: "拆除舊屋、施工", who: "起造人", law: "—", real: "沒有逐案資料【待確認】" },
+    { id: "W7", nm: "完工", ag: "bld", d: "使照", law: true,
+      give: "申請使用執照", who: "建管處", law: "—", real: "—" },
+  ];
+  const MOJ = "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=";
+  const CARDS = [
+    { art: "都市更新條例 §22", url: MOJ + "D0070008&flno=22", big: "1/2", h: "事業概要的同意門檻",
+      p: "人數、面積都要超過一半的地主與屋主同意，才能送事業概要。",
+      to: [["consent-tracker/", "同意書進度板"], ["consent-simulator/", "同意率模擬器"]] },
+    { art: "都市更新條例 §37", url: MOJ + "D0070008&flno=37", big: "1/2～4/5", h: "事業計畫的同意門檻",
+      p: "在哪裡更新，門檻就不同：公辦與迅行劃定過半，公劃 3/4，自己劃 4/5。面積超過 9/10 時不看人數。",
+      to: [["consent-simulator/", "同意率模擬器"], ["consent-tracker/", "同意書進度板"], ["renewal-calculator/", "划不划算試算"]] },
+    { art: "都市更新條例 §7", url: MOJ + "D0070008&flno=7", big: "過半", h: "迅行劃定",
+      p: "為了避免重大災害，市府可以迅行劃定更新地區。這樣同意門檻降到人數、面積各過半。",
+      to: [["priority-ranking/#tab=renew", "公辦都更候選"]], ev: "【文件，solutions/decisions/2026-10-18-consensus.md】" },
+    { art: "都市更新條例 §65", url: MOJ + "D0070008&flno=65", big: "1.5 倍", h: "都更容積獎勵上限",
+      p: "獎勵後最多到基準容積 1.5 倍。臺北市自己另加的部分，不能超過 0.2 倍。",
+      to: [["bonus-translator/", "容積獎勵翻譯機"]] },
+    { art: "臺北市都市更新建築容積獎勵辦法 §2 附表", url: "https://laws.gov.taipei/law/LawSearch/LawExport/FL036875?type=0", big: "0.2 倍內", h: "臺北市自己的獎勵項目",
+      p: "臺北市把自己的獎勵項目都放在附表。這是自治規則，市府可以自己修。",
+      to: [["bonus-translator/", "容積獎勵翻譯機"]], ev: "【文件】；「市府可自己修」是【推論】" },
+    { art: "都市危險及老舊建築物加速重建條例 §5", url: MOJ + "D0070249&flno=5", big: "100%", h: "危老要全體同意",
+      p: "每一位地主與屋主都要同意。重建計畫的申請期限到 116 年 5 月 31 日。",
+      to: [["consent-tracker/", "同意書進度板"], ["renewal-calculator/", "划不划算試算"]] },
+    { art: "危老條例 §6", url: MOJ + "D0070249&flno=6", big: "1.3 倍", h: "危老容積獎勵上限",
+      p: "最多到基準容積 1.3 倍，或原建築容積 1.15 倍。拿了危老獎勵，就不能再疊其他法令的獎勵。",
+      to: [["bonus-translator/", "容積獎勵翻譯機"], ["renewal-calculator/", "划不划算試算"]] },
+    { art: "危老條例施行細則 §7", url: MOJ + "D0070256&flno=7", big: "180 天", h: "核准後要趕快申請建照",
+      p: "重建計畫核准後 180 天內沒申請建照，核准就失效。可以延一次 180 天。",
+      to: [["priority-ranking/", "老屋健檢順序"]] },
+  ];
+
+  const $ = (s) => document.querySelector(s);
+  $("#legend").innerHTML = Object.values(AG).map((a) => `<span><i style="background:var(${a.v})"></i>${a.name}</span>`).join("");
+
+  function stops(list, sel) {
+    $(sel + " .stops").innerHTML = list.map((s) =>
+      `<li><button type="button" class="stop" id="${s.id}" data-id="${s.id}" aria-expanded="false" style="--ag:var(${AG[s.ag].v})">
+        <span class="dot"></span><span class="nm">${s.nm}</span><span class="ag">${AG[s.ag].name}</span>
+        <span class="d${s.law ? " law" : ""}">${s.d}</span></button></li>`).join("");
+  }
+  stops(U, "#lineU");
+  stops(W, "#lineW");
+
+  // time bars on one shared scale: the whole renewal path
+  const UB = [
+    { t: "概要 353 天", d: 353, c: "var(--uro)" },
+    { t: "事業計畫申請到核定 1,027 天", d: 1027, c: "var(--board)" },
+    { t: "權變 441 天", d: 441, c: "var(--impl)" },
+    { t: "拆遷、施工？", d: 500, unk: true },
+  ];
+  const TOTAL = UB.reduce((a, b) => a + b.d, 0);
+  const WB = [{ t: "審查 60", d: 60, c: "var(--bld)" }, { t: "建照 30", d: 30, c: "var(--bld)" }, { t: "拆除、施工？", d: 500, unk: true }];
+  const bar = (list) => list.map((b) => `<span class="${b.unk ? "unk" : ""}" style="--w:${(b.d / TOTAL * 100).toFixed(1)}%;${b.c ? "background:" + b.c : ""}" title="${b.t}">${b.t}</span>`).join("");
+  $("#tbarU").innerHTML = bar(UB);
+  $("#tbarW").innerHTML = bar(WB);
+  requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add("go")));
+
+  const all = Object.fromEntries(U.concat(W).map((s) => [s.id, s]));
+  function open(id, user) {
+    const s = all[id];
+    if (!s) return;
+    document.querySelectorAll(".stop").forEach((b) => b.setAttribute("aria-expanded", String(b.dataset.id === id)));
+    const d = $("#detail");
+    d.style.setProperty("--ag", `var(${AG[s.ag].v})`);
+    d.innerHTML = `<h3>${s.id} ${s.nm}</h3><dl>
+      <dt>要交什麼</dt><dd>${s.give}</dd>
+      <dt>誰審</dt><dd>${s.who}</dd>
+      <dt>法定</dt><dd>${s.law}</dd>
+      <dt>實際</dt><dd>${s.real}</dd>
+      ${s.note ? `<dt>捷徑</dt><dd>${s.note}</dd>` : ""}</dl>`;
+    // only on a click: a hash set during load makes the browser jump to the station on load
+    if (user) try { history.replaceState(null, "", "#" + id); } catch (e) {}
+  }
+  document.querySelectorAll(".stop").forEach((b) => b.addEventListener("click", () => open(b.dataset.id, true)));
+  open(all[location.hash.slice(1)] ? location.hash.slice(1) : "U2");
+
+  $("#cards").innerHTML = CARDS.map((c) => `<article class="card">
+    <div class="art"><a href="${c.url}" target="_blank" rel="noopener">${c.art}</a></div>
+    <div class="big">${c.big}</div><h3>${c.h}</h3><p>${c.p}</p>
+    <div class="ev">${c.ev || "【文件，city-workflow/ 查閱 2026-10-18】"}</div>
+    <div class="links">${c.to.map(([u, t]) => `<a href="../${u}">→ ${t}</a>`).join("")}</div></article>`).join("");
+})();
+</script>
+</body>
+</html>

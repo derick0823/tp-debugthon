@@ -1,0 +1,41 @@
+{
+ "generated": "2026-10-22",
+ "villages": 456,
+ "equal_weight_max_gap": 5.2e-05,
+ "stable_top46": 5,
+ "hidden": 72,
+ "aging": {
+  "known_buildings": 70326,
+  "all_buildings": 209350,
+  "years": {
+   "2025": {
+    "buildings": 0.215,
+    "units": 0.103
+   },
+   "2035": {
+    "buildings": 0.61,
+    "units": 0.46
+   },
+   "2045": {
+    "buildings": 0.766,
+    "units": 0.631
+   }
+  }
+ },
+ "renewal": {
+  "risk_top": 120,
+  "price_p33": 659847.6666666666,
+  "elderly_p67": 0.268,
+  "weilao_median": 1.36,
+  "candidates": 4,
+  "one_short": 22,
+  "uro_villages": 190,
+  "uro_cases_total": 461
+ },
+ "elderly_share_city": 0.249,
+ "sources": {
+  "rankings": "data/marts/village_rankings（R1b，2026-10-18；權重敏感度 2,000 次 Dirichlet 抽樣，種子 20261018）",
+  "indicators": "data/marts/village_indicators（人口 115/9；液化 soil.taipei 2019 城市版；逐棟屋齡與軟弱層為推估）",
+  "boundary": "內政部國土測繪中心里界 115/8/17 版，簡化 8 m"
+ }
+}
