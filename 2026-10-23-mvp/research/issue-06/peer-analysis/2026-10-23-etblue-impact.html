@@ -82,11 +82,11 @@ footer{color:var(--muted);font-size:15px;margin-top:24px}
 
 <section class="top" aria-label="兩件事的結論">
   <article class="card">
-    <div class="head"><span class="num">1</span><h2>主辦的市民留言已經給了，我們還沒拿</h2></div>
+    <div class="head"><span class="num">1</span><h2>別隊拿到了市民留言，我們沒有</h2></div>
     <span class="badge high">影響：高（Day 2）</span>
     <div class="meter h" aria-hidden="true"><i></i><i></i><i></i></div>
-    <p class="big">主辦已提供第 6 類 3,488 則留言。我們的文件還寫「未釋出」，本機也沒有。</p>
-    <p>今晚的講稿不用改。Day 2 前要拿到，自己數一次。</p>
+    <p class="big">ETBlue 用了第 6 類 3,488 則留言。主辦可能已在 Discord 提供，但官方頁仍寫「即將於此釋出」。</p>
+    <p>今晚的講稿不用改。先問主辦來源，Day 2 前拿到後自己數一次。</p>
   </article>
   <article class="card">
     <div class="head"><span class="num">2</span><h2>逐棟評估結果不能公開</h2></div>
@@ -110,12 +110,12 @@ footer{color:var(--muted);font-size:15px;margin-top:24px}
 <summary>建議怎麼做（誰、什麼時候）</summary>
 <div>
 <ul class="when">
-  <li class="now"><b>今晚提案前（使用者）</b>講稿不改。不要引用 ETBlue 的件數，那是他們的估算。被問「有沒有用主辦的市民意見」時，可以答：「主辦的資料我們今晚才確認已經提供，明天會用它校對我們的模擬住戶。」</li>
-  <li class="now"><b>今晚提案後（使用者，5 分鐘）</b>到 Discord 公告或官方題目頁找下載點。找到網址或檔案，放進 <span class="path">workspace/inbox/</span>，再告訴一個 session。</li>
+  <li class="now"><b>今晚提案前（使用者）</b>講稿不改。不要引用 ETBlue 的件數，那是他們的估算。被問「有沒有用主辦的市民意見」時，可以答：「我們今晚才知道其他隊伍拿到了主辦的市民意見，會向主辦確認，拿到後用它校對我們的模擬住戶。」</li>
+  <li class="now"><b>今晚提案後（使用者，5 分鐘）</b>問主辦，或在 Discord #6 頻道、服務台找下載連結。官方頁 <a href="https://puma.taipei/hackathon">puma.taipei/hackathon</a> 19:00 還沒有連結。找到網址或檔案，放進 <span class="path">workspace/inbox/</span>，再告訴一個 session。</li>
   <li class="d2"><b>Day 2 前（指定一個研究 session）</b>照下面「下載計畫」抓檔。用我們自己的關鍵字規則數第 6 類的主題，人工抽 50 則核對。只交彙總數字。</li>
   <li class="d2"><b>Day 2 前（行銷隊友）</b>我們自己的數字出來後，才放進簡報與影片。講稿那句「只用公開資料」改成「只用公開資料與主辦提供的去識別資料」。</li>
   <li class="d2"><b>Day 2 前（後端隊友）</b>不用做任何事。原始留言不進 git、不進公開網站、不進 API。</li>
-  <li class="later"><b>之後（整合者 debug-83）</b>更新 <span class="path">data/catalog.json</span>、<span class="path">README.md</span>、<span class="path">IDEAS.md</span> 的「未釋出」。歷史決策紀錄不改原文，只在 IDEAS 加註。</li>
+  <li class="later"><b>之後（整合者 debug-83）</b>確認來源之後，再更新 <span class="path">data/catalog.json</span>、<span class="path">README.md</span>、<span class="path">IDEAS.md</span> 的「未釋出」。歷史決策紀錄不改原文，只在 IDEAS 加註。</li>
 </ul>
 </div>
 </details>
@@ -123,15 +123,19 @@ footer{color:var(--muted);font-size:15px;margin-top:24px}
 <details>
 <summary>事實與出處</summary>
 <div>
-<div class="row"><p class="what">主辦已提供，第 6 類共 3,488 則 <span class="ev">【文件】</span></p>
+<div class="row"><p class="what">ETBlue 用了第 6 類共 3,488 則 <span class="ev">【文件】</span></p>
 <p>ETBlue 的分析附錄寫：用主辦總覽表的「06 危老耐震風險評級」類，共 3,488 則（核心 2,290、相關 1,198）。</p>
 <p>出處：<a href="https://github.com/ETBlue/pumadebugthon/blob/main/analysis/6-oldbuildings/issue-analysis.md">ETBlue/pumadebugthon issue-analysis.md</a>，附錄「市長，你給我聽好了資料的使用方式」。</p></div>
+<div class="row"><p class="what">主辦已經釋出 <span class="ev">【推論，依 ETBlue 文用了 3,488 則】</span></p>
+<p>可能是在 Discord 給的。來源【待確認】。</p></div>
+<div class="row"><p class="what">官方頁仍寫「即將於此釋出」 <span class="ev">【實測，debug-c1，2026-10-23 19:00】</span></p>
+<p><a href="https://puma.taipei/hackathon">puma.taipei/hackathon</a> 回 HTTP 200，頁面沒有下載連結。</p></div>
 <div class="row"><p class="what">我們 10/17 記下的官方狀態是「即將於此釋出」 <span class="ev">【文件】</span></p>
 <p><span class="path">docs/event.md</span> 第 46 行引官方頁原文。後來沒有人回頭檢查。</p></div>
 <div class="row"><p class="what">本機沒有資料 <span class="ev">【實測】</span></p>
 <p><span class="path">data/raw/event/mayor-listen-up-feedback/</span> 只有 <code>_manifest.json</code>，內容是 <code>"mode": "pending"</code>、<code>"files": []</code>，時間 2026-10-17 13:19。</p></div>
 <div class="row"><p class="what">下載位置 <span class="ev">【待確認】</span></p>
-<p>ETBlue 沒有寫網址。可能在官方題目頁，也可能是 Discord 附件或雲端硬碟。</p></div>
+<p>ETBlue 沒有寫網址。官方頁沒有連結，所以比較可能是 Discord 附件或雲端硬碟。</p></div>
 <div class="row"><p class="what">ETBlue 估的主題分布 <span class="ev">【文件，對方估算】</span></p>
 <p>他們用關鍵字估，沒有逐則人工確認。一則留言可以算進多個主題。</p>
 <ul>
@@ -165,7 +169,8 @@ footer{color:var(--muted);font-size:15px;margin-top:24px}
 <ul>
 <li><span class="path">mvp-variants/TEAM-HANDOFF-2026-10-23.md</span> 第 80 行的「資料」欄：可以加「主辦市民意見的類別彙總，定期更新」，當作排優先順序的依據。</li>
 </ul>
-<h3>研究文件裡寫錯的句子</h3>
+<h3>確認來源後要更新的句子</h3>
+<p>官方頁還寫「即將於此釋出」，所以這些句子現在不算錯。確認主辦的來源之後，再改成「已釋出」。</p>
 <ul>
 <li><span class="path">research/issue-06/IDEAS.md</span> 第 58 行：「官方還沒釋出，方案不依賴」</li>
 <li><span class="path">research/issue-06/mvp-variants/consent-simulator/report.md</span> 第 156 行：「到 10/17 還沒釋出」</li>
@@ -187,8 +192,8 @@ footer{color:var(--muted);font-size:15px;margin-top:24px}
 <li>代價：約 1～2 小時，加上遵守使用規則。</li>
 </ul>
 <ol>
-<li><b>確認來源（使用者）。</b>如果要登入 Discord 或雲端硬碟才拿得到，就由使用者手動下載，放進 <span class="path">workspace/inbox/</span>。session 不登入、不碰驗證碼。</li>
-<li><b>公開網址才由 session 抓。</b>用 <code>curl</code>。一次一個請求、間隔 4 秒以上、不平行。先抓官方頁一次找連結，再抓檔案。任何一個不是 200 就停下回報。預計 2～5 個請求。</li>
+<li><b>找連結（使用者）。</b>問主辦，或在 Discord #6 頻道、服務台找連結。官方頁 19:00 還沒有連結，不用再去官方頁找。如果要登入 Discord 或雲端硬碟才拿得到，就由使用者手動下載，放進 <span class="path">workspace/inbox/</span>。session 不登入、不碰驗證碼。</li>
+<li><b>公開網址才由 session 抓。</b>用 <code>curl</code>。一次一個請求、間隔 4 秒以上、不平行。任何一個不是 200 就停下回報。預計 1～3 個請求。</li>
 <li><b>每個請求記帳。</b>寫進同資料夾的 <code>_manifest.json</code>：網址、時間、狀態碼、大小、sha256。</li>
 <li><b>存放位置。</b>沿用 <span class="path">data/raw/event/mayor-listen-up-feedback/</span>，不進 git。<code>data/catalog.json</code> 寫的路徑少了 <code>event/</code>，請 debug-83 統一。</li>
 <li><b>使用規則。</b>只算件數、只寫改寫的摘要。不引原文；不寫地址、社區名、建案名、實施者、比行政區小的地點、單則日期；不反推身分；不帶出活動外；不放進公開網站。（<span class="path">docs/event.md</span> 第 71、123 行）</li>
