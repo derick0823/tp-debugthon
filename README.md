@@ -20,6 +20,17 @@
 3. 讀交接檔 [`2026-10-23-mvp/research/issue-06/mvp-variants/TEAM-HANDOFF-2026-10-23.md`](2026-10-23-mvp/research/issue-06/mvp-variants/TEAM-HANDOFF-2026-10-23.md)：誰接什麼、Day 2 審核要的三樣東西。
 4. 要追資料從哪裡來，再去 [`inbox/data/DATASETS.md`](inbox/data/DATASETS.md)。
 
+## 用到的開源套件與 AI 工具
+
+活動規則：「可用開源套件與 AI 工具，須於 README 註明」。
+
+| 類別 | 用了什麼 | 用在哪裡 |
+|---|---|---|
+| 前端 | Leaflet（地圖，附檔在 `solutions/prototype/assets/vendor/`，不連 CDN）；其餘是原生 HTML、CSS、JavaScript | 六個原型 |
+| 影片 | Remotion 4（`video/package.json`） | 示範影片的剪接、字幕、配音 |
+| 資料處理 | pandas、pyarrow、geopandas、shapely、pyproj、pyogrio、pdfplumber、pypdf、matplotlib、folium、openpyxl（`inbox/pyproject.toml`） | 開放資料清洗、里層級成品表、研究報告抽文字 |
+| AI 工具 | Claude Code（Anthropic Claude）：研究、資料處理、原型程式、查核；OpenAI Codex：部分研究；Azure OpenAI GPT-5.5：批次翻譯與摘要 | 全程協作；所有數字與引文都回原文核對過（`gov-reports/verify/`） |
+
 ## 協作約定（建議，第一次合作可以再調）
 
 - 不要直接改日期資料夾裡的檔。要改的話，複製到新的工作資料夾（例如 `app/`）再改，日期資料夾保留當時的樣子。
