@@ -124,6 +124,18 @@ if (r5.nearby_medical) {
   console.log("      nearby_medical:", JSON.stringify(r5.nearby_medical));
 }
 
+// 7. round 5: score
+check("score basic: 100-20(age)-5(soil)-10(elder_lift)-4(fire_lane) = 61", r1.score?.value, 61);
+check("score basic grade", r1.score?.label, "要留意");
+check("score note", r1.score?.note, "團隊自訂的計分，不是官方評分");
+check("score sea-sand doorplate <= 40", rs.score?.value <= 40, true);
+check("score all-optional group in 0..100", r5.score?.value >= 0 && r5.score?.value <= 100, true);
+check("score deductions sum", 100 - r5.score.deductions.reduce((a, d) => a + d.points, 0), r5.score.value);
+check("score null without village", (await buildReport({}, opts())).score, null);
+console.log("      score basic:", JSON.stringify(r1.score));
+console.log("      score sea-sand:", JSON.stringify(rs.score));
+console.log("      score all-optional:", JSON.stringify(r5.score));
+
 // 4. missing everything: no crash, asks for village
 const r4 = await buildReport({}, opts());
 check("empty input needs village", r4.needs_village, true);

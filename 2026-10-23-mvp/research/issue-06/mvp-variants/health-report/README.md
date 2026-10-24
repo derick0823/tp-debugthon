@@ -11,7 +11,7 @@
 |---|---|---|
 | `index.html` | **整合線上版**（給民眾，`online.js`／`online.css`） | `/research/issue-06/mvp-variants/health-report/?addr=信義路2段86巷40號&age=50&elder=1` |
 | `print.html` | 正式列印版 | `/research/issue-06/mvp-variants/health-report/print.html?addr=…` |
-| `v1.html` | 第一版健檢單（`app.js`／`style.css`） | `/research/issue-06/mvp-variants/health-report/v1.html?addr=…` |
+| `v1.html` | 第一版健檢單，2026-10-24 改成「輸入卡→四頁」（`app.js`／`style.css`）。沒帶 `addr` 時整頁是輸入卡；帶了直接跑約 1 秒動畫進第 1 頁。`embed=1` 給團隊 App 嵌入，`#p=1..4` 開在第幾頁 | 無參數：`/research/issue-06/mvp-variants/health-report/v1.html`；帶參數：`/research/issue-06/mvp-variants/health-report/v1.html?addr=信義路2段86巷40號&age=50&elder=1` |
 | `report.html`、`visual.html`、`map.html` | 試作版 | 同上，換檔名 |
 
 用 `research/issue-06/` 開的伺服器（8778）也可以，網址少前兩層。用檔案開（file://）不行，頁面用 fetch 讀 JSON。
@@ -33,7 +33,7 @@
 ## 分工（2026-10-24 起）
 
 - 引擎線（本線）：`lib/report.js`、`CONTRACT.md`、`test/`、`README.md`、`scripts/build_shelters.py`、`data/shelters_weak.json`。
-- 整合線上版：`index.html`、`online.js`、`online.css`。列印版：`print.*`。第一版 `v1.html`、`app.js`、`style.css`、試作版 `report.*`、`visual.*`、`map.*` 由各自的子代理維護。
+- 整合線上版：`index.html`、`online.js`、`online.css`。列印版：`print.*`。試作版 `report.*`、`visual.*`、`map.*` 由各自的子代理維護。第一版 `v1.html`、`app.js`、`style.css` 自 2026-10-24 第五輪起回到本線。
 - 前端只讀 `lib/report.js` 的回傳物件；引擎只加欄位、不改名。
 
 ## 檔案地圖
@@ -51,7 +51,17 @@
 | `data/shelters_weak.json` | 上一列的產出（約 10 KB，政府資料開放授權，無聯絡人欄） |
 | `data/medical.json` | 急救責任醫院、醫院、診所、AED 座標（另一子代理產生；欄位 kind、name、lon、lat、district、note） |
 | `test/check-engine.mjs` | 引擎驗收：用 Node 讀檔跑引擎，比對既有頁面的數字。`node research/issue-06/mvp-variants/health-report/test/check-engine.mjs` |
-| `test/mobile.html` | 第一版（`v1.html`）的 375 px 自檢：`test/mobile.html?q=<url 編碼的參數>`，結果寫在 `<pre id="out">` |
+| `test/mobile.html` | 第一版（`v1.html`）自檢，結果寫在 `<pre id="out">`：`?q=<url 編碼的參數>&p=<頁 1～4>&w=<框寬，預設 375>` 查換頁、不橫捲、內文 18 px、進階預設收合、JS 錯誤；`p=4` 另查試算與列印連結；`q` 裡加 `embed%3D1` 查嵌入模式；`?flow=1` 查輸入卡→送出→第 1 頁→「修改」回輸入卡 |
+
+### v1 的四頁
+
+| 頁 | 內容 |
+|---|---|
+| 輸入卡 | 門牌、屋齡（可勾「不知道」）、有無長者（兩顆大按鈕）、「更多資料（選填）」七項、「產生健檢報告」。是唯一能輸入的地方；有報告後每頁最上方是精簡輸入列（門牌｜屋齡｜長者｜修改） |
+| 1 分數與重點 | 分數圓環＋等級（`score`）、「你家比本里 N% 的房子老」（`age_rank`）、「你的里在全市 456 里排第 N 名，前 X%」（`ranking.rank`）、前 3 項紅黃風險、1 張最重要的行動卡 |
+| 2 這棟房子 | 屋齡兩種並列、耐震世代、老屋健檢八格 |
+| 3 你家附近 | 收容所、急救醫院、醫院、診所、AED 的直線距離；救災地圖與指標條；**進階：演練檢核表（給里長）**預設收合 |
+| 4 接下來可以做的事＋我的里 | 全部建議、排名卡、我的里；**進階：容積獎勵怎麼算**預設收合。底部主按鈕「下一步：算算看我家都更划不划算 →」連 `../renewal-calculator/?t=<區碼>&q=<門牌>`（試算頁 `assets/calc.js` 吃這兩個參數；沒有確切門牌時只帶區碼），次按鈕「印正式健檢單」連 `print.html?<同參數>` |
 
 ### 讀哪些資料、搬了哪段邏輯
 
@@ -77,6 +87,7 @@
 | 2026-10-24 14:10 | 第三輪引擎：`verdict`、`risks`、`user`、`report_id`、`plain_village` | `check-engine.mjs` ALL PASS；範例門牌黃燈；海砂屋門牌 `大安區仁愛路3段96號` 紅燈 |
 | 2026-10-24 14:40 | 第四輪引擎：七個選填參數、`input_optional`、`missing_optional`、action 的 `plain_title`／`money_tag`／`notes`、`nearby_medical`、風險加 `visible_damage`、`medical` | `check-engine.mjs` ALL PASS（含 `type=apt&units=12&floor=4&ground=shop&own=renter&mc=0&crack=1` 一組、`type=house&floor=1` 一組、醫療兩點測試資料）；`data/medical.json` 尚未產生，真資料驗收待檔案出現後補跑 |
 | 2026-10-24 15:00 | `data/medical.json` 出現後重跑驗收（另一子代理產生：急救責任醫院 18、醫院 23、診所 335、AED 2,729；欄位只有 kind、name、lon、lat、district、note）；租屋提醒只加在房子相關 action、填裂縫總評至少黃燈 | `check-engine.mjs` ALL PASS。範例門牌：急救醫院臺大醫院直線約 1,010 m（medical 風險 low）、醫院 830 m、診所 450 m、AED 120 m；龍圖里（無門牌，從里中心）急救醫院約 800 m |
+| 2026-10-24 15:40 | 第五輪：引擎加 `score`；v1 改成輸入卡→四頁、進階收合、內文 18 px、`embed=1`、最後一頁連試算與列印 | `check-engine.mjs` ALL PASS（基本組 61 分、海砂屋組 39 分、全部選填組 34 分）；`test/mobile.html` 375 與 1280 各四頁 ALL PASS（JS 錯誤 0、不橫捲、進階收合、`#p=3` 直接開第 3 頁）；`flow=1` ALL PASS；`embed=1` ALL PASS |
 
 ## 已知限制
 

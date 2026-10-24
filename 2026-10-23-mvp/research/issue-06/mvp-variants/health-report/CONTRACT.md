@@ -1,6 +1,6 @@
 # 健檢報告接口說明（CONTRACT）
 
-給前端、後端隊友。引擎：`lib/report.js`（ES module，不碰 DOM）。版本 `version: 1`（2026-10-24）。第二～四輪只**新增**欄位，沒有改名或刪除（第二輪新增標「＋」，第三輪「＋＋」，第四輪「＋＋＋」）。給民眾看的簡化版讀第三輪的 `verdict`、`risks`、`plain_village`。
+給前端、後端隊友。引擎：`lib/report.js`（ES module，不碰 DOM）。版本 `version: 1`（2026-10-24）。第二～五輪只**新增**欄位，沒有改名或刪除（第二輪新增標「＋」，第三輪「＋＋」，第四輪「＋＋＋」，第五輪「⁵」）。給民眾看的簡化版讀第三輪的 `verdict`、`risks`、`plain_village`。
 
 ## 1. 參數
 
@@ -21,6 +21,8 @@
 | `v` | 選填 | 里代碼 11 碼 | 門牌對不上時直接指定里（→ `opts.village_code`） |
 | `t` | 選填 | 區代碼 8 碼 | 限定搜尋的區（→ `opts.town_code`） |
 | `#w=a,b,c,d,e` | 選填 | 0～4 | 排名權重，順序：高齡、老屋、液化、救災、軟弱層。預設 `1,1,3,3,1`（→ `opts.weights`） |
+| `embed` | 頁面用（v1） | `1` | 被嵌進團隊 App（模擬市民－都更篇）時用：隱藏輸入卡、精簡輸入列與大抬頭，只留「報告編號｜受檢人」一小行；輸入由外層 App 負責，外層要帶 `addr`（或 `v`）。引擎不讀這個參數 |
+| `#p=1..4` | 頁面用（v1） | 整數 | 開在第幾頁：1 分數與重點、2 這棟房子、3 你家附近、4 接下來可以做的事＋我的里。可分享 |
 
 ## 2. 呼叫
 
@@ -71,6 +73,7 @@ const r = await buildReport({ addr, age, elder, type, units, floor, ground, own,
 | ＋＋`plain_village` | 字串或 `null` | 一句白話取代排名，例「你住的里，一樓比較空的房子比臺北 9 成的里多。」排名欄位照舊保留 |
 | ＋＋＋`input_optional` | 物件 | 選填參數回顯：`{type, units, floor, ground, own, mc, crack}`，沒填或格式不對是 `null` |
 | ＋＋＋`missing_optional` | 字串陣列 | 沒填的選填參數名 |
+| ⁵`score` | 物件或 `null` | 0～100 分，見下；沒有里時 `null` |
 | ＋＋＋`nearby_medical` | 物件或 `null` | 各類最近一處醫療點，見下；`data/medical.json` 不存在時整欄 `null` |
 
 ### `address`
@@ -204,6 +207,28 @@ const r = await buildReport({ addr, age, elder, type, units, floor, ground, own,
 | `line` | 字串，≤30 字 | 一句白話理由 |
 
 規則是團隊自訂，不是官方標準。`print.js` 之後改讀這個欄位。
+
+### ⁵`score`
+
+`{value, grade, label, deductions: [{risk_id, points, cap?}], unknown_n, note}`。**團隊自訂的計分，不是官方評分**（`note` 固定這句）。
+
+- 從 100 分起扣；`risks` 裡 `high` 扣第一個數、`mid` 扣第二個數，`low`、`unknown` 不扣。下限 0。
+
+  | risk_id | high | mid |
+  |---|---|---|
+  | `age_code` | 20 | 10 |
+  | `ground_floor` | 15 | 7 |
+  | `soil` | 10 | 5 |
+  | `elder_lift` | 10 | 5 |
+  | `fire_lane` | 8 | 4 |
+  | `shelter` | 5 | 2 |
+  | `medical` | 5 | 2 |
+  | `visible_damage` | 20 | 10 |
+
+- `quake_listed` 或 `sea_sand` 為 `high`（確切門牌在列管清冊上）時封頂 39 分；`deductions` 多一筆 `cap: true`。
+- `grade`／`label`：80 以上 `good`「良好」、60～79 `watch`「要留意」、59 以下 `check`「建議檢查」。
+- `unknown_n`：有權重但查不到的風險數（沒有扣分，頁面可提示）。
+- 例：`信義路2段86巷40號`、age=50、elder=1 → 61 分「要留意」（年紀 −20、土壤 −5、長者上下樓 −10、窄巷 −4）。
 
 ### ＋＋`risks[]`
 

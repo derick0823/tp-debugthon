@@ -1065,6 +1065,39 @@ function adjustRisks(risks, opt, building, elder) {
   });
 }
 
+/* ------------------------------------------------------------ round 5: score */
+
+// Team-made score, not an official rating. Start at 100; a high risk takes the first number off,
+// a mid risk the second; low and unknown take nothing. A listed doorplate caps the score below 40.
+export const SCORE_WEIGHTS = {
+  age_code: [20, 10], ground_floor: [15, 7], soil: [10, 5], elder_lift: [10, 5],
+  fire_lane: [8, 4], shelter: [5, 2], medical: [5, 2], visible_damage: [20, 10],
+};
+export const SCORE_CAP_LISTED = 39;
+function scoreOf(risks) {
+  let value = 100;
+  const deductions = [];
+  for (const r of risks) {
+    const w = SCORE_WEIGHTS[r.id];
+    if (!w) continue;
+    const pts = r.level === "high" ? w[0] : r.level === "mid" ? w[1] : 0;
+    if (pts) { value -= pts; deductions.push({ risk_id: r.id, points: pts }); }
+  }
+  const listed = risks.some((r) => (r.id === "quake_listed" || r.id === "sea_sand") && r.level === "high");
+  if (listed && value > SCORE_CAP_LISTED) {
+    deductions.push({ risk_id: risks.find((r) => (r.id === "sea_sand" || r.id === "quake_listed") && r.level === "high").id, points: value - SCORE_CAP_LISTED, cap: true });
+    value = SCORE_CAP_LISTED;
+  }
+  value = Math.max(0, value);
+  const grade = value >= 80 ? "good" : value >= 60 ? "watch" : "check";
+  return {
+    value, grade, label: { good: "良好", watch: "要留意", check: "建議檢查" }[grade],
+    deductions,
+    unknown_n: risks.filter((r) => SCORE_WEIGHTS[r.id] && r.level === "unknown").length,
+    note: "團隊自訂的計分，不是官方評分",
+  };
+}
+
 /* ------------------------------------------------------------ main */
 
 function cleanInput({ addr, age, elder } = {}) {
@@ -1178,6 +1211,8 @@ export async function buildReport(input, opts = {}) {
     nearby_medical: null,
     // added in round 3 (plain-language layer)
     verdict: null,
+    // added in round 5
+    score: null,
     risks: [],
     user: userOf(opts.user),
     report_id: null,
@@ -1219,6 +1254,7 @@ export async function buildReport(input, opts = {}) {
     report.risks = risksOf({ building, rescueP: rescue ? rescue._p : null, elder: inp.elder, shelter: report.nearest_weak_shelter, myVillage: report.my_village });
     report.risks = [...adjustRisks(report.risks, opt, building, inp.elder), ...extraRisksOf(opt, report.nearby_medical)];
     report.plain_village = plainVillageOf(prGeo, vcode);
+    report.score = scoreOf(report.risks);
     if (rescue) { delete rescue._p; }
     report.rescue = rescue;
   }
