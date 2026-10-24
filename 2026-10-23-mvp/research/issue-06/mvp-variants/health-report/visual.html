@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>老屋健檢報告</title>
+<link rel="stylesheet" href="../../solutions/prototype/assets/vendor/leaflet.css">
+<link rel="stylesheet" href="visual.css">
+<link rel="stylesheet" href="../design-kit/theme-puma.css">
+</head>
+<body>
+<main class="sheet">
+  <!-- formal header -->
+  <header class="head">
+    <div class="titlebar">
+      <h1>臺北市老屋健檢報告</h1>
+      <p class="rid"><span>報告編號 <b id="rid">—</b></span><span>日期 <b id="rdate">—</b></span></p>
+    </div>
+    <dl class="meta">
+      <div><dt>受檢人</dt><dd id="m-user">—</dd></div>
+      <div class="wide"><dt>門牌</dt><dd id="m-addr">—</dd></div>
+      <div><dt>屋齡</dt><dd id="m-age">—</dd></div>
+      <div><dt>家中長者</dt><dd id="m-elder">—</dd></div>
+    </dl>
+    <details class="change"><summary>換一個地址</summary>
+      <!-- same URL params as index.html: ?addr=&age=&elder= (plus v=, t=) -->
+      <form id="form" autocomplete="off">
+        <label>門牌<input id="in-addr" placeholder="例：大安區信義路2段86巷40號"></label>
+        <label>屋齡（年）<input id="in-age" type="number" min="0" max="120" inputmode="numeric" placeholder="可空白"></label>
+        <fieldset><legend>家裡有 65 歲以上長者</legend>
+          <label><input type="radio" name="elder" value="1"> 有</label>
+          <label><input type="radio" name="elder" value="0"> 沒有</label>
+        </fieldset>
+        <button class="btn primary" type="submit">產生報告</button>
+      </form>
+    </details>
+    <p id="status" class="status" role="status"></p>
+  </header>
+
+  <!-- one picture -->
+  <section class="stage">
+    <figure class="house" aria-label="房子剖面圖，圓點是要注意的地方">
+      <svg id="house" viewBox="0 0 600 540" role="img" aria-labelledby="house-t">
+        <title id="house-t">房子剖面圖</title>
+      </svg>
+      <div id="flags" class="flags" aria-label="列管旗標"></div>
+      <div id="scan" class="scan" aria-hidden="true"><i></i><span>健檢中⋯</span></div>
+      <figcaption id="dots-legend" class="dlegend"></figcaption>
+    </figure>
+
+    <aside class="side">
+      <div id="verdict" class="verdict"></div>
+      <div id="detail" class="detail" aria-live="polite"></div>
+      <div class="shelter">
+        <div class="mapring" role="button" tabindex="0" aria-label="最近的避難處，點看說明"><div id="minimap" role="img" aria-label="你家到最近收容所的地圖"></div></div>
+        <p id="shelter-line" class="sline"></p>
+        <p class="osm">地圖 © OpenStreetMap</p>
+      </div>
+    </aside>
+  </section>
+
+  <p id="village" class="village"></p>
+
+  <!-- next steps -->
+  <section class="steps-wrap">
+    <h2>接下來可以做的三件事</h2>
+    <ol id="steps" class="steps"></ol>
+  </section>
+
+  <footer class="foot">
+    <p><b>這是推估與白話整理，不是官方評估或鑑定。</b>里的狀況是相對於臺北其他里。</p>
+    <details><summary>資料來源</summary><ul id="sources"></ul></details>
+    <p><a id="to-sheet" href="./">看完整版（健檢單）→</a></p>
+  </footer>
+</main>
+
+<script src="../../solutions/prototype/assets/vendor/leaflet.js"></script>
+<script type="module" src="visual.js"></script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><title>375 px check</title>
+<style>body{margin:0;background:#888;display:flex;gap:16px;padding:8px;font:14px system-ui}
+iframe{border:0;background:#fff;width:375px}pre{background:#fff;padding:8px;margin:0;white-space:pre-wrap;width:300px}</style></head>
+<body>
+<iframe id="f"></iframe><pre id="out">running</pre>
+<script>
+// Checks the first layout (v1.html). Usage (headless Edge has a ~500 px minimum window, so a 375 px viewport needs this frame):
+//   test/mobile.html?q=<query string for ../v1.html>&h=<frame height, default 7000>
+// Writes PASS/FAIL lines into <pre id="out">: horizontal overflow, smallest body-text size, JS errors.
+const qs = new URLSearchParams(location.search);
+const f = document.getElementById("f");
+f.style.height = (qs.get("h") || 7000) + "px";
+f.src = "../v1.html?" + (qs.get("q") || "");
+const out = document.getElementById("out");
+const t0 = Date.now();
+(function poll() {
+  const d = f.contentDocument;
+  if (!d || !d.body || d.body.dataset.ready !== "1") { if (Date.now() - t0 < 25000) return setTimeout(poll, 300); out.textContent = "FAIL not ready"; return; }
+  setTimeout(() => {
+    const W = d.documentElement.clientWidth, SW = d.documentElement.scrollWidth;
+    const wide = [...d.querySelectorAll("body *")].filter((el) => el.getBoundingClientRect().right > W + 1 && !el.closest(".leaflet-container"))
+      .slice(0, 8).map((el) => el.tagName.toLowerCase() + (el.id ? "#" + el.id : "") + (typeof el.className === "string" && el.className ? "." + el.className.split(" ")[0] : ""));
+    const body = parseFloat(f.contentWindow.getComputedStyle(d.body).fontSize);
+    const ps = [...d.querySelectorAll("#report p, #report li, .form label")].map((el) => parseFloat(f.contentWindow.getComputedStyle(el).fontSize));
+    const errs = f.contentWindow.__errors || [];
+    const lines = [
+      `${SW <= W ? "PASS" : "FAIL"} no horizontal scroll (scrollWidth ${SW}, width ${W})${wide.length ? " wide: " + wide.join(" ") : ""}`,
+      `${body >= 17 ? "PASS" : "FAIL"} body font ${body}px`,
+      `INFO smallest p/li ${Math.min(...ps)}px`,
+      `${errs.length ? "FAIL" : "PASS"} js errors ${errs.length}${errs.length ? ": " + errs.join(" | ") : ""}`,
+      `INFO doc height ${d.documentElement.scrollHeight}`,
+    ];
+    out.textContent = (lines.some((l) => l.startsWith("FAIL")) ? "SOME FAIL" : "ALL PASS") + "\n" + lines.join("\n");
+  }, 800);
+})();
+</script></body></html>
