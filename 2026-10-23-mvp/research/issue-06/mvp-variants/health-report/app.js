@@ -25,7 +25,8 @@ if (EMBED) document.body.dataset.embed = "1";
 
 function hashPage() {
   const m = location.hash.match(/p=(\d)/);
-  const n = m ? Number(m[1]) : 1;
+  const qp = new URLSearchParams(location.search).get("p");
+  const n = m ? Number(m[1]) : (qp ? Number(qp) : 1);
   return n >= 1 && n <= PAGES.length ? n : 1;
 }
 
