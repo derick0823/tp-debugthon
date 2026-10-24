@@ -242,11 +242,13 @@ function renderP1(r) {
   const S = r.score, k = r.ranking, ar = r.age_rank;
   const C = 2 * Math.PI * 52;
   const color = S ? GRADE_COLOR[S.grade] : "#999";
-  const ring = S ? `<svg class="ring" viewBox="0 0 128 128" role="img" aria-label="分數 ${S.value} 分，${S.label}">
+  // Shown as a risk score (100 - engine score): higher means act sooner, as the pitch says.
+  const risk = S ? 100 - S.value : null;
+  const ring = S ? `<svg class="ring" viewBox="0 0 128 128" role="img" aria-label="風險分數 ${risk} 分，${S.label}">
       <circle cx="64" cy="64" r="52" fill="none" stroke="var(--track)" stroke-width="14"/>
       <circle class="arc" cx="64" cy="64" r="52" fill="none" stroke="${color}" stroke-width="14" stroke-linecap="round"
-        stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - S.value / 100)}" transform="rotate(-90 64 64)"/>
-      <text x="64" y="70" text-anchor="middle" class="rv">${S.value}</text><text x="64" y="92" text-anchor="middle" class="ru">分</text></svg>` : "";
+        stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - risk / 100)}" transform="rotate(-90 64 64)"/>
+      <text x="64" y="70" text-anchor="middle" class="rv">${risk}</text><text x="64" y="92" text-anchor="middle" class="ru">風險分</text></svg>` : "";
   const arShare = ar ? (ar.older_than_share_estimated ?? ar.older_than_share_user) : null;
   const topPct = k ? Math.max(1, Math.ceil((k.rank / k.n_villages) * 100)) : null;
   const red = r.risks.filter((x) => x.level === "high").concat(r.risks.filter((x) => x.level === "mid")).slice(0, 3);
@@ -256,7 +258,7 @@ function renderP1(r) {
       <div class="scorehead">${ring}
         <div class="sg"><b style="color:${color}">${esc(S ? S.label : "—")}</b>
           <span>${esc(r.verdict ? r.verdict.line : "")}</span>
-          <span class="small muted">滿分 100，越高越好。${esc(S ? S.note : "")}${S && S.unknown_n ? `；有 ${S.unknown_n} 項查不到，沒有扣分` : ""}。</span></div>
+          <span class="small muted">風險分數滿分 100，分數越高，越需要盡快改善。${esc(S ? S.note : "")}${S && S.unknown_n ? `；有 ${S.unknown_n} 項查不到，沒有算進去` : ""}。</span></div>
       </div>
       <div class="stats">
         <div class="stat"><b>${arShare == null ? "—" : pct(arShare)}</b><span>${arShare == null ? "查不到本里房子的年紀比較" : `你家比本里 ${pct(arShare)} 的房子老`}</span></div>
