@@ -33,13 +33,13 @@ python -m http.server 8778
 - `uro-cases/`：都更審議 466 案的事實表，是試算器的依據。
 - `design-kit/`：配色、元件、任務積分。
 - `pitch/day1-pitch.html`：Day 1 提案頁，有講稿 A、B 與 3 分鐘計時。
-- `video/out/mvp-demo.mp4`：146 秒示範影片。
+- 示範影片：`video/out/mvp-demo-2026-10-24.mp4`（中文，163 秒，最新）、`video/out/mvp-demo-en-2026-10-24.mp4`（英文配音、中英字幕，175 秒）、`video/out/mvp-demo.mp4`（10/22 第一版，146 秒）。
 
 ## 3. 依你的角色從哪裡切入
 
 | 你是 | 先看 | 再看 |
 |---|---|---|
-| 行銷 | 跑起來的總覽頁 20 分鐘、`video/out/mvp-demo.mp4` | `pitch/day1-pitch.html`、`video/SCRIPT.md`（影片劇本與對象設定） |
+| 行銷 | 跑起來的總覽頁 20 分鐘、`video/out/mvp-demo-2026-10-24.mp4` | `pitch/day1-pitch.html`、`video/SCRIPT.md`（影片劇本與對象設定） |
 | 後端 | `mvp-variants/TEAM-HANDOFF-2026-10-23.md` 第 4 節、`data/marts/README.md` | `renewal-calculator/README.md`（公式）、`uro-cases/report.md`（案件表）、`solutions/prototype/README.md` |
 | 都想先懂全貌 | `mvp-variants/TEAM-HANDOFF-2026-10-23.md` | `mvp-variants/README.md` |
 
@@ -73,6 +73,7 @@ Day 2 審核要三樣東西：MVP、YouTube 影片、未來需要的資源。分
 
 ## 6. 更新紀錄
 
+- **10/24 早上**：示範影片第二版，中、英文各一支，多三句介紹新功能（市場錯位、收容所與消防栓、負擔力）。
 - **10/24 凌晨**：七個原型依查核修正補助數字與說明；新增三個功能：試算器「這個里的負擔力」、健檢排序「市場錯位」圖、救災地圖「震後收容所」與「窄巷離消防栓」兩項檢核；翻譯機多一格銀髮住宅狀況。研究補一份屋齡比對：我們的推估比內政部稅籍低 1～11 個百分點，屬保守。
 - **10/23 晚上**：第一版，六個原型、示範影片、Day 1 提案頁。
 

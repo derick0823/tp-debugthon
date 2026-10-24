@@ -5,4 +5,4 @@ research/issue-06/mvp-variants/video/recordings/
 research/issue-06/mvp-variants/video/public/
 research/issue-06/mvp-variants/video/.remotion/
 research/issue-06/mvp-variants/video/out/*
-!research/issue-06/mvp-variants/video/out/mvp-demo.mp4
+!research/issue-06/mvp-variants/video/out/mvp-demo*.mp4

@@ -1,19 +1,87 @@
 {
-  "url": "/mvp-variants/renewal-calculator/",
-  "viewport": [1280, 720],
-  "steps": [
-    {"do": "caption", "text": "輸入你家地址，看現在值多少、分回多少。"},
-    {"do": "wait", "ms": 1500},
-    {"do": "type", "sel": "#addr", "text": "信義路2段86巷40號", "delay": 55, "wait": 300},
-    {"do": "hover", "sel": "#go", "wait": 400},
-    {"do": "click", "sel": "#go", "wait": 900},
-    {"do": "scroll_to", "sel": "#hero", "wait": 900},
-    {"do": "slider_sweep", "sel": "#bonus", "from": 20, "to": 40, "steps": 20, "ms": 55, "wait": 250},
-    {"do": "slider_sweep", "sel": "#bonus", "from": 40, "to": 30, "steps": 10, "ms": 55, "wait": 400},
-    {"do": "caption", "text": "同一戶，用新成屋算是賺 539 萬，用真實都更案算是虧 429 萬。"},
-    {"do": "scroll_to", "sel": "#flip", "wait": 2800},
-    {"do": "caption", "text": "划不划算，看你信哪個單價。"},
-    {"do": "wait", "ms": 2000},
-    {"do": "wait", "ms": 1000}
-  ]
+ "url": "/mvp-variants/renewal-calculator/",
+ "viewport": [
+  1280,
+  720
+ ],
+ "steps": [
+  {
+   "do": "caption",
+   "text": "輸入你家地址，看現在值多少、分回多少。"
+  },
+  {
+   "do": "wait",
+   "ms": 1500
+  },
+  {
+   "do": "type",
+   "sel": "#addr",
+   "text": "信義路2段86巷40號",
+   "delay": 55,
+   "wait": 300
+  },
+  {
+   "do": "hover",
+   "sel": "#go",
+   "wait": 400
+  },
+  {
+   "do": "click",
+   "sel": "#go",
+   "wait": 900
+  },
+  {
+   "do": "scroll_to",
+   "sel": "#hero",
+   "wait": 900
+  },
+  {
+   "do": "slider_sweep",
+   "sel": "#bonus",
+   "from": 20,
+   "to": 40,
+   "steps": 20,
+   "ms": 55,
+   "wait": 250
+  },
+  {
+   "do": "slider_sweep",
+   "sel": "#bonus",
+   "from": 40,
+   "to": 30,
+   "steps": 10,
+   "ms": 55,
+   "wait": 400
+  },
+  {
+   "do": "caption",
+   "text": "同一戶，用新成屋算是賺 539 萬，用真實都更案算是虧 429 萬。"
+  },
+  {
+   "do": "scroll_to",
+   "sel": "#flip",
+   "wait": 2800
+  },
+  {
+   "do": "caption",
+   "text": "划不划算，看你信哪個單價。"
+  },
+  {
+   "do": "wait",
+   "ms": 2000
+  },
+  {
+   "do": "caption",
+   "text": "也看得到這個里的平均所得，付不付得起。"
+  },
+  {
+   "do": "scroll_to",
+   "sel": "#afford",
+   "wait": 3000
+  },
+  {
+   "do": "wait",
+   "ms": 1000
+  }
+ ]
 }

@@ -1,16 +1,67 @@
 {
  "url": "/mvp-variants/priority-ranking/",
- "viewport": [1280, 720],
+ "viewport": [
+  1280,
+  720
+ ],
  "steps": [
-  {"do": "wait", "ms": 1500},
-  {"do": "caption", "text": "我們把高齡、老屋、液化、窄巷、軟弱層五件事放在一起，"},
-  {"do": "slider_sweep", "sel": "#w_elderly", "from": 1, "to": 4, "steps": 24, "ms": 70, "wait": 900},
-  {"do": "caption", "text": "排出 456 個里誰先健檢。"},
-  {"do": "hover", "sel": ".row[title^='中山區康樂里']", "wait": 400},
-  {"do": "click", "sel": ".row[title^='中山區康樂里']", "wait": 1200},
-  {"do": "caption", "text": "權重怎麼調，排名怎麼動，都看得到。"},
-  {"do": "hover", "sel": ".row[title^='中山區康樂里'] .whisk", "wait": 1200},
-  {"do": "click", "sel": ".tabs button[data-tab='renew']", "wait": 2000},
-  {"do": "wait", "ms": 1000}
+  {
+   "do": "wait",
+   "ms": 1500
+  },
+  {
+   "do": "caption",
+   "text": "我們把高齡、老屋、液化、窄巷、軟弱層五件事放在一起，"
+  },
+  {
+   "do": "slider_sweep",
+   "sel": "#w_elderly",
+   "from": 1,
+   "to": 4,
+   "steps": 24,
+   "ms": 70,
+   "wait": 900
+  },
+  {
+   "do": "caption",
+   "text": "排出 456 個里誰先健檢。"
+  },
+  {
+   "do": "hover",
+   "sel": ".row[title^='中山區康樂里']",
+   "wait": 400
+  },
+  {
+   "do": "click",
+   "sel": ".row[title^='中山區康樂里']",
+   "wait": 1200
+  },
+  {
+   "do": "caption",
+   "text": "權重怎麼調，排名怎麼動，都看得到。"
+  },
+  {
+   "do": "hover",
+   "sel": ".row[title^='中山區康樂里'] .whisk",
+   "wait": 1200
+  },
+  {
+   "do": "click",
+   "sel": ".tabs button[data-tab='renew']",
+   "wait": 2000
+  },
+  {
+   "do": "caption",
+   "text": "老屋最多的 32 個里占 6% 的房子，卻只分到 1.7% 的案子。"
+  },
+  {
+   "do": "scroll_to",
+   "sel": "#gapTitle",
+   "wait": 4000
+  },
+  {
+   "do": "wait",
+   "ms": 1000
+  }
  ]
 }
