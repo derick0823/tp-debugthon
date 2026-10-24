@@ -187,9 +187,17 @@ async function run(p, toPage = 1) {
 // it opens on the village's district only.
 function renderLinks(r) {
   const q = new URLSearchParams();
-  if (r.building) { q.set("t", r.building.town_code); q.set("q", r.building.address); }
-  else if (r.village) q.set("t", r.village.town_code);
-  $("#go-calc").href = "../renewal-calculator/" + (q.toString() ? "?" + q.toString() : "");
+  if (r.building) {
+    q.set("t", r.building.town_code);
+    const fullAddr = (r.village && !r.building.address.startsWith(r.village.town_name) ? r.village.town_name : "") + r.building.address;
+    q.set("addr", fullAddr);
+  } else if (r.input && r.input.addr) {
+    if (r.village) q.set("t", r.village.town_code);
+    q.set("addr", r.input.addr);
+  } else if (r.village) {
+    q.set("t", r.village.town_code);
+  }
+  $("#go-calc").href = "../renewal-calculator-v2/" + (q.toString() ? "?" + q.toString() : "");
   const pq = new URLSearchParams(location.search);
   pq.delete("embed");
   $("#go-print").href = "print.html" + (pq.toString() ? "?" + pq.toString() : "");
