@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>老公寓要幾戶點頭</title>
+<link rel="stylesheet" href="assets/style.css?v=19">
+<link rel="stylesheet" href="../design-kit/theme-puma.css?v=19">
+<link rel="stylesheet" href="assets/theme-map.css?v=19">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="sim-tag">政策情境模擬・不預測任何一棟樓</span>
+    <h1>老公寓要幾戶點頭？</h1>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="sim">🏢 門檻模擬</button>
+    <button role="tab" aria-selected="false" data-tab="people">💬 住戶在想什麼</button>
+    <button role="tab" aria-selected="false" data-tab="tree">🧭 不能都更怎麼辦</button>
+  </nav>
+
+  <!-- 1. consent simulator -->
+  <section class="panel active" id="tab-sim" role="tabpanel">
+    <div class="banner board" id="board-banner" hidden></div>
+
+    <div class="card">
+      <div class="rulepick" id="rulepick" role="radiogroup" aria-label="選一條法律"></div>
+      <div class="hero">
+        <div class="people" id="people" aria-label="每 100 戶中簽同意書的戶數"></div>
+        <div class="hero-side">
+          <div class="kpi"><b id="signed-n">0</b><span>／100 戶簽了</span><em class="delta" id="delta"></em></div>
+          <p class="pass-line" id="pass-line"></p>
+          <div class="kpi small"><b id="win-n">0</b><span id="win-label">／100 棟能過</span></div>
+          <div class="houses" id="houses" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card controls">
+        <h2>🏢 這棟樓</h2>
+        <div class="ctl"><label for="n">戶數 <output id="n-out"></output></label>
+          <input id="n" type="range" min="6" max="50" step="1">
+          <div class="ends"><span>6</span><span>真實都更案中位 16 戶</span><span>50</span></div></div>
+        <div class="ctl"><label for="elderly">👵 長輩戶 <output id="elderly-out"></output></label>
+          <input id="elderly" type="range" min="0" max="0.7" step="0.05"></div>
+        <div class="ctl"><label for="shops">🏪 一樓店面 <output id="shops-out"></output></label>
+          <input id="shops" type="range" min="0" max="4" step="1"></div>
+        <h2>🏛️ 市府做了什麼</h2>
+        <div class="ctl"><label for="transparency">🧮 講得多清楚 <output id="transparency-out"></output></label>
+          <input id="transparency" type="range" min="0" max="1" step="0.1">
+          <div class="ends"><span>簽了再說</span><span>全部算給你看</span></div></div>
+        <label class="toggle"><input type="checkbox" id="manager"> 🧑‍💼 個案經理陪長輩</label>
+        <label class="toggle"><input type="checkbox" id="riskInfo"> ⚠️ 說「你家危險」</label>
+        <label class="toggle"><input type="checkbox" id="damaged"> 🧱 房子已經裂了</label>
+        <button id="reset" class="chip" type="button">↺ 回到基準</button>
+      </div>
+
+      <div>
+        <div class="card">
+          <h2>100 棟樓，幾棟過門檻？</h2>
+          <div class="rules" id="rules"></div>
+        </div>
+
+        <div class="card">
+          <h2>哪一招最有用？</h2>
+          <p class="muted">危老要全體同意，看 100 棟能成幾棟。</p>
+          <div class="levers" id="levers"></div>
+        </div>
+
+        <div class="card">
+          <h2>講得越清楚，成的越多</h2>
+          <svg class="chart" id="curve" viewBox="0 0 560 240" role="img" aria-label="透明度與成功棟數的曲線"></svg>
+        </div>
+
+        <details class="card">
+          <summary>模型怎麼算、數字從哪來</summary>
+          <p>每戶屋主是一個代理人（agent）。每開一次說明會，還沒簽的人各自決定，簽了就不撤回。</p>
+          <p>同棟還沒簽的人越多，其他人越不想簽。租客沒有同意權，不計入。</p>
+          <p>基準情境的危老成功率校準到 13%，來自推動師報備 3,698 件只有 492 件走到重建計畫。這個漏斗卡住的原因不只同意，所以 13% 是錨點，不是擬合。</p>
+          <p>預設 16 戶來自都更審議平台 396 案的更新前戶數中位數（四分位 8～28 戶）。這些都是已送審的案子，沒送件的看不到。</p>
+          <p>戶數少時，「超過 3/4」和「超過 4/5」可能要一樣多戶，兩條長條會一樣長。</p>
+          <table class="params" id="params"></table>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. portraits -->
+  <section class="panel" id="tab-people" role="tabpanel">
+    <div class="banner">🤖 AI 扮演的虛構住戶。不是真實居民，也不是民調。</div>
+    <div class="card">
+      <div class="kpi"><b id="movers">0</b><span>位屋主聽完市府版，從「不想簽」變成「傾向簽」</span></div>
+      <p class="muted">AI 偏樂觀，真人應該更少。</p>
+    </div>
+    <div class="card">
+      <h2>同一批人，聽兩種說法</h2>
+      <div class="legend" id="shift-legend"></div>
+      <div class="strip" id="shift"></div>
+      <details><summary>這是怎麼做的</summary>
+        <p>五棟虛構的老公寓，各依一個迅行劃定候選里的真實人口與屋齡設定。住戶的身分、年齡、經濟、信任是依假設抽樣。</p>
+        <p>每位住戶由 Claude 扮演，各聽一次建商版和市府版說明。文字可以看出誰擔心什麼，分數不能當同意率。</p>
+      </details>
+    </div>
+    <div class="chips" id="arch-chips"></div>
+    <div class="chips" id="tenure-chips"></div>
+    <div class="pgrid" id="pgrid"></div>
+  </section>
+
+  <!-- 3. alternatives tree -->
+  <section class="panel" id="tab-tree" role="tabpanel">
+    <div class="card"><h2>🧭 點答案，找下一步</h2>
+      <div class="tprog" id="tprog"></div></div>
+    <div class="tree-path" id="tree"></div>
+    <div id="tree-opts-wrap" hidden>
+      <h2 class="opts-title">✅ 可以走的路</h2>
+      <div class="opts" id="tree-opts"></div>
+      <p class="muted">金額與期限以官方公告為準。</p>
+    </div>
+
+    <div class="card relo">
+      <h2>🏠 如果重建，中繼期間住哪？</h2>
+      <p class="lead2">市府有「中繼住宅」，但要由實施者幫你申請。</p>
+      <ol class="steps4">
+        <li><span class="sic">🪪</span><b>確認身分</b><span>你是合法建物的屋主，北北基桃沒有別的房子。</span>
+          <details><summary>細節</summary><p>家庭的不動產價值要低於臺北市中低收入戶門檻【文件，S29 第 9 點】。</p>
+          <p>租客不能申請中繼住宅。租客看中央租金補貼（臺北每月 3,000～8,000 元，2026 全年受理）【文件，S30】；危老條例 §9 要求市府對重建範圍內的弱勢住戶提供社宅或租金補貼，臺北怎麼執行【待確認】。</p></details></li>
+        <li><span class="sic">📝</span><b>請實施者申請</b><span>申請建照後，由實施者或起造人向都發局申請保留房子。</span>
+          <details><summary>細節</summary><p>屋主不能自己去排【推論，S29 第 4 點】。公辦都更在聽證後提出。</p>
+          <p>實施者要送：申請書、重建時程表、候租人名冊、切結書、建照掛件證明；危老另附重建計畫核定函與權狀。要繳保證金，海砂屋、輻射屋免繳【文件，S29 第 7 點】。</p></details></li>
+        <li><span class="sic">⏳</span><b>等空屋</b><span>依收件先後排，看有沒有空房。</span>
+          <details><summary>細節</summary><p>房源：永平、基河三期出租國宅，以及市府專案核准的社會住宅【文件，S29 第 2 點】。</p>
+          <p>要等多久、現在有幾戶空屋【待確認】：沒有找到公開的排隊數字。</p></details></li>
+        <li><span class="sic">🔑</span><b>搬進去</b><span>市價租金，3 年一期，最長住到新屋接水電後 90 天。</span>
+          <details><summary>細節</summary><p>租金由 3 家以上估價師查估市價；重大災民專案核定，拆遷戶等為市價 85%【文件，S29 第 15、16、21 點】。</p>
+          <p>都更權利變換的拆遷補償與安置費，列入共同負擔，由實施者先付【推論】。</p></details></li>
+      </ol>
+      <h3 class="sh-title">各區已完工的社會住宅戶數</h3>
+      <p class="sh-warn">⚠️ 這不是都更中繼住宅。臺北市沒有公開的中繼住宅清單。</p>
+      <div class="shbars" id="shbars"></div>
+      <p class="muted">社宅一般是申請、抽籤入住，都更戶不一定排得進去【推論】。要經市府專案核准，才能當中繼住宅的房源【文件，S29 第 2 點】。</p>
+      <p class="muted">出處：<a href="https://laws.gov.taipei/Law/LawSearch/LawArticleContent/FL095061" target="_blank" rel="noopener">臺北市政府受理中繼住宅申請處理原則（109-09-16）</a>；整理見 world-practices/taipei-assistance/items/rebuild-and-elderly.md §5。</p>
+    </div>
+  </section>
+
+  <footer>
+    第 6 題 MVP 變體 D（設計原型）。真實資料：里別人口、實價登錄屋齡、都更與危老條文、推動師統計表。模擬資料：本頁所有住戶、樓與成功棟數。
+  </footer>
+</div>
+<script src="assets/sim.js?v=19"></script>
+<script src="data/portraits-data.js?v=19"></script>
+<script src="data/tree-data.js?v=19"></script>
+<script src="data/social-housing.js?v=19"></script>
+<script src="../design-kit/quest.js?v=19"></script>
+<script src="assets/app.js?v=19"></script>
+</body>
+</html>

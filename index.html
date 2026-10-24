@@ -1,14 +1,231 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="refresh" content="0; url=./2026-10-23-mvp/research/issue-06/mvp-variants/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>模擬市民-都更人生</title>
-<script>
-  window.location.replace('./2026-10-23-mvp/research/issue-06/mvp-variants/' + window.location.search + window.location.hash);
-</script>
+<style>
+  :root{--ink:#1f2328;--muted:#5b6670;--line:#d9dee3;--bg:#ffffff;--panel:#f6f8fa;--red:#c0392b;--amber:#d08a00;--blue:#2b6cb0;--purple:#6b46c1;--green:#2f855a;--brand:#ad4d2a}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--ink:#e6e9ec;--muted:#a3adb8;--line:#3a424b;--bg:#15191d;--panel:#1e252c}}
+  :root[data-theme="dark"]{--ink:#e6e9ec;--muted:#a3adb8;--line:#3a424b;--bg:#15191d;--panel:#1e252c}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 16px 48px}
+  h1{font-size:34px;margin:0 0 20px}
+
+  /* Quick Check Card */
+  .qc-card{margin:0 0 28px;padding:22px 24px;border-radius:18px;background:var(--panel);border:2px solid var(--brand);box-shadow:0 8px 24px rgba(173,77,42,.1)}
+  .qc-head h2{margin:0 0 4px;font-size:24px;display:flex;align-items:center;gap:8px;color:var(--brand)}
+  .qc-head p{margin:0 0 16px;color:var(--muted);font-size:16px}
+  .qc-form{display:flex;flex-direction:column;gap:14px}
+  .qc-fields{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+  .qc-field{display:flex;flex-direction:column;gap:6px;font-size:15px;font-weight:700}
+  .qc-grow{flex:1 1 320px}
+  .qc-field input[type="text"],.qc-field input[type="number"]{font:inherit;font-size:16px;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);outline:none;transition:border-color .2s}
+  .qc-field input:focus{border-color:var(--brand)}
+  .qc-radios{display:flex;gap:10px;height:44px;align-items:center}
+  .qc-radios label{display:inline-flex;align-items:center;gap:6px;font-size:16px;font-weight:500;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--bg);cursor:pointer;user-select:none}
+  .qc-radios input{accent-color:var(--brand);margin:0}
+  .qc-actions{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-top:4px}
+  .qc-demos{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+  .qc-demo-btn{font:inherit;font-size:14px;background:var(--bg);color:var(--blue);border:1px dashed var(--blue);border-radius:999px;padding:5px 12px;cursor:pointer;transition:background .15s}
+  .qc-demo-btn:hover{background:color-mix(in srgb,var(--blue) 12%,var(--bg))}
+  .qc-submit-btn{font:inherit;font-size:18px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 28px;border:0;border-radius:999px;background:var(--brand);color:#fff;cursor:pointer;box-shadow:0 4px 14px rgba(173,77,42,.28);transition:transform .15s,filter .15s}
+  .qc-submit-btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+  .qc-submit-btn:active{transform:scale(.98)}
+  .req{color:var(--red)}
+
+  .flow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 28px}
+  .flow a{display:flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--ink);text-decoration:none;font-weight:600}
+  .flow a:hover{border-color:var(--blue)}
+  .flow .n{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;font-size:15px}
+  .flow .arr{color:var(--muted);font-size:22px}
+  .sec-title{font-size:22px;margin:32px 0 14px;display:flex;align-items:center;gap:10px}
+  .sec-title:first-of-type{margin-top:0}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px}
+  .card{display:block;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel);color:var(--ink);text-decoration:none;transition:transform .2s ease,box-shadow .2s ease}
+  .card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.18)}
+  .shot{aspect-ratio:14/9;background:#0e1215 center/cover no-repeat;border-bottom:1px solid var(--line)}
+  .body{padding:14px 16px 16px}
+  .tag{display:inline-block;font-size:14px;font-weight:700;color:#fff;border-radius:6px;padding:1px 8px;margin-bottom:6px}
+  .card h2{font-size:22px;margin:0 0 4px;display:flex;gap:8px;align-items:center}
+  .card p{margin:0;color:var(--muted);font-size:16px}
+  .who{margin-top:10px;font-size:15px;display:flex;gap:6px;flex-wrap:wrap}
+  .who span{border:1px solid var(--line);border-radius:999px;padding:1px 10px}
+  .core{outline:3px solid var(--brand);outline-offset:-3px}
+  .more{margin-top:28px;display:flex;gap:14px;flex-wrap:wrap;font-size:16px}
+  .more a{color:var(--blue)}
+  footer{margin-top:28px;color:var(--muted);font-size:14px}
+  @media (max-width:600px){h1{font-size:28px}.flow .arr{display:none}.qc-actions{flex-direction:column;align-items:stretch}.qc-submit-btn{width:100%}}
+</style>
+<link rel="stylesheet" href="design-kit/theme-puma.css">
 </head>
 <body>
-<p>導向中... <a href="./2026-10-23-mvp/research/issue-06/mvp-variants/">模擬市民-都更人生</a></p>
+<div class="wrap">
+  <h1>模擬市民-都更人生</h1>
+
+  <!-- Quick Check Form Card -->
+  <section class="qc-card" aria-labelledby="qc-title">
+    <div class="qc-head">
+      <h2 id="qc-title">🏠 一鍵開始健檢</h2>
+      <p>輸入你家地址與基本資訊，三步驟為老屋做全面健檢、身價試算與未來願景規劃：</p>
+    </div>
+    <form id="quick-check-form" class="qc-form">
+      <div class="qc-fields">
+        <label class="qc-field qc-grow">
+          <span>門牌地址 <b class="req">*</b></span>
+          <input id="qc-addr" type="text" placeholder="例：大安區信義路2段86巷40號" required autocomplete="off">
+        </label>
+        <label class="qc-field" style="width:160px">
+          <span>屋齡（年）</span>
+          <input id="qc-age" type="number" min="0" max="120" placeholder="例：50（可留空）">
+        </label>
+        <div class="qc-field">
+          <span>家中有 65 歲以上長者</span>
+          <div class="qc-radios" role="radiogroup" aria-label="家中有 65 歲以上長者">
+            <label><input type="radio" name="qc-elder" value="1" checked> 有</label>
+            <label><input type="radio" name="qc-elder" value="0"> 沒有</label>
+          </div>
+        </div>
+      </div>
+      <div class="qc-actions">
+        <div class="qc-demos">
+          <span>快速帶入範例：</span>
+          <button type="button" class="qc-demo-btn" id="demo-btn" data-addr="大安區信義路2段86巷40號" data-age="50" data-elder="1">📍 大安區信義路2段86巷40號（50 年、有長者）</button>
+        </div>
+        <button type="submit" class="qc-submit-btn">🚀 開始健檢 →</button>
+      </div>
+    </form>
+  </section>
+
+  <div class="flow">
+    <a href="health-report/v1.html?addr=%E4%BF%A1%E7%BE%A9%E8%B7%AF2%E6%AE%B586%E5%B7%B740%E8%99%9F&age=50&elder=1#p=1"><span class="n">1</span>都更健檢報告</a><span class="arr">→</span>
+    <a href="renewal-calculator-v2/?addr=大安區信義路2段86巷40號"><span class="n">2</span>都更試算機</a><span class="arr">→</span>
+    <a href="rooftop-vision/"><span class="n">3</span>從屋頂看臺北</a>
+  </div>
+
+  <h2 class="sec-title">⭐ 主要功能</h2>
+  <div class="grid">
+    <a class="card core" href="health-report/v1.html?addr=%E4%BF%A1%E7%BE%A9%E8%B7%AF2%E6%AE%B586%E5%B7%B740%E8%99%9F&age=50&elder=1#p=1">
+      <div class="shot" style="background-image:url(screenshots/priority-ranking-desktop.png)"></div>
+      <div class="body"><span class="tag" style="background:var(--red)">步驟 1・老屋健檢</span>
+        <h2>🩺 都更健檢報告</h2>
+        <p>輸入門牌、屋齡與家中有無長者，一張圖看懂房屋結構風險、周邊收容醫療距離與補助建議。</p>
+        <div class="who"><span>老公寓住戶</span><span>老屋健檢</span></div></div>
+    </a>
+    <a class="card core" href="renewal-calculator-v2/?addr=大安區信義路2段86巷40號">
+      <div class="shot" style="background-image:url(screenshots/renewal-calculator-desktop.png)"></div>
+      <div class="body"><span class="tag" style="background:var(--blue)">步驟 2・財務試算</span>
+        <h2>🧮 都更試算機</h2>
+        <p>網址直接帶入地址、填入坪數，先看都更後新房身價翻漲多少，再衡量施工期生活代價。</p>
+        <div class="who"><span>老公寓住戶</span><span>資產增值試算</span></div></div>
+    </a>
+    <a class="card core" href="rooftop-vision/">
+      <div class="shot" style="background-image:url(screenshots/rooftop-vision-desktop.png)"></div>
+      <div class="body"><span class="tag" style="background:var(--green)">步驟 3・未來願景</span>
+        <h2>🌿 從屋頂看臺北</h2>
+        <p>拖一下把手：鐵皮加蓋變成綠屋頂、太陽能或統一立面。勾你想加的，按讚你喜歡的方案。</p>
+        <div class="who"><span>都更住戶</span><span>設計參與</span></div></div>
+    </a>
+  </div>
+
+  <h2 class="sec-title">🧰 其他功能</h2>
+  <div class="grid">
+    <a class="card" href="priority-ranking/">
+      <div class="shot" style="background-image:url(screenshots/priority-ranking-desktop.png)"></div>
+      <div class="body"><span class="tag" style="background:var(--red)">題目核心</span>
+        <h2>🗺️ 老屋健檢：哪些里先做？</h2>
+        <p>5 個因子、權重滑桿、456 里即時重排、名次範圍線。第二分頁找「市場不會自己來」的公辦都更候選。</p>
+        <div class="who"><span>市府</span><span>評審</span></div></div>
+    </a>
+    <a class="card" href="rescue-drill-map/">
+      <div class="shot" style="background-image:url(screenshots/rescue-drill-map-desktop.png)"></div>
+      <div class="body"><span class="tag" style="background:var(--amber)">本隊差異</span>
+        <h2>🚒 救災演練地圖</h2>
+        <p>窄巷、液化、高齡三件事一起看。37 個候選里，每里一張可列印的演練檢核表。</p>
+        <div class="who"><span>里長</span><span>消防分隊</span></div></div>
+    </a>
+    <a class="card" href="renewal-calculator/">
+      <div class="shot" style="background-image:url(screenshots/renewal-calculator-desktop.png)"></div>
+      <div class="body"><span class="tag" style="background:var(--blue)">住戶視角</span>
+        <h2>🏠 我家都更划不划算？</h2>
+        <p>輸入地址，看現在值多少、分回多少、差多少、要幾戶同意。接 466 個真實都更案的數字。</p>
+        <div class="who"><span>老公寓住戶</span></div></div>
+    </a>
+    <a class="card" href="bonus-translator/">
+      <div class="shot" style="background-image:url(screenshots/bonus-translator-desktop.png)"></div>
+      <div class="body"><span class="tag" style="background:var(--blue)">住戶視角</span>
+        <h2>🧱 都更看得懂</h2>
+        <p>容積獎勵一塊一塊疊給你看，點一塊才講法源。全臺北 147 個基地最常拿哪幾塊。</p>
+        <div class="who"><span>住戶</span><span>里長</span></div></div>
+    </a>
+    <a class="card" href="consent-tracker/">
+      <div class="shot" style="background-image:url(screenshots/consent-tracker-desktop.png)"></div>
+      <div class="body"><span class="tag" style="background:var(--green)">推動工具</span>
+        <h2>✍️ 同意書進度板</h2>
+        <p>一棟樓逐戶格子：簽了、聯絡中、拒絕。進度尺畫出五條法定門檻，下一步要做什麼。</p>
+        <div class="who"><span>推動小組</span><span>住戶</span></div></div>
+    </a>
+    <a class="card" href="consent-simulator/">
+      <div class="shot" style="background-image:url(screenshots/consent-simulator-desktop.png)"></div>
+      <div class="body"><span class="tag" style="background:var(--purple)">政策模擬</span>
+        <h2>👥 老公寓要幾戶點頭？</h2>
+        <p>100 棟樓在四種門檻下能過幾棟。講得多清楚、派個案經理，能多幾棟。不能都更怎麼辦。</p>
+        <div class="who"><span>市府政策人員</span></div></div>
+    </a>
+    <a class="card" href="rules-map/">
+      <div class="shot" style="background-image:url(screenshots/rules-map-desktop.png)"></div>
+      <div class="body"><span class="tag" style="background:var(--muted)">看懂規則</span>
+        <h2>🚇 法規與流程一張圖</h2>
+        <p>都更 8 站、危老 7 站的捷運圖，站色是主辦機關，時間是 466 案的實際中位。8 張法規卡一句白話。</p>
+        <div class="who"><span>所有人</span></div></div>
+    </a>
+  </div>
+
+  <div class="more">
+    <a href="2026-10-22-morning-summary.md">早上總結</a>
+    <a href="priority-ranking/REQUIREMENTS.md">題目 17 條要求對照</a>
+    <a href="uro-cases/report.md">466 案事實表報告</a>
+    <a href="design-kit/demo.html">設計零件</a>
+    <a href="README.md">夜間計畫與規則</a>
+  </div>
+  <footer>資料：data.taipei、內政部、文化部文資局、都市更新審議服務平台（168 專案）。逐棟屋齡與軟弱層是推估、候選；已知案件只在輸入確切地址時顯示。</footer>
+</div>
+
+<script>
+(function(){
+  const form = document.getElementById("quick-check-form");
+  const inAddr = document.getElementById("qc-addr");
+  const inAge = document.getElementById("qc-age");
+  const demoBtn = document.getElementById("demo-btn");
+
+  if (demoBtn) {
+    demoBtn.addEventListener("click", () => {
+      inAddr.value = demoBtn.dataset.addr;
+      inAge.value = demoBtn.dataset.age;
+      const r = document.querySelector(`input[name="qc-elder"][value="${demoBtn.dataset.elder}"]`);
+      if (r) r.checked = true;
+      inAddr.focus();
+    });
+  }
+
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const addr = inAddr.value.trim();
+      if (!addr) {
+        inAddr.focus();
+        return;
+      }
+      const age = inAge.value.trim();
+      const elder = document.querySelector('input[name="qc-elder"]:checked')?.value ?? "1";
+      let url = `health-report/v1.html?addr=${encodeURIComponent(addr)}`;
+      if (age) url += `&age=${encodeURIComponent(age)}`;
+      url += `&elder=${elder}#p=1`;
+      window.location.href = url;
+    });
+  }
+})();
+</script>
 </body>
 </html>

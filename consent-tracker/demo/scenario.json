@@ -1,0 +1,22 @@
+{
+ "url": "/mvp-variants/consent-tracker/",
+ "viewport": [1280, 720],
+ "steps": [
+  {"do": "wait", "ms": 1200},
+  {"do": "caption", "text": "同意書收到哪，大家看同一張板子。"},
+  {"do": "scroll_to", "sel": "#bldg", "wait": 600},
+  {"do": "hover", "sel": "#btn-add", "wait": 300},
+  {"do": "click", "sel": "#btn-add", "wait": 800},
+  {"do": "scroll_to", "sel": "#unit-card", "wait": 600},
+  {"do": "click", "sel": "#unit-card [data-st=\"c\"]", "wait": 600},
+  {"do": "caption", "text": "差幾戶、誰要補掛號信，"},
+  {"do": "click", "sel": "#routes [data-k=\"urgent\"]", "wait": 700},
+  {"do": "scroll_to", "sel": "#bldg", "wait": 600},
+  {"do": "click", "sel": ".u[data-id=\"2F-1\"]", "wait": 500},
+  {"do": "scroll_to", "sel": "#unit-card .st", "wait": 600},
+  {"do": "click", "sel": "#unit-card [data-st=\"s\"]", "wait": 1800},
+  {"do": "caption", "text": "什麼時候可以撤銷，一目了然。"},
+  {"do": "scroll_to", "sel": "#unit-card .tl li:last-child", "wait": 1800},
+  {"do": "wait", "ms": 800}
+ ]
+}

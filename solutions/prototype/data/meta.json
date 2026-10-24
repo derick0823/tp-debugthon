@@ -1,0 +1,273 @@
+{
+ "generated": "2026-10-18",
+ "title": "臺北市老屋耐震優先順序 賽前原型",
+ "disclaimer": "本頁是事前排序與推估，不是官方耐震評估。等級是相對於臺北市其他里。資料日期見各欄。",
+ "data_note": "真實資料：人口（115 年 9 月）、液化圖（城市 2019、全國 2026）、使用執照、實價登錄（101S4～115S3）、消防與窄巷清冊、海砂屋與黃單清冊。推估：建成年（實價登錄、鄰棟）、構造、一樓軟弱層候選、里層級比例。",
+ "relative_note": "相對於臺北市其他里",
+ "composite_note": "等權合成，僅供對照",
+ "estimate_note": "推估",
+ "factors": [
+  {
+   "key": "elderly",
+   "label": "高齡",
+   "field_raw": "f_elderly",
+   "field_level": "lv_elderly",
+   "field_pct": "p_elderly",
+   "definition": "65 歲以上人口比例",
+   "source": "village-population-by-age",
+   "data_date": "115 年 9 月",
+   "kind": "原始",
+   "unit": "ratio"
+  },
+  {
+   "key": "old_stock",
+   "label": "老屋存量",
+   "field_raw": "f_old_stock",
+   "field_level": "lv_old_stock",
+   "field_pct": "p_old_stock",
+   "definition": "有建成年的戶中，1999 政策線以前的比例（bld_share_pre_policy_1999）。已知棟數少於 20 的里改用所在區中位數",
+   "source": "building_points（使照、實價登錄）",
+   "data_date": "使照 90～115 年；成交 101S4～115S3",
+   "kind": "推估",
+   "unit": "ratio"
+  },
+  {
+   "key": "liquefaction",
+   "label": "液化",
+   "versioned": true,
+   "field_raw": "f_liquefaction_{v}",
+   "field_level": "lv_liquefaction_{v}",
+   "field_pct": "p_liquefaction_{v}",
+   "definition": "高潛勢面積比例＋0.5×中潛勢面積比例，分母是整個里面積",
+   "source": "soil-liquefaction（城市版）、liquefaction-national-gsmma-2026（全國版）",
+   "data_date": "城市版 soil.taipei 2019 版；全國版 2026（115/9/24 更新）",
+   "kind": "原始",
+   "unit": "ratio"
+  },
+  {
+   "key": "rescue",
+   "label": "救災不便",
+   "field_raw": "f_rescue",
+   "field_level": "lv_rescue",
+   "field_pct": "p_rescue",
+   "definition": "（窄巷條數的百分位＋計畫道路寬度標註小於 6 m 比例的百分位）÷ 2",
+   "source": "narrow-lanes-red-yellow、road-width-planned",
+   "data_date": "窄巷 2026-10-17 下載；道路寬度 2021-03 版",
+   "kind": "推估",
+   "unit": "index"
+  },
+  {
+   "key": "soft_story",
+   "label": "一樓軟弱層候選",
+   "field_raw": "f_soft_story",
+   "field_level": "lv_soft_story",
+   "field_pct": "p_soft_story",
+   "definition": "（A 型＋B 型候選棟數）÷ 門牌棟數（soft_story_rate）",
+   "source": "building_points，規格 gov-reports/soft-story-spec.md",
+   "data_date": "門牌 2026-10-02 版；成交 101S4～115S3",
+   "kind": "推估",
+   "unit": "ratio"
+  }
+ ],
+ "liq_versions": {
+  "national2026": {
+   "label": "全國 2026 版",
+   "data_date": "2026（115/9/24 更新）",
+   "source": "liquefaction-national-gsmma-2026"
+  },
+  "city2019": {
+   "label": "城市版 2019",
+   "data_date": "soil.taipei 2019 版",
+   "source": "soil-liquefaction"
+  }
+ },
+ "default_liq_version": "city2019",
+ "public_default_liq_version": "city2019",
+ "level_shares": {
+  "5": 0.016,
+  "4": 0.056,
+  "3": 0.158,
+  "2": 0.318,
+  "1": 0.452
+ },
+ "level_note": "每個因子轉成百分位，再按固定比例分 5 級（最危險的 1.6% 為 5 級，再來 5.6%、15.8%、31.8%、45.2%）。比例取自東京地域危險度。",
+ "rank_interval_note": "權重從平坦 Dirichlet 分布抽 2,000 次（種子 20261018），記錄每個里排名的第 5、50、95 百分位，以及排進前 46 名（前 10%）的比例。",
+ "counts": {
+  "villages": 456,
+  "towns": 12,
+  "s5_candidates": 37,
+  "hidden_by_composite": {
+   "national2026": 67,
+   "city2019": 72
+  },
+  "stable_top46": {
+   "national2026": 5,
+   "city2019": 5
+  },
+  "heritage_villages": 145,
+  "heritage_sites_total": 566,
+  "buildings_total": 209350,
+  "with_built_year_buildings_share": 0.6816,
+  "with_built_year_units_share": 0.8511,
+  "status_counts": {
+   "estimated": 135830,
+   "undetermined": 66647,
+   "confirmed": 6873
+  },
+  "soft_story_candidates": {
+   "B": 2792,
+   "A": 1109
+  },
+  "sea_sand_buildings": 147,
+  "quake_listed_buildings": 32,
+  "quake_listed_shipped": true,
+  "list_flag_filter": {
+   "rule": "六欄旗標以 point_id 從 c8 內部分片 data/marts/shards/ 取得；c8 只在 geo_level＝1（精確門牌）的棟上掛旗標，分片沒有該棟或旗標為空就設空（BD10 精確比對）",
+   "source": "data/marts/shards (12 files, 209350 records)",
+   "sea_sand": {
+    "in_mart": 147,
+    "kept": 147,
+    "dropped": 0,
+    "added": 0,
+    "shipped": 147
+   },
+   "quake_listed": {
+    "in_mart": 32,
+    "kept": 32,
+    "dropped": 0,
+    "added": 0,
+    "shipped": 32
+   }
+  },
+  "age_source_counts": {
+   "lvr_neighbor": 72377,
+   "none": 66647,
+   "lvr": 63453,
+   "permit": 6726,
+   "sea_sand_list": 147
+  },
+  "near_heritage_50m_buildings": 6388,
+  "shard_columns": [
+   "point_id",
+   "address",
+   "addr_norm",
+   "village_code",
+   "lon",
+   "lat",
+   "doorplate_units",
+   "on_main_road",
+   "status",
+   "undetermined_reason",
+   "built_year",
+   "built_year_min",
+   "built_year_max",
+   "age_source",
+   "age_conf",
+   "code_generation",
+   "structure_class",
+   "status_structure",
+   "floors",
+   "lvr_building_type",
+   "no_elevator_30plus",
+   "liq_level_city2019",
+   "liq_level_national2026",
+   "liq_agreement",
+   "soft_story_candidate",
+   "sea_sand",
+   "sea_sand_list_address",
+   "sea_sand_list_version",
+   "near_heritage_50m",
+   "quake_listed",
+   "quake_listed_address",
+   "quake_listed_version"
+  ]
+ },
+ "data_dates": {
+  "village_boundary": {
+   "label": "里界",
+   "source": "village-boundary-nlsc",
+   "date": "115/8/17 版"
+  },
+  "population": {
+   "label": "人口",
+   "source": "village-population-by-age",
+   "date": "115 年 9 月"
+  },
+  "liquefaction_city2019": {
+   "label": "液化（城市版）",
+   "source": "soil-liquefaction",
+   "date": "soil.taipei 2019 版"
+  },
+  "liquefaction_national2026": {
+   "label": "液化（全國 2026 版）",
+   "source": "liquefaction-national-gsmma-2026",
+   "date": "2026（115/9/24 更新）"
+  },
+  "boreholes": {
+   "label": "液化鑽孔",
+   "source": "liquefaction-boreholes-soil-taipei",
+   "date": "soil.taipei"
+  },
+  "house_numbers": {
+   "label": "門牌座標",
+   "source": "house-number-coordinates",
+   "date": "2026-10-02 版"
+  },
+  "house_tax": {
+   "label": "房屋稅籍（區層級）",
+   "source": "house-tax-housing-overview-by-tax-office",
+   "date": "115 年度"
+  },
+  "use_permits": {
+   "label": "使用執照",
+   "source": "use-permit-summary-historical、use-permit-summary-115",
+   "date": "90～115 年"
+  },
+  "real_price_village": {
+   "label": "實價登錄（里層級）",
+   "source": "real-price-registration-lvr",
+   "date": "成交 114S4～115S3"
+  },
+  "real_price_building": {
+   "label": "實價登錄（逐棟）",
+   "source": "real-price-registration-lvr、lvr-history",
+   "date": "成交 101S4～115S3"
+  },
+  "narrow_lanes": {
+   "label": "狹小巷道",
+   "source": "narrow-lanes-red-yellow",
+   "date": "2026-10-17 下載"
+  },
+  "fire_rescue": {
+   "label": "火災搶救困難場所",
+   "source": "fire-rescue-difficult-areas",
+   "date": "2026-10-17 下載"
+  },
+  "road_width": {
+   "label": "計畫道路寬度",
+   "source": "road-width-planned",
+   "date": "2021-03 版"
+  },
+  "sea_sand": {
+   "label": "海砂屋列管",
+   "source": "sea-sand-houses-full-list",
+   "date": "115/3/25 版"
+  },
+  "quake_listed": {
+   "label": "地震黃單",
+   "source": "earthquake-listed-buildings",
+   "date": "115/3/18 版"
+  },
+  "weilao": {
+   "label": "危老核准案",
+   "source": "dangerous-old-building-rebuild-approved-cases",
+   "date": "1151002 版（截至 115-09-30）"
+  },
+  "heritage": {
+   "label": "文化資產",
+   "source": "cultural-heritage-boch",
+   "date": "2026-10-18 下載"
+  }
+ },
+ "sources_readme": "data/marts/README.md"
+}

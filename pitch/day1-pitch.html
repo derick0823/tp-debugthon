@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>模擬市民－都更篇・Day 1 提案</title>
+<style>
+:root{
+  --primary:#db6a41; --deep:#ad4d2a; --ink:#211d1d; --muted:#665b57; --surface:#fff8f4; --card:#ffffff;
+  --line:#efc5ad; --yes:#5aa874; --no:#d4513f; --wait:#c9bfb9; --yellow:#fcea8b;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--surface);color:var(--ink);font-family:"Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif}
+header.bar{position:sticky;top:0;z-index:5;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 16px;font-size:16px;font-weight:700;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--deep);border-color:var(--deep);color:#fff}
+.spacer{flex:1}
+.timer{font-variant-numeric:tabular-nums;font-size:28px;font-weight:900;min-width:92px;text-align:center}
+.timer.warn{color:var(--deep)} .timer.over{color:var(--no)}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;font-size:15px;cursor:pointer}
+.btn.main{background:var(--primary);color:#fff;border-color:var(--primary);font-weight:700}
+.hint{color:var(--muted);font-size:13px}
+section.view{display:none;padding:20px 16px 60px}
+section.view.on{display:block}
+
+/* ---------- 畫面（分享用） ---------- */
+.stage{max-width:1280px;margin:0 auto;aspect-ratio:16/9;background:var(--card);border-radius:24px;box-shadow:0 8px 40px rgba(33,29,29,.10);
+  display:grid;grid-template-columns:1.1fr 1fr;overflow:hidden;position:relative}
+.stage .left{padding:5% 4% 5% 6%;display:flex;flex-direction:column;justify-content:center;gap:2.2vmin}
+.kicker{display:inline-block;align-self:flex-start;background:var(--yellow);border-radius:999px;padding:.5vmin 2vmin;font-weight:700;font-size:clamp(12px,1.8vmin,20px)}
+.stage h1{margin:0;font-size:clamp(28px,7vmin,76px);line-height:1.1;letter-spacing:1px}
+.stage h1 span{color:var(--primary)}
+.question{font-size:clamp(18px,4.2vmin,46px);font-weight:900;color:var(--deep);margin:0}
+.three{display:grid;gap:1.4vmin;margin-top:1vmin}
+.three div{display:flex;align-items:center;gap:1.6vmin;font-size:clamp(14px,2.6vmin,28px);font-weight:700}
+.three b{display:grid;place-items:center;width:5.2vmin;height:5.2vmin;min-width:30px;min-height:30px;border-radius:50%;background:var(--primary);color:#fff;font-size:clamp(14px,2.4vmin,26px)}
+.foot{font-size:clamp(11px,1.7vmin,18px);color:var(--muted);margin-top:1.5vmin}
+.stage .right{background:linear-gradient(180deg,#fff1e8 0%,#ffe2d1 100%);display:grid;place-items:center;position:relative}
+.stage svg{width:92%;height:auto}
+.legend{position:absolute;bottom:4%;left:0;right:0;display:flex;justify-content:center;gap:2.4vmin;font-size:clamp(11px,1.8vmin,18px);font-weight:700}
+.legend i{display:inline-block;width:1.8vmin;height:1.8vmin;min-width:10px;min-height:10px;border-radius:50%;margin-right:.8vmin;vertical-align:-1px}
+.dot{transition:fill .6s ease}
+.stage-tip{max-width:1280px;margin:12px auto 0;color:var(--muted);font-size:14px}
+
+/* ---------- 講稿（照讀用） ---------- */
+.script{max-width:980px;margin:0 auto}
+.seg{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 22px;margin:14px 0;transition:box-shadow .3s,border-color .3s}
+.seg.now{border-color:var(--primary);box-shadow:0 0 0 4px rgba(219,106,65,.18)}
+.seg h2{margin:0 0 6px;font-size:15px;color:var(--muted);display:flex;gap:10px;align-items:baseline}
+.seg h2 .t{font-variant-numeric:tabular-nums;color:var(--deep);font-weight:900}
+.seg p{margin:.4em 0;line-height:1.75;font-size:var(--fs,30px)}
+.seg p .k{background:linear-gradient(transparent 60%,var(--yellow) 60%);font-weight:900}
+.seg p.pause{color:var(--muted);font-size:calc(var(--fs,30px)*.6)}
+.cue{display:inline-block;background:#f3ece8;color:var(--muted);border-radius:8px;padding:2px 10px;font-size:14px;margin-left:6px}
+
+/* ---------- 備忘 ---------- */
+.notes{max-width:980px;margin:0 auto;display:grid;gap:14px}
+.notes .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 20px}
+.notes h3{margin:0 0 8px;font-size:20px}
+.notes li{margin:.35em 0;line-height:1.6;font-size:17px}
+.notes .q{font-weight:900}
+@media (max-width:760px){
+  .stage{grid-template-columns:1fr;aspect-ratio:auto}
+  .stage .right{min-height:260px}
+  .seg p{font-size:22px}
+}
+</style>
+</head>
+<body>
+<header class="bar">
+  <button class="tab" role="tab" aria-selected="true" data-v="stage">畫面（分享用）</button>
+  <button class="tab" role="tab" aria-selected="false" data-v="script">講稿 A：提問開場</button>
+  <button class="tab" role="tab" aria-selected="false" data-v="scriptb">講稿 B：隊友版（介紹工具）</button>
+  <button class="tab" role="tab" aria-selected="false" data-v="notes">追問與規則</button>
+  <span class="spacer"></span>
+  <span class="timer" id="timer">3:00</span>
+  <button class="btn main" id="go">開始</button>
+  <button class="btn" id="reset">歸零</button>
+  <button class="btn" id="smaller" title="字小一點">A−</button>
+  <button class="btn" id="bigger" title="字大一點">A＋</button>
+  <span class="hint">空白鍵：開始／暫停　F：全螢幕</span>
+</header>
+
+<section class="view on" id="v-stage">
+  <div class="stage" id="stage">
+    <div class="left">
+      <span class="kicker">第 6 題・老屋耐震</span>
+      <h1>模擬市民<br><span>－都更篇</span></h1>
+      <p class="question">這棟樓，誰會點頭？</p>
+      <div class="three">
+        <div><b>1</b>我們這棟，大概在什麼位置</div>
+        <div><b>2</b>有哪些路可以走</div>
+        <div><b>3</b>鄰居可能怎麼想</div>
+      </div>
+      <div class="foot">小水滴大浪潮・公開資料推估，不是鑑定・MIT 開源</div>
+    </div>
+    <div class="right">
+      <svg viewBox="0 0 400 420" aria-label="一棟五層老公寓，每戶一個點，有的同意、有的還在想、有的反對">
+        <rect x="70" y="40" width="260" height="340" rx="10" fill="#f6e1d3" stroke="#c98a6a" stroke-width="4"/>
+        <rect x="58" y="28" width="284" height="20" rx="6" fill="#b9714f"/>
+        <g id="units"></g>
+        <rect x="175" y="330" width="50" height="50" rx="4" fill="#8a5a42"/>
+        <rect x="20" y="380" width="360" height="8" rx="4" fill="#c98a6a"/>
+      </svg>
+      <div class="legend"><span><i style="background:var(--yes)"></i>點頭</span><span><i style="background:var(--wait)"></i>還在想</span><span><i style="background:var(--no)"></i>反對</span></div>
+    </div>
+  </div>
+  <p class="stage-tip">分享這一頁就好，整段提案不用切換。點畫面右側的公寓，住戶的態度會換一輪。</p>
+</section>
+
+<section class="view" id="v-script">
+  <div class="script" id="script">
+    <div class="seg" data-start="0" data-end="25">
+      <h2><span class="t">0:00</span>開場：一個問題<span class="cue">看鏡頭，慢一點</span></h2>
+      <p>先問大家一個問題：如果明天地震，你家那棟老公寓，你知道會不會倒嗎？</p>
+      <p class="pause">（停一秒）</p>
+      <p>就算知道了，你能自己決定要補強嗎？<span class="k">不行。因為那是整棟樓的事。</span></p>
+      <p>大家好，我們是「小水滴大浪潮」，選第 6 題，專案叫<span class="k">「模擬市民－都更篇」</span>。</p>
+    </div>
+    <div class="seg" data-start="25" data-end="80">
+      <h2><span class="t">0:25</span>痛點：卡住的不是「不知道」</h2>
+      <p>臺北有很多四、五十年的老公寓。查風險的工具越來越多，但查完之後，事情常常就停住了。要補強、要危老、要都更，都要鄰居一起點頭。</p>
+      <p>我們讀了五十多份政府研究，看到兩件事。</p>
+      <p>一份大台北老公寓的研究發現：屋主願不願意補強，<span class="k">跟他覺得風險多大沒有顯著關係，跟同棟有多少人反對才有關。</span></p>
+      <p>另一份追蹤地震後重建的研究發現：<span class="k">集合住宅重建，比獨棟住宅多花約 31 個月。</span></p>
+      <p>所以真正的卡點，不是「不知道危險」，而是<span class="k">一棟樓的人，沒辦法一起想清楚。</span></p>
+    </div>
+    <div class="seg" data-start="80" data-end="140">
+      <h2><span class="t">1:20</span>方向：在地震之前，一起看懂三件事<span class="cue">畫面上的 1、2、3</span></h2>
+      <p>所以我們不想再做一張風險地圖。我們想讓一棟樓的人，<span class="k">在地震之前</span>，就能一起看懂三件事。</p>
+      <p>第一，我們這棟大概在什麼位置。用公開資料做相對比較，不是鑑定。</p>
+      <p>第二，有哪些路可以走。補強、危老、都更、整建維護，各要多少人同意、大概要走多久。</p>
+      <p>第三，鄰居可能怎麼想。用模擬的住戶，讓大家先看到不同的立場，再坐下來談。</p>
+      <p>我們想把它做得像遊戲一樣：<span class="k">每個人從自己家出發，一步一步走。</span></p>
+    </div>
+    <div class="seg" data-start="140" data-end="160">
+      <h2><span class="t">2:20</span>原則：三個不做</h2>
+      <p>我們給自己三個原則：數字一律標「推估」；模擬的住戶不是民調；<span class="k">只用公開資料，不碰個資。</span></p>
+    </div>
+    <div class="seg" data-start="160" data-end="180">
+      <h2><span class="t">2:40</span>招募與結尾<span class="cue">放慢，留給大家記</span></h2>
+      <p>我們在找夥伴：會做<span class="k">前端互動或遊戲化介面</span>的人、會<span class="k">視覺或插畫</span>的人，也很歡迎<span class="k">住過老公寓、跑過都更或同意書流程</span>的朋友。</p>
+      <p>程式用 MIT 開源。歡迎來找我們聊，謝謝大家！</p>
+    </div>
+  </div>
+</section>
+
+<section class="view" id="v-scriptb">
+  <div class="script">
+    <div class="seg" data-start="0" data-end="25">
+      <h2><span class="t">0:00</span>開場與痛點<span class="cue">可換成講稿 A 的提問句</span></h2>
+      <p>大家好，我們是小水滴大浪潮，提案題目是第 6 題，專案叫<span class="k">「模擬市民－都更篇」</span>。</p>
+      <p>談到台北的老公寓，大家第一個想到的是都市更新。但卡住的常常不只是錢，而是<span class="k">整棟樓的住戶怎麼形成共識</span>，以及政策怎麼講得讓人聽懂。</p>
+    </div>
+    <div class="seg" data-start="25" data-end="80">
+      <h2><span class="t">0:25</span>三個發現</h2>
+      <p>我們讀了 50 多份政府研究，有 3 個發現。</p>
+      <p>第一，一份大台北老公寓的研究發現，屋主願不願意補強，<span class="k">跟他覺得風險多大沒有顯著關係，跟同棟有多少人反對才有關。</span></p>
+      <p>換句話說，查風險只是第一步。民眾需要知道的是：我家的風險大概在哪裡、市府能幫什麼、怎麼讓鄰居一起準備。</p>
+      <p>第二，好幾份研究都提到<span class="k">一樓軟弱層</span>，像騎樓街屋，是常見的致命樣態。</p>
+      <p>第三，政府的耐震規範一直在改。光看屋齡不夠，要看房子蓋的時候<span class="k">依據的是哪一版規範</span>。</p>
+    </div>
+    <div class="seg" data-start="80" data-end="95">
+      <h2><span class="t">1:20</span>資料層</h2>
+      <p>資料層，我們用台北市的公開資料，<span class="k">細到每一棟、每一里</span>，包含建造年代、液化潛勢、救災巷道，以及四百多件都更審議案件的費用與容積獎勵。</p>
+    </div>
+    <div class="seg" data-start="95" data-end="145">
+      <h2><span class="t">1:35</span>三個原型<span class="cue">先講完工具，沒時間展示也不可惜</span></h2>
+      <p>工具層，我們做了 3 個原型，讓使用者在網頁上走過都更的主要步驟。</p>
+      <p>一，<span class="k">都更划算嗎？</span>輸入地址與坪數，看到更新前市價、預估分回、差多少；不划算就告訴你替代方案。</p>
+      <p>二，<span class="k">容積獎勵翻譯機</span>：把 ΔF1 到 ΔF6 這些代號翻成白話，看到容積從多少變成多少、各項獎勵是怎麼來的。</p>
+      <p>三，<span class="k">同意門檻模擬器</span>：一棟虛擬公寓，每戶有不同立場。換一種說明方式、多一個人陪伴，能過同意門檻的機會差多少，畫面直接動給你看；過不了，就告訴你還有哪些路。</p>
+    </div>
+    <div class="seg" data-start="145" data-end="152">
+      <h2><span class="t">2:25</span>原則</h2>
+      <p>所有數字都標「推估」，模擬的住戶不是民調，<span class="k">我們也不碰個資。</span></p>
+    </div>
+    <div class="seg" data-start="152" data-end="168">
+      <h2><span class="t">2:32</span>明天要做的</h2>
+      <p>明天我們要把這些串成一座<span class="k">「都更島」</span>：每一棟樓是一個可以走進去的地方，民眾從自己家出發，看到風險、看到選項、看到鄰居的想法，最後知道下一步找誰。</p>
+    </div>
+    <div class="seg" data-start="168" data-end="180">
+      <h2><span class="t">2:48</span>招募與結尾<span class="cue">放慢</span></h2>
+      <p>我們想找會<span class="k">前端互動、視覺或 3D</span> 的夥伴，也歡迎住過老公寓、跑過都更的人給意見。授權 MIT。謝謝！</p>
+    </div>
+  </div>
+</section>
+
+<section class="view" id="v-notes">
+  <div class="notes">
+    <div class="card">
+      <h3>被追問時怎麼答</h3>
+      <ul>
+        <li><span class="q">「補強意願那份研究是哪裡？」</span>大台北 5 個里、民國 71 年以前的 4～6 層公寓、265 份有效問卷，問的是補強意願，不是都更。</li>
+        <li><span class="q">「31 個月準嗎？為什麼？」</span>樣本是美濃、池上地震的受災戶，集合住宅約 30 戶、多數來自美濃。我們只講時間差，原因報告沒有證實。</li>
+        <li><span class="q">「你們已經做了什麼？」</span>讀了研究、整理公開資料，做了幾個互動原型（主辦信說可分享初具型態的 Demo）；明天把它們串成一個作品。</li>
+        <li><span class="q">「跟查風險的專案有什麼不同？」</span>查風險回答「會不會倒」；我們回答「查完之後，一棟樓的人怎麼一起決定」。可以互補。</li>
+        <li><span class="q">「模擬住戶會不會誤導？」</span>它只呈現不同立場讓人討論，不給百分比，畫面上標明是模擬，不是民調。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>合規與分寸</h3>
+      <ul>
+        <li>規則寫「Day 1 起可開始討論與寫程式」；10/21 行前信說提案可分享「已經初具型態的 Demo」。講稿 B 介紹原型沒問題，但不當場操作，3 分鐘不夠。</li>
+        <li>提案在 19:40～21:30，依登記順序；我們排第 14 組，預估 20:30 左右。</li>
+        <li>不提特定人物或政黨，不評論任何市府施政。</li>
+        <li>不說「危樓」，說「相對比較」「推估」。</li>
+        <li>可以順便問主辦：賽前整理的公開資料與設計，能不能當作品的基礎？</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>講之前</h3>
+      <ul>
+        <li>測麥克風。計時講兩遍：第一遍看稿，第二遍只看黃色重點。</li>
+        <li>超時就刪「原則」那段，招募一定要講完。</li>
+        <li>講稿的研究數字都經過三方查核，紀錄在 research/issue-06/gov-reports/verify/。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  // tabs
+  var tabs = document.querySelectorAll(".tab");
+  tabs.forEach(function (t) {
+    t.addEventListener("click", function () {
+      tabs.forEach(function (x) { x.setAttribute("aria-selected", String(x === t)); });
+      document.querySelectorAll(".view").forEach(function (v) { v.classList.toggle("on", v.id === "v-" + t.dataset.v); });
+    });
+  });
+
+  // apartment units: 5 floors x 2 sides x 2 units = 20 households
+  var g = document.getElementById("units"), dots = [], NS = "http://www.w3.org/2000/svg";
+  for (var f = 0; f < 5; f++) {
+    for (var c = 0; c < 4; c++) {
+      var x = 92 + c * 58, y = 62 + f * 54;
+      if (f === 4 && (c === 1 || c === 2)) continue; // door
+      var w = document.createElementNS(NS, "rect");
+      w.setAttribute("x", x); w.setAttribute("y", y); w.setAttribute("width", 46); w.setAttribute("height", 36);
+      w.setAttribute("rx", 4); w.setAttribute("fill", "#fffaf6"); w.setAttribute("stroke", "#c98a6a"); w.setAttribute("stroke-width", 2);
+      g.appendChild(w);
+      var d = document.createElementNS(NS, "circle");
+      d.setAttribute("cx", x + 23); d.setAttribute("cy", y + 18); d.setAttribute("r", 11); d.setAttribute("class", "dot");
+      g.appendChild(d); dots.push(d);
+    }
+  }
+  var COL = ["var(--yes)", "var(--wait)", "var(--no)"], seed = 7;
+  function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+  function shuffle() {
+    dots.forEach(function (d) { var r = rnd(); d.style.fill = r < 0.45 ? COL[0] : r < 0.8 ? COL[1] : COL[2]; });
+  }
+  shuffle();
+  document.querySelector(".stage .right").addEventListener("click", shuffle);
+
+  // timer
+  var total = 180, left = total, running = false, iv = null;
+  var el = document.getElementById("timer"), go = document.getElementById("go");
+  function fmt(s) { var a = Math.abs(s); return (s < 0 ? "-" : "") + Math.floor(a / 60) + ":" + String(a % 60).padStart(2, "0"); }
+  function paint() {
+    el.textContent = fmt(left);
+    el.classList.toggle("warn", left <= 30 && left > 0);
+    el.classList.toggle("over", left <= 0);
+    var t = total - left;
+    document.querySelectorAll(".seg").forEach(function (s) {
+      var on = t >= +s.dataset.start && t < +s.dataset.end;
+      if (on && !s.classList.contains("now") && running && s.closest(".view").classList.contains("on")) {
+        s.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      s.classList.toggle("now", on);
+    });
+  }
+  function toggle() {
+    running = !running; go.textContent = running ? "暫停" : "繼續";
+    if (running) { iv = setInterval(function () { left--; paint(); }, 1000); } else { clearInterval(iv); }
+  }
+  go.addEventListener("click", toggle);
+  document.getElementById("reset").addEventListener("click", function () {
+    clearInterval(iv); running = false; left = total; go.textContent = "開始"; paint();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.code === "Space") { e.preventDefault(); toggle(); }
+    if (e.key === "f" || e.key === "F") {
+      var target = document.getElementById("v-stage").classList.contains("on") ? document.getElementById("stage") : document.documentElement;
+      if (!document.fullscreenElement) { target.requestFullscreen && target.requestFullscreen(); } else { document.exitFullscreen(); }
+    }
+  });
+
+  // font size
+  var fs = 30;
+  function setFs() { document.documentElement.style.setProperty("--fs", fs + "px"); }
+  document.getElementById("bigger").addEventListener("click", function () { fs = Math.min(48, fs + 2); setFs(); });
+  document.getElementById("smaller").addEventListener("click", function () { fs = Math.max(18, fs - 2); setFs(); });
+  setFs(); paint();
+})();
+</script>
+</body>
+</html>

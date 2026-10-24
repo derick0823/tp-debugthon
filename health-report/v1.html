@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>我家健檢單</title>
+<link rel="stylesheet" href="../solutions/prototype/assets/vendor/leaflet.css">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../design-kit/theme-puma.css">
+</head>
+<body>
+<header class="top">
+  <h1>我家健檢單</h1>
+  <p id="idline" class="idline" hidden></p>
+  <p class="sub">一棟房子＋一個里＋你家有沒有長者，先看分數，有興趣再往下翻。</p>
+</header>
+
+<main id="main">
+  <!-- step 0: input card (the only place to type). Shown when the URL has no addr/v, or after 修改 -->
+  <section id="inputcard" class="card inputcard" hidden>
+    <h2>先告訴我們你家在哪裡</h2>
+    <form id="form" class="form big" autocomplete="off">
+      <label class="f-addr">門牌<input id="in-addr" name="addr" placeholder="例：信義路2段86巷40號" enterkeyhint="go"></label>
+      <div class="f-age">
+        <label for="in-age">屋齡（年）</label>
+        <div class="agerow"><input id="in-age" name="age" type="number" min="0" max="120" inputmode="numeric" placeholder="例：45">
+          <label class="chk"><input type="checkbox" id="in-age-unknown"> 不知道</label></div>
+      </div>
+      <fieldset class="f-elder"><legend>家裡有沒有長者（65 歲以上）</legend>
+        <label class="bigopt"><input type="radio" name="elder" value="1"><span>👵 有</span></label>
+        <label class="bigopt"><input type="radio" name="elder" value="0"><span>沒有</span></label>
+      </fieldset>
+      <details class="more" id="more">
+        <summary>更多資料（選填，填了建議會更準）</summary>
+        <div class="moregrid">
+          <label>房子類型<select name="type"><option value="">不填</option><option value="apt">公寓</option><option value="house">透天</option><option value="building">大樓</option></select></label>
+          <label>全棟幾戶<input name="units" type="number" min="1" max="5000" inputmode="numeric" placeholder="例：12"></label>
+          <label>你住幾樓<input name="floor" type="number" min="-5" max="120" inputmode="numeric" placeholder="例：4"></label>
+          <label>一樓是什麼<select name="ground"><option value="">不填</option><option value="home">住家</option><option value="shop">店面</option><option value="parking">停車空間</option><option value="arcade">騎樓</option></select></label>
+          <label>你是<select name="own"><option value="">不填</option><option value="owner">屋主</option><option value="renter">租屋</option></select></label>
+          <label>有沒有管委會<select name="mc"><option value="">不填</option><option value="1">有</option><option value="0">沒有</option></select></label>
+          <label>看到裂縫、鋼筋外露或漏水<select name="crack"><option value="">不填</option><option value="1">有看到</option><option value="0">沒看到</option></select></label>
+        </div>
+      </details>
+      <div id="vpick" class="f-vpick" hidden>
+        <p class="hint">查不到門牌時，也可以選你住的里：</p>
+        <select id="in-town" aria-label="行政區"></select>
+        <select id="in-village" aria-label="里"></select>
+      </div>
+      <div id="suggest" class="suggest" hidden></div>
+      <p id="status" class="status" role="status"></p>
+      <button type="submit" class="btn primary go">產生健檢報告</button>
+    </form>
+  </section>
+
+  <!-- working animation (about one second) -->
+  <section id="embedwait" class="card" hidden><p>等外層 App 帶入門牌⋯（網址需要 <code>addr</code> 或 <code>v</code> 參數）</p></section>
+  <section id="loading" class="loading" hidden aria-live="polite">
+    <div class="spinner" aria-hidden="true"><i></i><i></i><i></i></div>
+    <p id="loading-msg">正在比對門牌、讀里的資料⋯</p>
+  </section>
+
+  <!-- compact input bar on every page -->
+  <div id="bar" class="bar" hidden>
+    <span id="bar-addr" class="b-addr"></span><span id="bar-age"></span><span id="bar-elder"></span>
+    <button type="button" id="edit" class="btn">修改</button>
+  </div>
+
+  <div id="report" hidden>
+    <nav class="dots" id="dots" aria-label="頁數"></nav>
+
+    <!-- page 1: score and the few things that matter -->
+    <section class="page" data-p="1" aria-label="第 1 頁：分數與重點">
+      <div id="p1"></div>
+    </section>
+
+    <!-- page 2: this building -->
+    <section class="page" data-p="2" aria-label="第 2 頁：這棟房子" hidden>
+      <h2 class="ph">🏠 這棟房子</h2>
+      <section id="s-head" class="card hero"></section>
+      <section id="s-bldg" class="card"><h3>老屋健檢</h3><div id="bldg"></div></section>
+    </section>
+
+    <!-- page 3: around your home -->
+    <section class="page" data-p="3" aria-label="第 3 頁：你家附近" hidden>
+      <h2 class="ph">🗺️ 你家附近</h2>
+      <section id="s-near" class="card"><h3>震後去哪裡、醫院在哪裡</h3><div id="near"></div></section>
+      <section id="s-map" class="card"><h3>救災地圖</h3>
+        <div class="maprow"><div id="map" role="img" aria-label="本里地圖：你家、收容所、窄巷與文資點"></div><div id="bars"></div></div>
+      </section>
+      <details id="adv-check" class="card adv">
+        <summary>進階：演練檢核表（給里長）</summary>
+        <p id="check-note" class="note" hidden></p><ul id="check" class="check"></ul>
+      </details>
+    </section>
+
+    <!-- page 4: what to do next + my village -->
+    <section class="page" data-p="4" aria-label="第 4 頁：接下來可以做的事" hidden>
+      <h2 class="ph">📋 接下來可以做的事</h2>
+      <section id="s-actions" class="card result"><ol id="actions" class="actions"></ol></section>
+      <h2 class="ph">📍 我的里</h2>
+      <section id="s-rank" class="card"><div id="rank"></div></section>
+      <section id="s-myv" class="card"><div id="myv"></div></section>
+      <details id="adv-bonus" class="card adv">
+        <summary>進階：容積獎勵怎麼算</summary>
+        <div id="blocks"></div>
+      </details>
+    </section>
+
+    <nav class="pager" aria-label="換頁">
+      <button type="button" id="prev" class="btn">← 上一頁</button>
+      <button type="button" id="next" class="btn primary">下一頁 →</button>
+      <a id="go-calc" class="btn primary" href="../renewal-calculator-v2/" hidden>下一步：算算看我家都更划不划算（都更試算機） →</a>
+    </nav>
+    <p class="pager2" id="pager2" hidden><a id="go-print" class="btn" href="print.html">🖨️ 印正式健檢單</a></p>
+  </div>
+</main>
+
+<footer class="foot">
+  <p class="disc"><b>這是推估與白話整理，不是官方評估或鑑定。</b>里的數字都是相對於臺北其他里；分數是團隊自訂的計分，不是官方評分。</p>
+  <details><summary>資料來源</summary><ul id="sources"></ul></details>
+  <p class="muted"><button type="button" class="btn" onclick="window.print()">🖨️ 列印健檢單</button></p>
+</footer>
+
+<script src="../solutions/prototype/assets/vendor/leaflet.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>

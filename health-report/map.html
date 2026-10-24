@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>我家健檢地圖</title>
+<link rel="stylesheet" href="../solutions/prototype/assets/vendor/leaflet.css">
+<link rel="stylesheet" href="map.css">
+<link rel="stylesheet" href="../design-kit/theme-puma.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><h1>我家健檢地圖</h1><p class="sub">這一棟＋這個里＋家裡有沒有長者。點檢核項目，地圖會跳到那一層。</p></div>
+  <!-- same URL params as index.html: ?addr=&age=&elder=, plus v=, t=, #w= -->
+  <form id="form" class="form" autocomplete="off">
+    <label class="f-addr">門牌<input id="in-addr" name="addr" placeholder="例：大安區信義路2段86巷40號" enterkeyhint="search"></label>
+    <label class="f-age">屋齡（年）<input id="in-age" name="age" type="number" min="0" max="120" inputmode="numeric" placeholder="可空白"></label>
+    <fieldset class="f-elder"><legend>家裡有長者（65+）</legend>
+      <label><input type="radio" name="elder" value="1"> 有</label>
+      <label><input type="radio" name="elder" value="0"> 沒有</label>
+    </fieldset>
+    <button type="submit" class="btn primary">產生</button>
+    <div id="vpick" class="f-vpick" hidden>
+      <span class="hint">查不到門牌時，選你住的里：</span>
+      <select id="in-town" aria-label="行政區"></select>
+      <select id="in-village" aria-label="里"></select>
+    </div>
+    <div id="suggest" class="suggest" hidden></div>
+    <p id="status" class="status" role="status"></p>
+  </form>
+</header>
+
+<main id="main" class="layout" hidden>
+  <!-- left: this building + ranking card -->
+  <aside class="col left" aria-label="這一棟與我的里">
+    <section id="s-head" class="card hero"></section>
+    <section class="card"><h2>🏠 老屋健檢（這一棟）</h2><div id="bldg"></div></section>
+    <section class="card"><h2>📍 我的里排名</h2><div id="rank"></div></section>
+  </aside>
+
+  <!-- center: map; legend and focus note sit below it, never on top of numbers -->
+  <section class="col center" aria-label="救災地圖">
+    <div class="mapbox">
+      <div id="map" role="img" aria-label="本里地圖：里界、列管窄巷、液化高潛勢、文資點"></div>
+    </div>
+    <div id="legend" class="legend" role="toolbar" aria-label="地圖圖層"></div>
+    <div id="focus" class="focus" aria-live="polite"></div>
+    <div id="bars" class="ibars" aria-label="本里救災指標，長條是本里相對全市最高里的比例"></div>
+  </section>
+
+  <!-- right: drill checklist + actions -->
+  <aside class="col right" aria-label="演練檢核表與建議行動">
+    <section class="card"><h2>✅ 演練檢核表</h2>
+      <p id="check-note" class="note" hidden></p>
+      <p class="hint small">點項目看地圖；勾方框記下做完了。</p>
+      <ul id="check" class="check"></ul>
+    </section>
+    <section class="card result"><h2>📋 建議你接下來做的事</h2><ol id="actions" class="actions"></ol></section>
+  </aside>
+
+  <!-- bottom strip: bonus blocks summary -->
+  <section id="s-bonus" class="strip" aria-label="容積獎勵積木摘要"></section>
+</main>
+
+<footer class="foot">
+  <p class="disc"><b>這是推估與白話整理，不是官方評估或鑑定。</b>里的數字都是相對於臺北其他里。</p>
+  <details><summary>資料來源</summary><ul id="sources"></ul></details>
+  <p class="muted small"><a id="to-sheet" href="./">看單子版（健檢單）→</a></p>
+</footer>
+
+<script src="../solutions/prototype/assets/vendor/leaflet.js"></script>
+<script type="module" src="map.js"></script>
+</body>
+</html>

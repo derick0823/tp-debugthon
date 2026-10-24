@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><title>v1 layout check</title>
+<style>body{margin:0;background:#888;display:flex;gap:16px;padding:8px;font:14px system-ui}
+iframe{border:0;background:#fff}pre{background:#fff;padding:8px;margin:0;white-space:pre-wrap;width:300px}</style></head>
+<body>
+<iframe id="f"></iframe><pre id="out">running</pre>
+<script>
+// Checks the first layout (v1.html) inside a frame (headless Edge has a ~500 px minimum window,
+// so a 375 px viewport needs this frame). Usage:
+//   test/mobile.html?q=<url-encoded query for ../v1.html>&p=<page 1-4>&w=<frame width, default 375>&h=<frame height, default 7000>
+//   (add embed%3D1 inside q to check the embedded mode; p=4 also checks the calculator and print links)
+// Writes PASS/FAIL lines into <pre id="out">: page shown, horizontal overflow, body text size,
+// advanced sections collapsed, JS errors.
+const qs = new URLSearchParams(location.search);
+const f = document.getElementById("f");
+const want = Number(qs.get("p") || 1);
+f.style.width = (qs.get("w") || 375) + "px";
+f.style.height = (qs.get("h") || 7000) + "px";
+f.src = "../v1.html?" + (qs.get("q") || "") + (want > 1 ? "#p=" + want : "");
+const out = document.getElementById("out");
+const t0 = Date.now();
+// Input-flow check: test/mobile.html?flow=1 opens v1.html with no parameters, fills the card,
+// submits, waits for page 1, then presses 修改 and checks the card comes back with the values.
+if (qs.get("flow") === "1") {
+  f.src = "../v1.html";
+  const L = [];
+  const wait = (cond, ms = 25000) => new Promise((res, rej) => { const s = Date.now(); (function w() { try { if (cond()) return res(); } catch (e) { /* not ready */ } if (Date.now() - s > ms) return rej(new Error("timeout")); setTimeout(w, 200); })(); });
+  (async () => {
+    try {
+      await wait(() => f.contentDocument.body.dataset.mode === "input");
+      const d = f.contentDocument, w = f.contentWindow;
+      L.push(`${!d.querySelector("#inputcard").hidden && d.querySelector("#report").hidden ? "PASS" : "FAIL"} no parameters -> input card only`);
+      d.querySelector("#in-addr").value = "信義路2段86巷40號";
+      d.querySelector("#in-age").value = "50";
+      d.querySelector('input[name="elder"][value="1"]').click();
+      d.querySelector('#form [name="floor"]').value = "4";
+      d.querySelector("#form button[type=submit]").click();
+      await wait(() => d.body.dataset.mode === "loading", 3000).then(() => L.push("PASS working animation shown"), () => L.push("FAIL working animation not seen"));
+      await wait(() => d.body.dataset.mode === "report");
+      const shown = [...d.querySelectorAll(".page")].filter((el) => !el.hidden).map((el) => el.dataset.p).join(",");
+      L.push(`${shown === "1" ? "PASS" : "FAIL"} after submit -> page ${shown}`);
+      const u = new URL(w.location.href);
+      L.push(`${u.searchParams.get("addr") === "信義路2段86巷40號" && u.searchParams.get("age") === "50" && u.searchParams.get("elder") === "1" && u.searchParams.get("floor") === "4" ? "PASS" : "FAIL"} URL has the parameters (${u.search})`);
+      L.push(`${!d.querySelector("#bar").hidden ? "PASS" : "FAIL"} compact input bar shown: ${d.querySelector("#bar").textContent.replace(/\s+/g, " ").trim()}`);
+      d.querySelector("#edit").click();
+      await wait(() => d.body.dataset.mode === "input", 3000);
+      L.push(`${d.querySelector("#in-addr").value === "信義路2段86巷40號" && d.querySelector("#in-age").value === "50" ? "PASS" : "FAIL"} 修改 -> input card with values kept`);
+      const errs = w.__errors || [];
+      L.push(`${errs.length ? "FAIL" : "PASS"} js errors ${errs.length}${errs.length ? ": " + errs.join(" | ") : ""}`);
+    } catch (e) { L.push("FAIL " + e.message); }
+    out.textContent = (L.some((l) => l.startsWith("FAIL")) ? "SOME FAIL" : "ALL PASS") + "\n" + L.join("\n");
+  })();
+} else
+(function poll() {
+  const d = f.contentDocument;
+  if (!d || !d.body || d.body.dataset.ready !== "1") { if (Date.now() - t0 < 25000) return setTimeout(poll, 300); out.textContent = "FAIL not ready"; return; }
+  setTimeout(() => {
+    const W = d.documentElement.clientWidth, SW = d.documentElement.scrollWidth;
+    const wide = [...d.querySelectorAll("body *")].filter((el) => el.getBoundingClientRect().right > W + 1 && !el.closest(".leaflet-container"))
+      .slice(0, 8).map((el) => el.tagName.toLowerCase() + (el.id ? "#" + el.id : "") + (typeof el.className === "string" && el.className ? "." + el.className.split(" ")[0] : ""));
+    const body = parseFloat(f.contentWindow.getComputedStyle(d.body).fontSize);
+    const ps = [...d.querySelectorAll("#report p, #report li, .form label")].filter((el) => el.offsetParent).map((el) => parseFloat(f.contentWindow.getComputedStyle(el).fontSize));
+    const shown = [...d.querySelectorAll(".page")].filter((el) => !el.hidden).map((el) => Number(el.dataset.p));
+    const advOpen = [...d.querySelectorAll("details.adv")].filter((el) => el.open).length;
+    const errs = f.contentWindow.__errors || [];
+    const lines = [
+      `${shown.length === 1 && shown[0] === want ? "PASS" : "FAIL"} page shown ${shown.join(",")} (want ${want})`,
+      `${SW <= W ? "PASS" : "FAIL"} no horizontal scroll (scrollWidth ${SW}, width ${W})${wide.length ? " wide: " + wide.join(" ") : ""}`,
+      `${body >= 18 ? "PASS" : "FAIL"} body font ${body}px`,
+      `INFO smallest visible p/li ${ps.length ? Math.min(...ps) : "—"}px`,
+      `${advOpen === 0 ? "PASS" : "FAIL"} advanced sections collapsed (${advOpen} open)`,
+      `${errs.length ? "FAIL" : "PASS"} js errors ${errs.length}${errs.length ? ": " + errs.join(" | ") : ""}`,
+      `INFO doc height ${d.documentElement.scrollHeight}`,
+    ];
+    if (want === 4) {
+      const calc = d.querySelector("#go-calc"), pr = d.querySelector("#go-print");
+      lines.push(`${!calc.hidden && /renewal-calculator\/\?t=\d{8}&q=/.test(calc.getAttribute("href")) ? "PASS" : "FAIL"} last page -> calculator link ${calc.getAttribute("href")}`);
+      lines.push(`${!d.querySelector("#pager2").hidden && /^print\.html\?/.test(pr.getAttribute("href")) ? "PASS" : "FAIL"} last page -> print link ${pr.getAttribute("href")}`);
+    }
+    if (d.body.dataset.embed === "1") {
+      const vis = (sel) => { const el = d.querySelector(sel); return el && el.getClientRects().length > 0; };
+      lines.push(`${!vis("#inputcard") && !vis("#bar") && !vis(".top h1") && vis("#idline") ? "PASS" : "FAIL"} embed=1: no input card, bar or big header; id line: ${d.querySelector("#idline").textContent}`);
+    }
+    out.textContent = (lines.some((l) => l.startsWith("FAIL")) ? "SOME FAIL" : "ALL PASS") + "\n" + lines.join("\n");
+  }, 1500);
+})();
+</script></body></html>

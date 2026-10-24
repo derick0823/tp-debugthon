@@ -1,0 +1,75 @@
+{
+  "url": "/mvp-variants/rooftop-vision/#p=88",
+  "viewport": [
+    1280,
+    720
+  ],
+  "settle_ms": 1500,
+  "steps": [
+    {
+      "do": "eval",
+      "js": "document.querySelector('.k-wrap').style.maxWidth='960px'; window.scrollTo(0, document.querySelector('.tabs').getBoundingClientRect().top + scrollY - 56)",
+      "wait": 300
+    },
+    {
+      "do": "caption",
+      "text": "都更後，屋頂可以不是【鐵皮】。"
+    },
+    {
+      "do": "wait",
+      "ms": 1200
+    },
+    {
+      "do": "eval",
+      "js": "Rooftop.sweep(88, 18, 1800)",
+      "wait": 2000
+    },
+    {
+      "do": "caption",
+      "text": "拖一下，選你喜歡的樣子，"
+    },
+    {
+      "do": "click",
+      "sel": ".tabs button[data-s=solar]",
+      "wait": 900
+    },
+    {
+      "do": "click",
+      "sel": ".tabs button[data-s=facade]",
+      "wait": 900
+    },
+    {
+      "do": "click",
+      "sel": ".tabs button[data-s=green]",
+      "wait": 800
+    },
+    {
+      "do": "eval",
+      "js": "const c=document.querySelector('.adds input[value=balcony]'); c.checked=true; c.dispatchEvent(new Event('change',{bubbles:true}))",
+      "wait": 1300
+    },
+    {
+      "do": "caption",
+      "text": "按個讚，【設計從住戶開始】。"
+    },
+    {
+      "do": "scroll_to",
+      "sel": ".card[data-s=green] .like",
+      "wait": 700
+    },
+    {
+      "do": "hover",
+      "sel": ".card[data-s=green] .like",
+      "wait": 300
+    },
+    {
+      "do": "click",
+      "sel": ".card[data-s=green] .like",
+      "wait": 1100
+    },
+    {
+      "do": "wait",
+      "ms": 1000
+    }
+  ]
+}

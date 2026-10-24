@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-Hant-TW" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>我家危險嗎</title>
+  <meta name="description" content="輸入臺北市地址，看這棟房子與這個里的地震風險（建成年、耐震規範世代、液化、一樓軟弱層候選、五因子相對等級），和下一步可以找誰。賽前設計原型，不是官方耐震評估。">
+  <meta name="color-scheme" content="light dark">
+  <link rel="stylesheet" href="assets/vendor/leaflet.css">
+  <link rel="stylesheet" href="assets/common.css">
+  <link rel="stylesheet" href="assets/citizen.css">
+</head>
+<body>
+  <header class="page-header">
+    <div class="container">
+      <p class="eyebrow">臺北市老屋耐震優先順序 · 賽前原型</p>
+      <h1>我家危險嗎</h1>
+      <p class="subtitle">輸入地址，看這棟房子與這個里的地震風險，和下一步可以找誰。</p>
+      <nav class="page-nav" aria-label="入口">
+        <a href="index.html" aria-current="page">市民入口</a>
+        <a href="city.html">市府入口</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container citizen">
+    <section class="card query-card" aria-labelledby="query-title">
+      <h2 id="query-title" class="sr-only">查詢</h2>
+      <div class="query-steps">
+        <div class="step">
+          <span class="step-num" aria-hidden="true">1</span>
+          <label class="step-label" for="town-select">選區</label>
+          <div class="step-body">
+            <select id="town-select" aria-describedby="town-hint">
+              <option value="">載入中…</option>
+            </select>
+            <p id="town-hint" class="step-hint">選了才載入該區的門牌（一區約 1～4 MB）。</p>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-num" aria-hidden="true">2</span>
+          <label class="step-label" for="addr-input">輸入地址</label>
+          <div class="step-body">
+            <div id="addr-combo" class="combo">
+              <div class="combo-row">
+                <input id="addr-input" type="search" autocomplete="off" spellcheck="false"
+                       placeholder="例：西園路2段261巷11號"
+                       role="combobox" aria-autocomplete="list" aria-expanded="false"
+                       aria-controls="addr-list" aria-describedby="query-status" disabled>
+                <button id="search-btn" type="button" class="btn btn-primary" disabled>查詢</button>
+              </div>
+              <ul id="addr-list" class="combo-list" role="listbox" aria-label="相近門牌" hidden></ul>
+            </div>
+            <p id="query-status" class="query-status" aria-live="polite"></p>
+          </div>
+        </div>
+      </div>
+      <div class="query-foot">
+        <label class="check">
+          <input id="elderly-check" type="checkbox">
+          <span>家裡有 65 歲以上</span>
+        </label>
+        <p class="query-example">不知道打什麼？<button id="use-example" type="button">用範例地址試試</button></p>
+      </div>
+    </section>
+
+    <section id="result" class="result" aria-live="polite" hidden></section>
+  </main>
+
+  <footer id="footer" class="container"></footer>
+
+  <script src="assets/vendor/leaflet.js"></script>
+  <script src="assets/common.js"></script>
+  <script src="assets/nextsteps.js"></script>
+  <script src="assets/citizen.js"></script>
+</body>
+</html>

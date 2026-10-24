@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>救災演練地圖</title>
+<link rel="stylesheet" href="../solutions/prototype/assets/vendor/leaflet.css">
+<style>
+  :root{--ink:#1f2328;--muted:#5b6670;--line:#d9dee3;--bg:#ffffff;--panel:#f6f8fa;--track:#e6eaee;--red:#c0392b;--amber:#d08a00;--blue:#2b6cb0;--purple:#6b46c1;--green:#2f855a}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--ink:#e6e9ec;--muted:#a3adb8;--line:#3a424b;--bg:#15191d;--panel:#1e252c;--track:#2a323b}}
+  :root[data-theme="dark"]{--ink:#e6e9ec;--muted:#a3adb8;--line:#3a424b;--bg:#15191d;--panel:#1e252c;--track:#2a323b}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif}
+  header{padding:10px 16px;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+  header h1{font-size:22px;margin:0}
+  header .sub{color:var(--muted);font-size:15px}
+  header .stat{margin-left:auto;font-size:14px}
+  header .stat b{font-size:34px;color:var(--red)}
+  header .legend{display:flex;gap:10px;font-size:15px;color:var(--muted);flex-wrap:wrap}
+  .muted{color:var(--muted)} .small{font-size:15px}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:3px;vertical-align:middle}
+  main{display:grid;grid-template-columns:300px 1fr 420px;height:calc(100vh - 100px)}
+  #list{overflow:auto;border-right:1px solid var(--line);background:var(--panel)}
+  #list .tools{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  #list select,#list input{font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+  #list button.row{display:block;width:100%;text-align:left;padding:9px 12px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);font:inherit;cursor:pointer}
+  #list button.row:hover,#list button.row[aria-current="true"]{background:var(--bg)}
+  #list button.row[aria-current="true"]{box-shadow:inset 4px 0 0 var(--red)}
+  #list .row .t{font-weight:600;font-size:16px}
+  .badge{display:inline-block;background:var(--red);color:#fff;border-radius:4px;padding:0 7px;font-size:15px;font-weight:700;vertical-align:middle}
+  .spark{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:5px}
+  .spark>span{display:flex;align-items:center;gap:4px;font-size:15px}
+  .spark i{flex:1;display:block;height:8px;border-radius:4px;background:var(--track);position:relative;overflow:hidden}
+  .spark i::after{content:"";position:absolute;inset:0;width:0;border-radius:4px;transition:width .7s ease}
+  .spark>span:nth-child(1) i::after{background:var(--red)} .spark>span:nth-child(2) i::after{background:var(--blue)} .spark>span:nth-child(3) i::after{background:var(--amber)}
+  #rows.grow .spark i::after{width:var(--w)}
+  #map{min-height:320px}
+  .leaflet-interactive.hi{animation:dash 1.4s linear infinite}
+  @keyframes dash{to{stroke-dashoffset:-20}}
+  #card{overflow:auto;border-left:1px solid var(--line);padding:14px 16px}
+  #card h2{font-size:24px;margin:0 0 2px}
+  #card h3{font-size:20px;margin:18px 0 8px}
+  #card .why{color:var(--muted);font-size:15px;margin:0 0 10px}
+  /* pictogram */
+  .pict{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel);margin-bottom:10px}
+  .dots{display:grid;grid-template-columns:repeat(20,1fr);gap:3px}
+  .dots i{display:block;aspect-ratio:1;border-radius:50%;background:var(--track);transition:background .4s ease;transition-delay:var(--d)}
+  #card.grow .dots i.on{background:var(--amber)}
+  .pcap{margin-top:8px;font-size:16px}
+  .pcap b{font-size:36px;color:var(--amber)}
+  /* bars */
+  .bars{display:flex;flex-direction:column;gap:7px}
+  .brow{display:flex;gap:8px;align-items:flex-start}
+  .brow .ic{font-size:20px;line-height:1.2;width:26px;text-align:center}
+  .brow .bl{flex:1}
+  .bk{display:flex;justify-content:space-between;font-size:15px;align-items:baseline}
+  .bk b{font-size:22px}
+  .bar{height:14px;border-radius:5px;background:var(--track);overflow:hidden}
+  .bar i{display:block;height:100%;width:0;border-radius:5px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+  #card.grow .bar i{width:var(--w)}
+  .bs{font-size:15px;color:var(--muted)}
+  /* levels */
+  .lvs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:12px}
+  .lvc{text-align:center}
+  .lvb{height:72px;background:var(--track);border-radius:6px;display:flex;align-items:flex-end;overflow:hidden}
+  .lvb i{display:block;width:100%;height:0;transition:height .7s ease;border-radius:6px 6px 0 0}
+  #card.grow .lvb i{height:var(--h)}
+  .l5{background:#8b1e1e}.l4{background:var(--red)}.l3{background:var(--amber)}.l2{background:#7a9cc6}.l1{background:#9aa5b1}
+  .lvn{font-size:14px;margin-top:3px}
+  .lvt{font-size:16px;font-weight:700}
+  .l5t,.l4t{color:var(--red)} .l3t{color:var(--amber)} .l2t,.l1t{color:var(--muted)}
+  /* checklist */
+  ul.check{list-style:none;padding:0;margin:4px 0}
+  ul.check li{display:grid;grid-template-columns:24px 1fr;gap:4px 10px;align-items:start;padding:9px 0;border-bottom:1px dashed var(--line);font-size:17px}
+  ul.check input{margin-top:6px;width:22px;height:22px}
+  ul.check label{display:flex;gap:8px;align-items:flex-start;cursor:pointer;font-weight:600}
+  ul.check .ic{font-size:24px;line-height:1.2}
+  ul.check .ckd{grid-column:2;margin:0;font-size:15px;color:var(--muted)}
+  ul.check .ckd summary{font-weight:400;font-size:14px}
+  ul.check .ckd ul.sh{margin:4px 0;padding-left:18px}
+  ul.check .ckd ul.sh li{display:list-item;border:0;padding:1px 0;font-size:15px}
+  details{margin:8px 0}
+  summary{cursor:pointer;font-weight:600;font-size:14px}
+  .btn{font:inherit;padding:7px 12px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);cursor:pointer}
+  footer{font-size:14px;color:var(--muted);padding:6px 16px;border-top:1px solid var(--line)}
+  #pick{display:none;font:inherit;font-size:17px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%;margin:4px 0 0}
+  @media (max-width:900px){main{grid-template-columns:1fr;height:auto}#map{order:1;height:48vh}#card{order:2;border-left:0}#list{order:3;max-height:50vh;border-right:0;border-top:1px solid var(--line)}header .stat{margin-left:0}header .legend{display:none}#pick{display:block}}
+  @media print{header,#list,#map,.btn,footer{display:none}main{display:block;height:auto}#card{border:0;padding:0}.bar i,.lvb i{width:var(--w);height:var(--h)}.dots i.on{background:var(--amber)}}
+</style>
+<link rel="stylesheet" href="../design-kit/theme-puma.css">
+</head>
+<body>
+<header>
+  <h1>🚒 救災演練地圖</h1>
+  <span class="sub">窄巷、液化、高齡三件事一起看。給里長與消防分隊排演練用。</span>
+  <span class="legend"><span><span class="dot" style="background:#c0392b"></span>紅區巷道</span><span><span class="dot" style="background:#d08a00"></span>黃區巷道</span><span><span class="dot" style="background:#6b46c1"></span>文資</span><span><span class="dot" style="background:#2b6cb0;opacity:.5"></span>液化高潛勢</span></span>
+  <span class="stat" id="hdrStat"></span>
+  <select id="pick" aria-label="選一個候選里"></select>
+</header>
+<main>
+  <aside id="list">
+    <div class="tools">
+      <select id="town"><option value="">全部 12 區</option></select>
+      <label><input type="checkbox" id="onlyS5" checked> 只看候選里</label>
+      <input id="q" placeholder="搜里名" size="8">
+      <span class="small muted" style="width:100%">三條小長條：<span style="color:var(--red)">■</span>窄巷 <span style="color:var(--blue)">■</span>液化 <span style="color:var(--amber)">■</span>80 歲以上</span>
+    </div>
+    <div id="rows"></div>
+  </aside>
+  <div id="map"></div>
+  <section id="card">
+    <p class="muted">左邊選一個里。</p>
+  </section>
+</main>
+<footer id="foot"></footer>
+<script src="../solutions/prototype/assets/vendor/leaflet.js"></script>
+<script src="../design-kit/quest.js"></script>
+<script>Quest.init({ page: "c", role: "里長", steps: ["選一個里", "勾一項檢核", "列印檢核表"] });</script>
+<script src="app.js"></script>
+</body>
+</html>

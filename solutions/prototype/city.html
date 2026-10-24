@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-Hant-TW" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>哪些里不論怎麼算都在前面</title>
+  <meta name="description" content="臺北市老屋耐震優先順序賽前原型的市府入口：456 個里的五因子等級、權重滑桿與排名區間、穩定前段、被總分藏起來的里、救災可及性候選與高齡化最快的里。">
+  <link rel="stylesheet" href="assets/vendor/leaflet.css">
+  <link rel="stylesheet" href="assets/common.css">
+  <link rel="stylesheet" href="assets/city.css">
+</head>
+<body>
+  <header class="page-header">
+    <div class="container">
+      <span class="eyebrow">臺北市老屋耐震優先順序 賽前原型 ・ 市府入口</span>
+      <div class="title-block">
+        <h1>哪些里不論怎麼算都在前面</h1>
+        <p class="subtitle">五個因子分開看，權重自己調。排名區間告訴你哪些里不管怎麼算都排前面，哪些里只看總分會被藏起來。</p>
+      </div>
+      <nav class="page-nav" aria-label="入口">
+        <a href="index.html">市民入口：我家危險嗎</a>
+        <a href="city.html" aria-current="page">市府入口</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" id="city-app">
+    <div class="kpi-strip" id="kpis" aria-label="摘要"></div>
+
+    <div class="city-layout">
+      <aside class="city-controls card" aria-label="控制">
+        <div class="control-group">
+          <h3>地圖視圖</h3>
+          <ul class="view-list" id="view-list"></ul>
+          <p class="control-note">五個因子各自分 5 級，等級相對於臺北市其他里。等權合成只是對照，不是結論。</p>
+        </div>
+
+        <div class="control-group">
+          <h3>液化圖版本</h3>
+          <div class="segmented full" id="version-seg" role="group" aria-label="液化圖版本">
+            <button type="button" class="btn" data-version="national2026" aria-pressed="true">全國 2026 版</button>
+            <button type="button" class="btn" data-version="city2019" aria-pressed="false">城市版 2019</button>
+          </div>
+          <p class="control-note">切換後地圖、右欄與清單的數字都跟著換。預設城市版 2019（政府資料開放授權）。全國版欄位來源：經濟部地礦中心 2026，僅供對照。</p>
+        </div>
+
+        <div class="control-group">
+          <h3>權重滑桿</h3>
+          <div class="weights" id="weights"></div>
+          <div class="weights-foot">
+            <span class="control-note">拖動任一支滑桿就切到「滑桿加權」視圖。</span>
+            <button type="button" class="btn btn-sm" id="btn-reset">重設為等權</button>
+          </div>
+          <p class="callout callout-warn" id="weights-warn" hidden>五支權重都是 0，暫時用等權計算。</p>
+          <p class="control-note">排名區間是預先用 2,000 組隨機權重算的；滑桿只重算加權和。等權時滑桿排名與預算的等權排名可能差 1～2 名，是並列值的處理不同。</p>
+        </div>
+
+        <div class="control-group">
+          <h3>標記</h3>
+          <label class="check-row"><input type="checkbox" id="toggle-stable" checked> 在地圖上框出穩定前段（≥90% 權重組合都進前 46）</label>
+        </div>
+      </aside>
+
+      <section class="city-map-col" aria-label="地圖">
+        <div class="map-stage" id="map-stage">
+          <div class="map map-tall" id="city-map" role="application" aria-label="臺北市 456 個里的等級地圖"></div>
+          <div class="map-status" id="map-status">載入資料中</div>
+          <div class="map-legend" id="map-legend" aria-live="polite"></div>
+        </div>
+        <p class="control-note" style="margin-top:8px">滑過一個里看等級與數字，點一下在右欄展開。底圖 OpenStreetMap；載不到底圖時里界仍可操作。</p>
+      </section>
+
+      <aside class="city-panel card" id="panel" aria-label="選中的里" aria-live="polite"></aside>
+    </div>
+
+    <section class="city-lists" id="city-lists" aria-label="清單">
+      <div class="section-title">
+        <h2>四份清單</h2>
+        <span class="hint">點一列，地圖與右欄跟著跳</span>
+      </div>
+      <div class="tabs" id="tabs" role="tablist" aria-label="清單分頁"></div>
+      <div class="tab-panel" data-tab="stable" id="tab-stable" role="tabpanel"></div>
+      <div class="tab-panel" data-tab="hidden" id="tab-hidden" role="tabpanel" hidden></div>
+      <div class="tab-panel" data-tab="s5" id="tab-s5" role="tabpanel" hidden></div>
+      <div class="tab-panel" data-tab="aging" id="tab-aging" role="tabpanel" hidden></div>
+    </section>
+
+    <footer id="footer"></footer>
+  </main>
+
+  <script src="assets/vendor/leaflet.js"></script>
+  <script src="assets/common.js"></script>
+  <script src="assets/city.js"></script>
+</body>
+</html>

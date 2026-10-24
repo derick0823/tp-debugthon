@@ -1,0 +1,48 @@
+/*
+ * theme-map.css  Maps this page's tokens onto design-kit/theme-puma.css (puma.taipei palette).
+ * Load order: assets/style.css -> ../design-kit/theme-puma.css -> assets/theme-map.css.
+ * The selector outranks the dark-mode block in style.css, so the warm light theme always wins.
+ */
+html:root:not([data-theme="never"]) {
+  --bg: var(--brand-surface);
+  --surface: #ffffff;
+  --surface-2: #fbefe8;
+  --border: var(--brand-border);
+  --fg: var(--brand-ink);
+  --fg-2: #4a3f3b;
+  --fg-muted: var(--brand-muted);
+  --accent: var(--brand-primary);
+  --accent-soft: #fde6da;
+  --focus: var(--brand-deep);
+  --on: var(--brand-primary);
+  --off: #ecdcd2;
+  --good: #3f8a58;
+  --warn-bg: var(--brand-yellow);
+  --warn-fg: #5a3d00;
+  --sim-bg: #f3e4f1;
+  --sim-fg: #6a3a6f;
+  /* support scale: oppose = warm reds, wait = grey, support = greens */
+  --r1: var(--brand-warning); --r2: var(--brand-orange); --r3: #c9bdb6; --r4: var(--brand-positive); --r5: #3f8a58;
+  color-scheme: light;
+}
+html:root:not([data-theme="never"]) body { background: var(--bg); color: var(--fg); }
+
+/* Selected states use the deep orange so white text keeps contrast. */
+nav.tabs button[aria-selected="true"],
+.chip[aria-pressed="true"],
+.rulepick .chip[aria-checked="true"],
+.tnode .branches button.picked { background: var(--brand-deep); border-color: var(--brand-deep); color: #fff; }
+.tnode .branches button { color: var(--brand-deep); border-color: var(--brand-border); }
+.tnode.current { border-color: var(--brand-primary); }
+
+/* People grid: signed = brand orange, passing the threshold = positive green. */
+.people.pass svg.on path, .people.pass svg.on circle { fill: var(--brand-positive); }
+.kpi b { color: var(--brand-primary); }
+.kpi.small b { color: var(--brand-ink); }
+.bar .fill { background: var(--brand-primary); }
+.lever .bar .fill { background: var(--brand-positive); }
+.steps4 li::before { background: var(--brand-deep); }
+.sbar span { color: var(--brand-ink); text-shadow: 0 0 3px #fff, 0 0 3px #fff; }
+.banner.board { background: var(--accent-soft); color: var(--brand-deep); }
+.houses svg.on path { fill: var(--brand-positive); }
+.opt { border-color: var(--brand-positive); }
