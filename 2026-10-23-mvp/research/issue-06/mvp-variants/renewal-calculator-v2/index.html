@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>都更試算機｜我家都更後身價變多少？</title>
+<meta name="description" content="從網址帶入地址、填入坪數，先看都更後新房價值與資產增值，再衡量施工期間的生活代價。設計原型，數字為公開資料推估。">
+<link rel="stylesheet" href="../design-kit/kit.css">
+<link rel="stylesheet" href="assets/calc.css">
+<link rel="stylesheet" href="../design-kit/theme-puma.css">
+<link rel="stylesheet" href="assets/theme-puma-map.css">
+</head>
+<body>
+<header class="top wrap">
+  <p class="kicker">
+    <span>市政 debug 松・第 6 題・都更試算機（改版）</span>
+    <a href="../">← 回 MVP 總覽</a>
+  </p>
+  <h1>🧮 都更試算機</h1>
+  <p class="lede">確認你家坪數，馬上看出老屋變新房的身價成長，再評估施工過渡期的生活代價。</p>
+</header>
+
+<main class="wrap">
+  <!-- Top Card: URL Address Banner + Required Parameter (Ping) -->
+  <section id="s-input" class="card" aria-labelledby="addr-display">
+    <div class="addr-banner">
+      <div class="addr-title">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
+        <span id="addr-display">載入地址中…</span>
+      </div>
+      <button id="toggle-addr" class="btn-ghost" type="button" aria-expanded="false">換個地址</button>
+    </div>
+
+    <div id="addr-drawer" class="addr-drawer" hidden>
+      <div class="row">
+        <label class="field"><span>行政區</span><select id="town"></select></label>
+        <label class="field grow"><span>地址（到「號」）</span>
+          <input id="addr" type="text" autocomplete="off" placeholder="例：信義路2段86巷40號"></label>
+        <button id="go" class="btn" type="button">套用地址</button>
+      </div>
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+      <ul id="suggest" class="suggest" hidden></ul>
+    </div>
+
+    <div id="bldg" hidden>
+      <div id="flags"></div>
+      <div id="chips" class="chips"></div>
+      <details class="more"><summary>這棟老屋的公開資料來源</summary><div id="bldg-src" class="src"></div></details>
+    </div>
+
+    <!-- Required Parameter: Ping -->
+    <div class="req-box">
+      <div class="ping-hero-input">
+        <label class="ping-label" for="ping">
+          必填參數：你家權狀幾坪？
+          <small id="ping-hint">已先帶入同區段常見坪數，可直接修改</small>
+        </label>
+        <div class="ping-ctrl">
+          <input id="ping" type="number" min="5" max="200" step="0.1" value="31">
+          <span class="unit">坪</span>
+        </div>
+      </div>
+      <div class="ping-quick" aria-label="常用坪數快速選擇">
+        <button type="button" data-ping="20">20 坪</button>
+        <button type="button" data-ping="25">25 坪</button>
+        <button type="button" data-ping="30">30 坪</button>
+        <button type="button" data-ping="35">35 坪</button>
+        <button type="button" data-ping="40">40 坪</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 1: Trial Calculation Result First (Toggleable Card, Default Collapsed, Celebrates on Open) -->
+  <details id="s-result" class="hero card toggle-card hero-toggle" aria-labelledby="h-result">
+    <summary class="toggle-summary hero-summary">
+      <div class="toggle-head">
+        <span class="n">1</span>
+        <div class="toggle-titles">
+          <span id="h-result" class="toggle-title">都更試算結果：換新房、身價大躍升</span>
+          <span id="result-preview" class="toggle-preview">✨ 點擊揭曉你家老屋變新房後，身價躍升多少！</span>
+        </div>
+      </div>
+      <span class="toggle-pill hero-pill" aria-hidden="true"><span class="open-txt">🎁 點擊揭曉</span><span class="close-txt">收起</span></span>
+    </summary>
+
+    <div class="toggle-body">
+      <div class="perks" aria-label="都更升級好處">
+        <span class="perk">✨ 換住全新電梯大樓</span>
+        <span class="perk">🛡️ 符合現代耐震結構</span>
+        <span class="perk">📈 單價躍升新成屋行情</span>
+      </div>
+
+      <svg id="hero" viewBox="0 0 340 190" role="img" aria-labelledby="hero-title hero-desc">
+        <title id="hero-title">現在的老家與都更後的新家</title>
+        <desc id="hero-desc">左邊是現在的老家，右邊是都更後分回的新家，面積代表坪數。</desc>
+        <line x1="8" y1="160" x2="332" y2="160" class="ground"/>
+        <g class="house-wrap" transform="translate(30 20)">
+          <g id="house-now" class="house now">
+            <path d="M0 55 L60 0 L120 55 Z" class="roof"/>
+            <rect x="12" y="55" width="96" height="85" class="body"/>
+            <rect x="26" y="72" width="22" height="20" class="win"/>
+            <rect x="72" y="72" width="22" height="20" class="win"/>
+            <rect x="50" y="102" width="20" height="38" class="door"/>
+          </g>
+        </g>
+        <g transform="translate(170 85)">
+          <path d="M0 0 H24 M16 -8 L26 0 L16 8" class="arrow"/>
+        </g>
+        <g class="house-wrap" transform="translate(190 20)">
+          <g id="house-new" class="house new">
+            <path d="M0 55 L60 0 L120 55 Z" class="roof"/>
+            <rect x="12" y="55" width="96" height="85" class="body"/>
+            <rect x="26" y="72" width="22" height="20" class="win"/>
+            <rect x="72" y="72" width="22" height="20" class="win"/>
+            <rect x="26" y="102" width="22" height="20" class="win"/>
+            <rect x="72" y="102" width="22" height="20" class="win"/>
+          </g>
+        </g>
+        <text x="90" y="178" class="cap">現在的老家</text>
+        <text x="250" y="178" class="cap">都更後的新家</text>
+      </svg>
+
+      <div class="hero-nums">
+        <div>
+          <small style="color:var(--fg-muted);font-weight:700">更新前（老屋現況）</small>
+          <b id="h-now-val">—</b>
+          <span id="h-now-ping">—</span>
+        </div>
+        <div>
+          <small style="color:var(--accent);font-weight:700">更新後（分回新房）</small>
+          <b id="h-new-val">—</b>
+          <span id="h-new-ping">—</span>
+        </div>
+      </div>
+
+      <div id="verdict" class="verdict good" aria-live="polite"></div>
+
+      <h3 class="sub">房屋總價值躍升</h3>
+      <div class="bars" id="money-bars"></div>
+
+      <h3 class="sub">權狀坪數對照</h3>
+      <div class="bars" id="ping-bars"></div>
+
+      <!-- Collapsible Advanced Assumptions -->
+      <details class="more" id="adv-box" style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
+        <summary>⚙️ 展開微調進階參數（容積獎勵、共同負擔、土地持分算法）</summary>
+        <div style="margin-top:10px">
+          <div class="row">
+            <label class="field"><span>現況建物型態</span>
+              <select id="btype">
+                <option value="walkup">公寓（無電梯）</option>
+                <option value="midrise">電梯華廈</option>
+                <option value="tower">大樓（11 樓以上）</option>
+                <option value="townhouse">透天厝</option>
+              </select></label>
+            <label class="field"><span>建成年代</span>
+              <select id="decade">
+                <option value="pre1974">1974 以前</option>
+                <option value="1974-1981" selected>1974～1981</option>
+                <option value="1982-1989">1982～1989</option>
+                <option value="1990-1998">1990～1998</option>
+                <option value="1999-2009">1999～2009</option>
+                <option value="2010plus">2010 以後</option>
+              </select></label>
+          </div>
+
+          <div class="slider">
+            <label for="bonus"><span>容積獎勵</span><output id="bonus-out"></output></label>
+            <input id="bonus" type="range" min="0" max="100" step="1" value="30">
+            <div id="bonus-meter" class="k-meter" aria-hidden="true"></div>
+            <p class="say" id="bonus-say">政府多給的樓地板。過了黑線，分回坪數就不會變少。</p>
+            <p class="src">預設 30%：防災型都更的危險建物獎勵【文件：都更處懶人包 114-05-09】。危老最多 1.3 倍基準容積，都更一般上限 1.5 倍。</p>
+          </div>
+
+          <div class="slider">
+            <label for="burden"><span>共同負擔比例</span><output id="burden-out"></output></label>
+            <input id="burden" type="range" min="15" max="65" step="1" value="32">
+            <div id="burden-grid" class="grid100" aria-hidden="true"></div>
+            <p class="say" id="burden-say">蓋房子的營建與規劃費，用一部分樓地板折給建商，住戶不用自己掏工程款。</p>
+            <p class="src" id="burden-src"></p>
+          </div>
+
+          <div class="slider">
+            <label for="after"><span>都更後新房每坪單價</span><output id="after-out"></output></label>
+            <input id="after" type="range" min="40" max="250" step="0.1" value="100">
+            <div class="seg" role="radiogroup" aria-label="新房每坪的來源">
+              <label><input type="radio" name="after-src" value="newbuild" checked><span>同區新成屋行情</span></label>
+              <label><input type="radio" name="after-src" value="uro"><span>歷年都更案核定中位數</span></label>
+            </div>
+            <p class="src" id="after-src"></p>
+          </div>
+
+          <div style="margin-top:12px;padding:12px;border-radius:8px;background:var(--surface-2)">
+            <label class="check" style="margin:0 0 8px;background:transparent;padding:0">
+              <input id="mode-land" type="checkbox"> 改用「土地持分」算分回坪數（較接近實務，老公寓分回通常更多）
+            </label>
+            <div class="row">
+              <label class="field"><span>土地持分（坪）</span><input id="land" type="number" min="1" max="100" step="0.01" value="8.9"></label>
+              <label class="field"><span>使用分區</span>
+                <select id="far">
+                  <option value="1.2">住二（120%）</option>
+                  <option value="2.25" selected>住三（225%）</option>
+                  <option value="3">住三之一、住四（300%）</option>
+                  <option value="4">住三之二（400%）</option>
+                  <option value="3.6">商一（360%）</option>
+                  <option value="6.3">商二（630%）</option>
+                </select></label>
+              <label class="field"><span>權狀坪÷容積坪</span><input id="gross" type="number" min="1" max="2.5" step="0.05" value="1.6"></label>
+            </div>
+            <p class="src">分回坪＝持分 × 容積率 × (1＋獎勵) × 權狀坪÷容積坪 × (1－負擔)。容積率依臺北市土地使用分區管制自治條例；1.6 為業界常見銷坪係數粗估。</p>
+          </div>
+        </div>
+      </details>
+
+      <details class="more"><summary>每個試算數字怎麼來的</summary><div id="calc-src" class="src"></div></details>
+    </div>
+  </details>
+
+  <!-- Section 2: Living Cost Tradeoff (Toggleable Card, Default Collapsed) -->
+  <details id="s-cost" class="card toggle-card" aria-labelledby="h-cost">
+    <summary class="toggle-summary">
+      <div class="toggle-head">
+        <span class="n">2</span>
+        <div class="toggle-titles">
+          <span id="h-cost" class="toggle-title">生活代價：施工過渡期要付出多少？</span>
+          <span id="cost-preview" class="toggle-preview">點擊展開過渡期房租、搬家費與資產增值對照</span>
+        </div>
+      </div>
+      <span class="toggle-pill" aria-hidden="true"><span class="open-txt">展開</span><span class="close-txt">收起</span></span>
+    </summary>
+
+    <div class="toggle-body">
+      <p class="say">新房子蓋好前，需要暫時搬出去住幾年。把這段過渡期的房租與搬家費攤開來看，對比都更帶來的資產增值：</p>
+
+      <div class="relo-compare">
+        <h3 class="sub" style="margin-top:0">過渡期生活代價 vs 都更資產增值</h3>
+        <div class="bars" id="relo-compare-bars"></div>
+      </div>
+
+      <div id="relo-net-box" class="relo-net-box" aria-live="polite">
+        <span class="net-title">扣除生活代價後・最終淨收穫</span>
+        <span id="net-val" class="net-val">—</span>
+        <span id="net-sub" class="net-sub"></span>
+      </div>
+
+      <label class="check">
+        <input id="relo-paid" type="checkbox">
+        <span>💡 實施者補貼拆遷安置費（都更權利變換案常見，由實施者發放租金補貼，勾選後自付生活代價為 0 元）</span>
+      </label>
+
+      <div class="slider">
+        <label for="relo-years"><span>施工等待期間（要搬出去幾年）</span><output id="relo-years-out"></output></label>
+        <input id="relo-years" type="range" min="1" max="5" step="0.1" value="3">
+      </div>
+      <div class="slider">
+        <label for="relo-rent"><span>過渡期在外每月房租</span><output id="relo-rent-out"></output></label>
+        <input id="relo-rent" type="range" min="0.5" max="6" step="0.1" value="1.5">
+      </div>
+      <div class="slider">
+        <label for="relo-move"><span>搬家與安頓費（搬出＋搬回兩趟）</span><output id="relo-move-out"></output></label>
+        <input id="relo-move" type="range" min="0" max="20" step="0.5" value="4">
+      </div>
+
+      <h3 class="sub">過渡期費用明細</h3>
+      <div class="bars" id="relo-bars"></div>
+
+      <p id="afford" class="afford" hidden></p>
+
+      <p class="say" style="margin-top:10px">若北北基桃無其他自有住宅，亦可由實施者協助申請<a href="https://laws.gov.taipei/Law/LawSearch/LawArticleContent/FL095061" target="_blank" rel="noopener">臺北市都市更新中繼住宅</a>。</p>
+      <details class="more"><summary>生活代價預設值說明</summary><div class="src">
+        <p>施工期預設 3 年：參考施工期常見範圍 1.6～3 年上緣；對照危老案從建照到完工中位數約 1,348 天（3.7 年）。</p>
+        <p>每月房租預設 1.5 萬元、搬家費預設 4 萬元（搬出與搬回各 2 萬元）：可依你家附近租屋行情自由調整滑桿。</p>
+        <p>拆遷安置費：都更權利變換時，實施者發給住戶的拆遷安置費計入共同負擔，住戶領取補貼租屋即可免自掏腰包。</p>
+      </div></details>
+    </div>
+  </details>
+
+  <!-- Section 3: Google Search AI Overview-style Smart Search (Toggleable Card, Default Collapsed) -->
+  <details id="s-search" class="card toggle-card" aria-labelledby="h-search">
+    <summary class="toggle-summary">
+      <div class="toggle-head">
+        <span class="n">3</span>
+        <div class="toggle-titles">
+          <span id="h-search" class="toggle-title">都更智慧搜尋：疑難雜症 AI 摘要解答</span>
+          <span class="toggle-preview">預設提問：「我家是古蹟可以都更嗎?」・Google AI 摘要風格</span>
+        </div>
+      </div>
+      <span class="toggle-pill" aria-hidden="true"><span class="open-txt">展開</span><span class="close-txt">收起</span></span>
+    </summary>
+
+    <div class="toggle-body">
+      <p class="say">直接輸入完整的都更問題，系統會檢索臺北市都更法規與實務知識庫，直接整理出結構化解答：</p>
+
+      <form id="ai-search-form" class="g-search-bar" role="search">
+        <svg class="g-search-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.2"/>
+          <path d="M16.2 16.2 21 21" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        <input id="ai-search-input" type="search" value="我家是古蹟可以都更嗎?" placeholder="輸入完整的都更問題，例如：我家是古蹟可以都更嗎?" aria-label="輸入都更問題">
+        <button id="ai-search-btn" type="submit" class="g-search-btn">搜尋</button>
+      </form>
+
+      <div class="g-quick-queries" aria-label="常見問題快速帶入">
+        <span class="g-quick-label">熱門提問：</span>
+        <button type="button" class="g-query-chip active" data-q="我家是古蹟可以都更嗎?">🏛️ 我家是古蹟可以都更嗎?</button>
+        <button type="button" class="g-query-chip" data-q="海砂屋都更可以拿多少容積獎勵?">🧱 海砂屋都更可以拿多少容積獎勵?</button>
+        <button type="button" class="g-query-chip" data-q="施工期間沒錢付房租怎麼辦?">💰 施工期間沒錢付房租怎麼辦?</button>
+      </div>
+
+      <!-- Loading Skeleton (shown briefly for 0.5s after clicking Search) -->
+      <div id="ai-loading" class="ai-overview-loading" hidden aria-live="polite">
+        <div class="ai-sparkle-head">
+          <span class="sparkle-icon" aria-hidden="true">✦</span>
+          <span>正在檢索臺北市都更與文資法規知識庫，生成 AI 摘要…</span>
+        </div>
+        <div class="shimmer-line w90"></div>
+        <div class="shimmer-line w75"></div>
+        <div class="shimmer-line w60"></div>
+      </div>
+
+      <!-- AI Overview Result Container -->
+      <div id="ai-overview" class="ai-overview" hidden aria-live="polite"></div>
+    </div>
+  </details>
+
+  <!-- Section 4: Formula Flow (Toggleable Card, Default Collapsed) -->
+  <details id="s-flow" class="card toggle-card" aria-labelledby="h-flow">
+    <summary class="toggle-summary">
+      <div class="toggle-head">
+        <span class="n">4</span>
+        <div class="toggle-titles">
+          <span id="h-flow" class="toggle-title">怎麼算的：一張圖看懂財富變化</span>
+          <span class="toggle-preview">點擊展開 6 步計算公式卡片、資料來源與已知限制</span>
+        </div>
+      </div>
+      <span class="toggle-pill" aria-hidden="true"><span class="open-txt">展開</span><span class="close-txt">收起</span></span>
+    </summary>
+
+    <div class="toggle-body">
+      <p class="say">往右滑看每一步計算。直接拉卡片裡的滑桿，上面的試算結果與生活代價會即時連動。</p>
+      <div id="flow" class="flow" tabindex="0" aria-label="計算流程"></div>
+
+      <details class="more method" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+        <summary>方法、資料來源、已知偏誤</summary>
+        <div id="method" class="src"></div>
+      </details>
+    </div>
+  </details>
+</main>
+
+<footer class="foot wrap">
+  <p><b>這是公開資料推估，實際分回與安置條件以實施者計畫書與市府核定為準。</b></p>
+  <p id="foot-data" class="src"></p>
+</footer>
+
+<script src="../design-kit/kit.js"></script>
+<script src="../design-kit/quest.js"></script>
+<script src="assets/calc.js"></script>
+</body>
+</html>
