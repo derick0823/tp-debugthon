@@ -443,6 +443,13 @@ function compute() {
   const netDiff = grossDiff === null ? null : grossDiff - relo;
   const ratio = x.ping > 0 ? share / x.ping : 0;
 
+  state.lastCalc = { before, afterVal, grossDiff, relo, netDiff, ping: x.ping };
+
+  const resPreview = $('result-preview');
+  if (resPreview) {
+    resPreview.textContent = `✨ 點擊揭曉你家 ${x.ping} 坪老屋變新房後，身價躍升多少！`;
+  }
+
   // Hero SVG houses scaling
   const maxP = Math.max(x.ping, share, 1);
   const sNow = Math.max(0.2, Math.sqrt(x.ping / maxP));
@@ -467,7 +474,7 @@ function compute() {
     v.innerHTML = `
       <div class="verdict-head">
         <span class="tag-label">🎉 都更後房屋身價預計增值</span>
-        <span class="big">${signed(grossDiff)}</span>
+        <span id="verdict-big" class="big">${signed(grossDiff)}</span>
       </div>
       <span class="t">${pingNote}</span>`;
   } else {
@@ -475,7 +482,7 @@ function compute() {
     v.innerHTML = `
       <div class="verdict-head">
         <span class="tag-label">預估帳面價值差額</span>
-        <span class="big">${signed(grossDiff)}</span>
+        <span id="verdict-big" class="big">${signed(grossDiff)}</span>
       </div>
       <span class="t">在目前保守假設下帳面尚未打平。許多老公寓土地持分高，建議展開下方「⚙️ 展開微調進階參數」勾選<b>改用土地持分算</b>或調高容積獎勵試算看看！</span>`;
   }
@@ -513,6 +520,7 @@ function compute() {
 
   const netBox = $('relo-net-box');
   const costPreview = $('cost-preview');
+  const isResultOpen = $('s-result') && $('s-result').open;
   if (netDiff === null) {
     netBox.className = 'relo-net-box';
     $('net-val').textContent = '—';
@@ -522,9 +530,13 @@ function compute() {
     netBox.className = `relo-net-box${netDiff >= 0 ? '' : ' neg'}`;
     $('net-val').textContent = signed(netDiff);
     if (costPreview) {
-      costPreview.textContent = x.reloPaid
-        ? `實施者補貼安置費（自付 0 元）・最終淨收穫 ${signed(netDiff)}`
-        : `施工 ${x.reloYears.toFixed(1)} 年生活代價約 ${wan(relo)}・扣除後淨收穫 ${signed(netDiff)}`;
+      if (!isResultOpen && !state.resultRevealed) {
+        costPreview.textContent = `施工期約 ${x.reloYears.toFixed(1)} 年房租與搬家費 vs 都更資產增值對照`;
+      } else {
+        costPreview.textContent = x.reloPaid
+          ? `實施者補貼安置費（自付 0 元）・最終淨收穫 ${signed(netDiff)}`
+          : `施工 ${x.reloYears.toFixed(1)} 年生活代價約 ${wan(relo)}・扣除後淨收穫 ${signed(netDiff)}`;
+      }
     }
     if (x.reloPaid && netDiff > 0) {
       $('net-sub').innerHTML = `實施者補貼拆遷安置費，過渡期免自掏房租與搬家費，<b>完整淨享 ${wan(netDiff)} 身價成長與全新電梯好宅！</b>`;
@@ -624,6 +636,140 @@ function setDefaultsFromPrice(keepUserPing = false) {
   if (bp.land) $('land').value = bp.land;
 }
 
+/* ------------------------------------------------------------ Lavish Gold Coins + Banknotes + Confetti Celebration */
+
+function animateCountUp(el, targetNtd, prefix = '', isSigned = false, dur = 950) {
+  if (!el || targetNtd === null || targetNtd === undefined || Number.isNaN(targetNtd)) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const targetWan = targetNtd / 1e4;
+  const t0 = performance.now();
+  const fmt = (w) => {
+    const absW = Math.abs(w);
+    const signStr = isSigned ? (w >= 0 ? '＋' : '－') : '';
+    if (absW >= 10000) return `${prefix}${signStr}${(absW / 10000).toFixed(2)} 億元`;
+    return `${prefix}${signStr}${Math.round(absW).toLocaleString('zh-TW')} 萬元`;
+  };
+  const step = (now) => {
+    const p = Math.max(0, Math.min(1, (now - t0) / dur));
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = fmt(targetWan * ease);
+    if (p < 1) requestAnimationFrame(step);
+    else el.textContent = fmt(targetWan);
+  };
+  requestAnimationFrame(step);
+}
+
+function animateHeroNumbers() {
+  const lc = state.lastCalc;
+  if (!lc) return;
+  if (lc.before !== null) animateCountUp($('h-now-val'), lc.before, '約 ', false, 750);
+  if (lc.afterVal !== null) animateCountUp($('h-new-val'), lc.afterVal, '約 ', false, 1000);
+  if (lc.grossDiff !== null) animateCountUp($('verdict-big'), lc.grossDiff, '', true, 1150);
+}
+
+function celebrateJackpot() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  // Remove any previous stage so rapid re-clicks feel fresh
+  document.querySelectorAll('.jackpot-stage, .jackpot-banner').forEach((n) => n.remove());
+
+  const lc = state.lastCalc;
+  const gainText = lc && lc.grossDiff > 0 ? `身價大躍升 ${signed(lc.grossDiff)}！` : '老屋升級全新耐震電梯大樓！';
+
+  const banner = document.createElement('div');
+  banner.className = 'jackpot-banner';
+  banner.setAttribute('aria-hidden', 'true');
+  banner.innerHTML = `🪙 恭喜揭曉！都更後預計 ${gainText} 💵`;
+  document.body.appendChild(banner);
+
+  const stage = document.createElement('div');
+  stage.className = 'jackpot-stage';
+  stage.setAttribute('aria-hidden', 'true');
+
+  const COIN_SYMBOLS = ['$', '¥', '發', '★', '$'];
+  const BILL_THEMES = ['', 'bill-blue', 'bill-gold'];
+  const EMOJIS = ['🪙', '💵', '💰', '💴', '✨', '🎉'];
+  const RIBBON_COLORS = ['#fbbf24', '#f59e0b', '#10b981', '#db6a41', '#fde047', '#3b82f6'];
+
+  const createParticle = (mode, idx) => {
+    const el = document.createElement('div');
+    const r = Math.random();
+    let kindClass = '';
+
+    if (r < 0.38) {
+      // 38% Shiny 3D Gold Coins
+      kindClass = 'jp-coin';
+      const sz = Math.round(26 + Math.random() * 18);
+      el.style.setProperty('--sz', `${sz}px`);
+      el.textContent = COIN_SYMBOLS[idx % COIN_SYMBOLS.length];
+    } else if (r < 0.72) {
+      // 34% Fluttering Banknotes ($1000 Bills)
+      const theme = BILL_THEMES[idx % BILL_THEMES.length];
+      kindClass = `jp-bill ${theme}`;
+      const bw = Math.round(50 + Math.random() * 18);
+      const bh = Math.round(bw * 0.48);
+      el.style.setProperty('--bw', `${bw}px`);
+      el.style.setProperty('--bh', `${bh}px`);
+      el.textContent = idx % 2 === 0 ? 'NT$' : '鈔';
+    } else if (r < 0.88) {
+      // 16% Large Crisp Money Bags / Coins / Cash Emojis
+      kindClass = 'jp-emoji';
+      el.style.setProperty('--esz', `${Math.round(26 + Math.random() * 16)}px`);
+      el.textContent = EMOJIS[idx % EMOJIS.length];
+    } else {
+      // 12% Metallic Foil Ribbons
+      kindClass = 'jp-ribbon';
+      el.style.setProperty('--rc', RIBBON_COLORS[idx % RIBBON_COLORS.length]);
+    }
+
+    el.className = `jp-item ${kindClass} ${mode}`;
+
+    if (mode === 'jp-cannon') {
+      // 3 Cannon origins: left (18%), center (50%), right (82%)
+      const origins = [18, 50, 82];
+      const x0 = origins[idx % origins.length] + (Math.random() * 10 - 5);
+      const dx = Math.round((Math.random() - 0.5) * 420);
+      const peakY = Math.round(-55 - Math.random() * 35);
+      const dur = (1.7 + Math.random() * 0.9).toFixed(2);
+      const delay = (Math.random() * 0.28).toFixed(2);
+      el.style.setProperty('--x0', `${x0}%`);
+      el.style.setProperty('--dx', `${dx}px`);
+      el.style.setProperty('--peakY', `${peakY}vh`);
+      el.style.setProperty('--dur', `${dur}s`);
+      el.style.setProperty('--delay', `${delay}s`);
+    } else {
+      // Full-screen Golden Rain from top
+      const x = (Math.random() * 98).toFixed(1);
+      const sway = Math.round((Math.random() - 0.5) * 150);
+      const r0 = Math.round(Math.random() * 360);
+      const dur = (1.8 + Math.random() * 1.1).toFixed(2);
+      const delay = (Math.random() * 0.75).toFixed(2);
+      el.style.setProperty('--x', `${x}%`);
+      el.style.setProperty('--sway', `${sway}px`);
+      el.style.setProperty('--r0', `${r0}deg`);
+      el.style.setProperty('--dur', `${dur}s`);
+      el.style.setProperty('--delay', `${delay}s`);
+    }
+
+    return el;
+  };
+
+  // Wave A: 42 Cannon Burst particles shooting up from bottom/center
+  for (let i = 0; i < 42; i++) {
+    stage.appendChild(createParticle('jp-cannon', i));
+  }
+  // Wave B: 72 Golden Rain particles cascading across the whole viewport
+  for (let i = 0; i < 72; i++) {
+    stage.appendChild(createParticle('jp-rain', i + 42));
+  }
+
+  document.body.appendChild(stage);
+  setTimeout(() => {
+    stage.remove();
+    banner.remove();
+  }, 3200);
+}
+
 /* ------------------------------------------------------------ quest bar */
 
 function questDone(step) {
@@ -631,14 +777,28 @@ function questDone(step) {
 }
 
 function initQuest() {
-  if (!window.Quest) return;
-  Quest.init({ page: 'a2', role: '住戶', steps: ['確認地址與坪數', '看身價增值', '探索更多卡片'] });
-  if ('IntersectionObserver' in window) {
-    const io1 = new IntersectionObserver((entries) => {
-      if (entries.some((e) => e.isIntersecting)) { questDone('看身價增值'); io1.disconnect(); }
-    }, { threshold: 0.4 });
-    io1.observe($('s-result'));
+  if (window.Quest) {
+    Quest.init({ page: 'a2', role: '住戶', steps: ['確認地址與坪數', '看身價增值', '探索更多卡片'] });
+    // Upgrade Quest's built-in confetti to our Gold Coins + Banknotes Jackpot effect
+    window.Quest.confetti = celebrateJackpot;
   }
+
+  const sResult = $('s-result');
+  if (sResult) {
+    sResult.addEventListener('toggle', () => {
+      if (sResult.open) {
+        state.resultRevealed = true;
+        compute();
+        sResult.classList.remove('jackpot-glow');
+        void sResult.offsetWidth;
+        sResult.classList.add('jackpot-glow');
+        celebrateJackpot();
+        animateHeroNumbers();
+        questDone('看身價增值');
+      }
+    });
+  }
+
   ['s-cost', 's-search', 's-flow'].forEach((id) => {
     const el = $(id);
     if (el) el.addEventListener('toggle', () => { if (el.open) questDone('探索更多卡片'); });
@@ -676,7 +836,12 @@ const AI_ANSWERS = {
     onAction: () => {
       $('bonus').value = 50;
       compute();
-      $('s-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const sRes = $('s-result');
+      if (sRes) {
+        if (!sRes.open) sRes.open = true;
+        else { celebrateJackpot(); animateHeroNumbers(); }
+        sRes.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     },
     sources: [
       '📜 《文化資產保存法》§34、§41',
@@ -708,7 +873,12 @@ const AI_ANSWERS = {
     onAction: () => {
       $('bonus').value = 50;
       compute();
-      $('s-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const sRes = $('s-result');
+      if (sRes) {
+        if (!sRes.open) sRes.open = true;
+        else { celebrateJackpot(); animateHeroNumbers(); }
+        sRes.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     },
     sources: [
       '📜 《都市更新條例》§7、§37、§65',
