@@ -1,4 +1,0 @@
-# Derived data is rebuilt by scripts/build_prototype_data.py from data/marts (CONVENTIONS 4a-1: no data snapshots in git).
-data/*
-!data/README.md
-scripts/__pycache__/
