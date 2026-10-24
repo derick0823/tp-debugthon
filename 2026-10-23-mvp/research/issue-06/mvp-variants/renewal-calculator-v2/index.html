@@ -204,63 +204,135 @@
     <details class="more"><summary>每個試算數字怎麼來的</summary><div id="calc-src" class="src"></div></details>
   </section>
 
-  <!-- Section 2: Living Cost Tradeoff Second (生活代價) -->
-  <section id="s-cost" class="card" aria-labelledby="h-cost">
-    <h2 id="h-cost"><span class="n">2</span>生活代價：施工過渡期要付出多少？</h2>
-    <p class="say">新房子蓋好前，需要暫時搬出去住幾年。把這段過渡期的房租與搬家費攤開來看，對比都更帶來的資產增值：</p>
+  <!-- Section 2: Living Cost Tradeoff (Toggleable Card, Default Collapsed) -->
+  <details id="s-cost" class="card toggle-card" aria-labelledby="h-cost">
+    <summary class="toggle-summary">
+      <div class="toggle-head">
+        <span class="n">2</span>
+        <div class="toggle-titles">
+          <span id="h-cost" class="toggle-title">生活代價：施工過渡期要付出多少？</span>
+          <span id="cost-preview" class="toggle-preview">點擊展開過渡期房租、搬家費與資產增值對照</span>
+        </div>
+      </div>
+      <span class="toggle-pill" aria-hidden="true"><span class="open-txt">展開</span><span class="close-txt">收起</span></span>
+    </summary>
 
-    <div class="relo-compare">
-      <h3 class="sub" style="margin-top:0">過渡期生活代價 vs 都更資產增值</h3>
-      <div class="bars" id="relo-compare-bars"></div>
+    <div class="toggle-body">
+      <p class="say">新房子蓋好前，需要暫時搬出去住幾年。把這段過渡期的房租與搬家費攤開來看，對比都更帶來的資產增值：</p>
+
+      <div class="relo-compare">
+        <h3 class="sub" style="margin-top:0">過渡期生活代價 vs 都更資產增值</h3>
+        <div class="bars" id="relo-compare-bars"></div>
+      </div>
+
+      <div id="relo-net-box" class="relo-net-box" aria-live="polite">
+        <span class="net-title">扣除生活代價後・最終淨收穫</span>
+        <span id="net-val" class="net-val">—</span>
+        <span id="net-sub" class="net-sub"></span>
+      </div>
+
+      <label class="check">
+        <input id="relo-paid" type="checkbox">
+        <span>💡 實施者補貼拆遷安置費（都更權利變換案常見，由實施者發放租金補貼，勾選後自付生活代價為 0 元）</span>
+      </label>
+
+      <div class="slider">
+        <label for="relo-years"><span>施工等待期間（要搬出去幾年）</span><output id="relo-years-out"></output></label>
+        <input id="relo-years" type="range" min="1" max="5" step="0.1" value="3">
+      </div>
+      <div class="slider">
+        <label for="relo-rent"><span>過渡期在外每月房租</span><output id="relo-rent-out"></output></label>
+        <input id="relo-rent" type="range" min="0.5" max="6" step="0.1" value="1.5">
+      </div>
+      <div class="slider">
+        <label for="relo-move"><span>搬家與安頓費（搬出＋搬回兩趟）</span><output id="relo-move-out"></output></label>
+        <input id="relo-move" type="range" min="0" max="20" step="0.5" value="4">
+      </div>
+
+      <h3 class="sub">過渡期費用明細</h3>
+      <div class="bars" id="relo-bars"></div>
+
+      <p id="afford" class="afford" hidden></p>
+
+      <p class="say" style="margin-top:10px">若北北基桃無其他自有住宅，亦可由實施者協助申請<a href="https://laws.gov.taipei/Law/LawSearch/LawArticleContent/FL095061" target="_blank" rel="noopener">臺北市都市更新中繼住宅</a>。</p>
+      <details class="more"><summary>生活代價預設值說明</summary><div class="src">
+        <p>施工期預設 3 年：參考施工期常見範圍 1.6～3 年上緣；對照危老案從建照到完工中位數約 1,348 天（3.7 年）。</p>
+        <p>每月房租預設 1.5 萬元、搬家費預設 4 萬元（搬出與搬回各 2 萬元）：可依你家附近租屋行情自由調整滑桿。</p>
+        <p>拆遷安置費：都更權利變換時，實施者發給住戶的拆遷安置費計入共同負擔，住戶領取補貼租屋即可免自掏腰包。</p>
+      </div></details>
     </div>
+  </details>
 
-    <div id="relo-net-box" class="relo-net-box" aria-live="polite">
-      <span class="net-title">扣除生活代價後・最終淨收穫</span>
-      <span id="net-val" class="net-val">—</span>
-      <span id="net-sub" class="net-sub"></span>
+  <!-- Section 3: Google Search AI Overview-style Smart Search (Toggleable Card, Default Collapsed) -->
+  <details id="s-search" class="card toggle-card" aria-labelledby="h-search">
+    <summary class="toggle-summary">
+      <div class="toggle-head">
+        <span class="n">3</span>
+        <div class="toggle-titles">
+          <span id="h-search" class="toggle-title">都更智慧搜尋：疑難雜症 AI 摘要解答</span>
+          <span class="toggle-preview">預設提問：「我家是古蹟可以都更嗎?」・Google AI 摘要風格</span>
+        </div>
+      </div>
+      <span class="toggle-pill" aria-hidden="true"><span class="open-txt">展開</span><span class="close-txt">收起</span></span>
+    </summary>
+
+    <div class="toggle-body">
+      <p class="say">直接輸入完整的都更問題，系統會檢索臺北市都更法規與實務知識庫，直接整理出結構化解答：</p>
+
+      <form id="ai-search-form" class="g-search-bar" role="search">
+        <svg class="g-search-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.2"/>
+          <path d="M16.2 16.2 21 21" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        <input id="ai-search-input" type="search" value="我家是古蹟可以都更嗎?" placeholder="輸入完整的都更問題，例如：我家是古蹟可以都更嗎?" aria-label="輸入都更問題">
+        <button id="ai-search-btn" type="submit" class="g-search-btn">搜尋</button>
+      </form>
+
+      <div class="g-quick-queries" aria-label="常見問題快速帶入">
+        <span class="g-quick-label">熱門提問：</span>
+        <button type="button" class="g-query-chip active" data-q="我家是古蹟可以都更嗎?">🏛️ 我家是古蹟可以都更嗎?</button>
+        <button type="button" class="g-query-chip" data-q="海砂屋都更可以拿多少容積獎勵?">🧱 海砂屋都更可以拿多少容積獎勵?</button>
+        <button type="button" class="g-query-chip" data-q="施工期間沒錢付房租怎麼辦?">💰 施工期間沒錢付房租怎麼辦?</button>
+      </div>
+
+      <!-- Loading Skeleton (shown briefly for 0.5s after clicking Search) -->
+      <div id="ai-loading" class="ai-overview-loading" hidden aria-live="polite">
+        <div class="ai-sparkle-head">
+          <span class="sparkle-icon" aria-hidden="true">✦</span>
+          <span>正在檢索臺北市都更與文資法規知識庫，生成 AI 摘要…</span>
+        </div>
+        <div class="shimmer-line w90"></div>
+        <div class="shimmer-line w75"></div>
+        <div class="shimmer-line w60"></div>
+      </div>
+
+      <!-- AI Overview Result Container -->
+      <div id="ai-overview" class="ai-overview" hidden aria-live="polite"></div>
     </div>
+  </details>
 
-    <label class="check">
-      <input id="relo-paid" type="checkbox">
-      <span>💡 實施者補貼拆遷安置費（都更權利變換案常見，由實施者發放租金補貼，勾選後自付生活代價為 0 元）</span>
-    </label>
+  <!-- Section 4: Formula Flow (Toggleable Card, Default Collapsed) -->
+  <details id="s-flow" class="card toggle-card" aria-labelledby="h-flow">
+    <summary class="toggle-summary">
+      <div class="toggle-head">
+        <span class="n">4</span>
+        <div class="toggle-titles">
+          <span id="h-flow" class="toggle-title">怎麼算的：一張圖看懂財富變化</span>
+          <span class="toggle-preview">點擊展開 6 步計算公式卡片、資料來源與已知限制</span>
+        </div>
+      </div>
+      <span class="toggle-pill" aria-hidden="true"><span class="open-txt">展開</span><span class="close-txt">收起</span></span>
+    </summary>
 
-    <div class="slider">
-      <label for="relo-years"><span>施工等待期間（要搬出去幾年）</span><output id="relo-years-out"></output></label>
-      <input id="relo-years" type="range" min="1" max="5" step="0.1" value="3">
+    <div class="toggle-body">
+      <p class="say">往右滑看每一步計算。直接拉卡片裡的滑桿，上面的試算結果與生活代價會即時連動。</p>
+      <div id="flow" class="flow" tabindex="0" aria-label="計算流程"></div>
+
+      <details class="more method" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+        <summary>方法、資料來源、已知偏誤</summary>
+        <div id="method" class="src"></div>
+      </details>
     </div>
-    <div class="slider">
-      <label for="relo-rent"><span>過渡期在外每月房租</span><output id="relo-rent-out"></output></label>
-      <input id="relo-rent" type="range" min="0.5" max="6" step="0.1" value="1.5">
-    </div>
-    <div class="slider">
-      <label for="relo-move"><span>搬家與安頓費（搬出＋搬回兩趟）</span><output id="relo-move-out"></output></label>
-      <input id="relo-move" type="range" min="0" max="20" step="0.5" value="4">
-    </div>
-
-    <h3 class="sub">過渡期費用明細</h3>
-    <div class="bars" id="relo-bars"></div>
-
-    <p id="afford" class="afford" hidden></p>
-
-    <p class="say" style="margin-top:10px">若北北基桃無其他自有住宅，亦可由實施者協助申請<a href="https://laws.gov.taipei/Law/LawSearch/LawArticleContent/FL095061" target="_blank" rel="noopener">臺北市都市更新中繼住宅</a>。</p>
-    <details class="more"><summary>生活代價預設值說明</summary><div class="src">
-      <p>施工期預設 3 年：參考施工期常見範圍 1.6～3 年上緣；對照危老案從建照到完工中位數約 1,348 天（3.7 年）。</p>
-      <p>每月房租預設 1.5 萬元、搬家費預設 4 萬元（搬出與搬回各 2 萬元）：可依你家附近租屋行情自由調整滑桿。</p>
-      <p>拆遷安置費：都更權利變換時，實施者發給住戶的拆遷安置費計入共同負擔，住戶領取補貼租屋即可免自掏腰包。</p>
-    </div></details>
-  </section>
-
-  <!-- Section 3: Formula Flow (怎麼算的) -->
-  <section id="s-flow" class="card" aria-labelledby="h-flow">
-    <h2 id="h-flow">怎麼算的：一張圖看懂財富變化</h2>
-    <p class="say">往右滑看每一步計算。直接拉卡片裡的滑桿，上面的試算結果與生活代價會即時連動。</p>
-    <div id="flow" class="flow" tabindex="0" aria-label="計算流程"></div>
-  </section>
-
-  <details class="card more method">
-    <summary>方法、資料來源、已知偏誤</summary>
-    <div id="method" class="src"></div>
   </details>
 </main>
 

@@ -512,13 +512,20 @@ function compute() {
     + bar('資產增值', Math.max(0, grossDiff || 0), cmpMax, 'gain', grossDiff === null ? '—' : `${signed(grossDiff)} <small>（更新前後房屋差價）</small>`));
 
   const netBox = $('relo-net-box');
+  const costPreview = $('cost-preview');
   if (netDiff === null) {
     netBox.className = 'relo-net-box';
     $('net-val').textContent = '—';
     $('net-sub').textContent = '';
+    if (costPreview) costPreview.textContent = '點擊展開過渡期房租、搬家費與資產增值對照';
   } else {
     netBox.className = `relo-net-box${netDiff >= 0 ? '' : ' neg'}`;
     $('net-val').textContent = signed(netDiff);
+    if (costPreview) {
+      costPreview.textContent = x.reloPaid
+        ? `實施者補貼安置費（自付 0 元）・最終淨收穫 ${signed(netDiff)}`
+        : `施工 ${x.reloYears.toFixed(1)} 年生活代價約 ${wan(relo)}・扣除後淨收穫 ${signed(netDiff)}`;
+    }
     if (x.reloPaid && netDiff > 0) {
       $('net-sub').innerHTML = `實施者補貼拆遷安置費，過渡期免自掏房租與搬家費，<b>完整淨享 ${wan(netDiff)} 身價成長與全新電梯好宅！</b>`;
     } else if (netDiff > 0) {
@@ -625,16 +632,218 @@ function questDone(step) {
 
 function initQuest() {
   if (!window.Quest) return;
-  Quest.init({ page: 'a2', role: '住戶', steps: ['確認地址與坪數', '看身價增值', '評估生活代價'] });
-  if (!('IntersectionObserver' in window)) return;
-  const io1 = new IntersectionObserver((entries) => {
-    if (entries.some((e) => e.isIntersecting)) { questDone('看身價增值'); io1.disconnect(); }
-  }, { threshold: 0.4 });
-  io1.observe($('s-result'));
-  const io2 = new IntersectionObserver((entries) => {
-    if (entries.some((e) => e.isIntersecting)) { questDone('評估生活代價'); io2.disconnect(); }
-  }, { threshold: 0.4 });
-  io2.observe($('s-cost'));
+  Quest.init({ page: 'a2', role: '住戶', steps: ['確認地址與坪數', '看身價增值', '探索更多卡片'] });
+  if ('IntersectionObserver' in window) {
+    const io1 = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { questDone('看身價增值'); io1.disconnect(); }
+    }, { threshold: 0.4 });
+    io1.observe($('s-result'));
+  }
+  ['s-cost', 's-search', 's-flow'].forEach((id) => {
+    const el = $(id);
+    if (el) el.addEventListener('toggle', () => { if (el.open) questDone('探索更多卡片'); });
+  });
+}
+
+/* ------------------------------------------------------------ Google Search AI Overview (智慧搜尋) */
+
+const AI_ANSWERS = {
+  heritage: {
+    leadTitle: '🎉 可以透過「古蹟容積移轉變現」或「歷史建築併同都更」換取豐厚權益！',
+    leadBody: '老屋具有文化資產身分<b>並不等於財產被凍結</b>。依《文化資產保存法》與《都市更新條例》，政府針對「指定古蹟」、「歷史建築」與「古蹟鄰地」設計了不同的<b>容積變現與獎勵補償機制</b>，先確認你家屬於哪一種身分，就能找到最划算的增值出路：',
+    cases: [
+      {
+        title: '🏛️ 身分 1｜本體是「已指定古蹟」',
+        tag: '💰 容積移轉賣錢變現',
+        tagCls: '',
+        body: '<b>規定</b>：古蹟本體依法不得拆除重建，北市自劃更新單元須排除已指定古蹟（亦不適用危老條例）。<br><b>你的財產出路</b>：可依<b>《文化資產保存法》§41 與《古蹟土地容積移轉辦法》</b>，把古蹟基地沒用完的基準容積<b>「出售並移轉給其他可建築基地」直接變現</b>！你既能拿回一大筆容積出售資金，原本古蹟房屋還能申請《文資法》修復再利用補助、繼續保留產權收租。',
+      },
+      {
+        title: '🏢 身分 2｜登錄為「歷史建築／紀念建築」',
+        tag: '🚀 併同都更＋最高 1.5 倍獎勵',
+        tagCls: '',
+        body: '<b>規定</b>：歷史建築<b>沒有強制排除都更</b>！可與鄰地整合劃入同一都市更新單元，採「部分保存、部分重建」或同基地共構。<br><b>你的財產出路</b>：依<b>《都市更新建築容積獎勵辦法》§9</b>，基地內歷史建築整體保存部分<b>完全不計入容積（免扣額度）</b>，且還能額外獲得<b>實際保存面積最高 1.5 倍的容積獎勵</b>（或選擇容積移轉），換成新大樓的高價值樓地板分回！',
+      },
+      {
+        title: '📐 身分 3｜位於「古蹟周邊 50 公尺內（古蹟鄰地）」',
+        tag: '✅ 都審通過即可正常都更',
+        tagCls: 'alt',
+        body: '<b>規定</b>：你家本身不是文資，只是位於古蹟隔壁 50 公尺內（臺北市約有 6,388 棟老屋屬於此類）。<br><b>你的財產出路</b>：<b>完全可以正常辦理都更或危老重建！</b>只需依《文資法》§34 與《臺北市土地使用分區管制自治條例》§78-2，在送件時通過「都市設計審議（都審）」，確認新建築退縮、色彩與天際線不遮擋古蹟景觀即可。',
+      },
+    ],
+    actionText: '💡 <b>想試算看看若屬於「歷史建築併同都更」或高獎勵案件，你家能分回多少新房價值嗎？</b>',
+    actionBtn: '⚡ 套用文資保存高容積獎勵（50%）到上方試算機',
+    onAction: () => {
+      $('bonus').value = 50;
+      compute();
+      $('s-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
+    sources: [
+      '📜 《文化資產保存法》§34、§41',
+      '📜 《古蹟土地容積移轉辦法》',
+      '📜 《都市更新建築容積獎勵辦法》§9（最高 1.5 倍獎勵）',
+      '📜 《臺北市自劃更新單元檢討書圖作業須知》第 4 點',
+      '📜 《都市危險及老舊建築物加速重建條例》§3',
+    ],
+  },
+  seasand: {
+    leadTitle: '🧱 列管海砂屋最高可享「原建築容積 1.3 倍」或「基準容積＋30% 防災獎勵」！',
+    leadBody: '經臺北市政府公告列管須拆除重建的高氯離子混凝土建築物（海砂屋），屬於市府最優先協助更新的對象，不僅容積獎勵給得高，同意門檻與審議流程也有專案加速：',
+    cases: [
+      {
+        title: '📈 專案容積獎勵｜海砂屋與危險建物加碼',
+        tag: '🔥 最高 +30% 或原容 1.3 倍',
+        tagCls: '',
+        body: '依《都市更新建築容積獎勵辦法》與臺北市海砂屋專案，經鑑定須拆除重建之海砂屋可直接爭取<b>基準容積 30% 的危險建物獎勵</b>，加計綠建築、耐震、時程等獎勵後，都更最高可達<b>基準容積 1.5 倍</b>（或原建築容積＋30%）。',
+      },
+      {
+        title: '⚡ 迅行劃定與公辦都更 7599 專案',
+        tag: '🚀 免自己辛苦找建商',
+        tagCls: 'alt',
+        body: '列管海砂屋得由市府<b>迅行劃定更新地區</b>，同意比率門檻降至 <b>1/2</b>；若自行整合達 75% 意願，還可申請臺北市「公辦都更 7599 專案」由市府與住都中心進場協助招商。',
+      },
+    ],
+    actionText: '💡 <b>上方試算機預設已帶入 30% 危險建物獎勵，也可直接拉高至 50% 試算海砂屋加碼上限！</b>',
+    actionBtn: '⚡ 套用 50% 容積獎勵試算海砂屋身價',
+    onAction: () => {
+      $('bonus').value = 50;
+      compute();
+      $('s-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
+    sources: [
+      '📜 《都市更新條例》§7、§37、§65',
+      '📜 《臺北市高氯離子混凝土建築物善後處理自治條例》',
+      '📜 《都市更新建築容積獎勵辦法》§8',
+    ],
+  },
+  rent: {
+    leadTitle: '💰 都更權利變換案通常由「實施者發放拆遷安置費（租金補貼）」，住戶免自掏腰包！',
+    leadBody: '許多長輩擔心施工 3 年期間在外租屋是一大筆負擔，其實在多數都更權利變換案件中，<b>施工期間的房租與搬家費會由實施者（建商）先行發放現金補貼</b>：',
+    cases: [
+      {
+        title: '💵 拆遷安置費｜由實施者發放租金與搬遷補貼',
+        tag: '✅ 施工期自付 0 元',
+        tagCls: '',
+        body: '依《都市更新權利變換實施辦法》，住戶因更新而騰空搬遷期間的<b>租金補貼（拆遷安置費）與搬家費</b>，會依法編列進共同負擔中，由實施者按月或按期發給住戶，住戶拿這筆補貼去租房即可，不必動用自己的退休金。',
+      },
+      {
+        title: '🏠 臺北市都市更新中繼住宅｜高齡與弱勢優先承租',
+        tag: '🛡️ 市府中繼安置保障',
+        tagCls: 'alt',
+        body: '若家庭成員在北北基桃無其他自有住宅，且家中有 65 歲以上長者、身心障礙者或低收入戶，在都更搬遷期間可由實施者協助向市府申請<b>「都市更新中繼住宅」</b>，解決高齡房客租屋不易的痛點。',
+      },
+    ],
+    actionText: '💡 <b>想看看如果由實施者補貼拆遷安置費，你家的最終淨收穫會變多少嗎？</b>',
+    actionBtn: '⚡ 展開「生活代價」並勾選實施者補貼安置費',
+    onAction: () => {
+      const costCard = $('s-cost');
+      if (costCard) costCard.open = true;
+      $('relo-paid').checked = true;
+      compute();
+      if (costCard) costCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
+    sources: [
+      '📜 《都市更新條例》§51、§57',
+      '📜 《都市更新權利變換實施辦法》§19（拆遷安置費）',
+      '📜 《臺北市都市更新中繼住宅出租管理辦法》',
+    ],
+  },
+};
+
+function matchAiAnswer(rawQuery) {
+  const q = String(rawQuery || '').trim();
+  if (/古蹟|文資|文化資產|歷史建築|紀念建築|古厝/.test(q)) return { key: 'heritage', data: AI_ANSWERS.heritage, query: q };
+  if (/海砂|氯離子|獎勵|幾倍|容積/.test(q)) return { key: 'seasand', data: AI_ANSWERS.seasand, query: q };
+  if (/房租|租金|搬家|安置|沒錢|生活代價|中繼/.test(q)) return { key: 'rent', data: AI_ANSWERS.rent, query: q };
+  // Default fallback still includes heritage & general renewal guidance
+  return {
+    key: 'custom',
+    query: q,
+    data: {
+      leadTitle: `✨ 關於「${esc(q || '都更權益與試算')}」的 AI 法規摘要`,
+      leadBody: '臺北市都市更新透過<b>「容積獎勵」</b>與<b>「共同負擔折抵工程款」</b>兩大機制，讓老屋住戶不必自己拿出現金蓋房，就能換回全新耐震電梯大樓。若涉及特殊身分（如古蹟／歷史建築、海砂屋、過渡期安置），皆有對應保障：',
+      cases: AI_ANSWERS.heritage.cases,
+      actionText: AI_ANSWERS.heritage.actionText,
+      actionBtn: AI_ANSWERS.heritage.actionBtn,
+      onAction: AI_ANSWERS.heritage.onAction,
+      sources: AI_ANSWERS.heritage.sources,
+    },
+  };
+}
+
+let searchTimer = null;
+
+function runSmartSearch(queryText) {
+  const input = $('ai-search-input');
+  const loading = $('ai-loading');
+  const out = $('ai-overview');
+  if (!input || !loading || !out) return;
+
+  const q = (queryText !== undefined ? queryText : input.value).trim() || '我家是古蹟可以都更嗎?';
+  input.value = q;
+
+  document.querySelectorAll('.g-query-chip').forEach((chipEl) => {
+    chipEl.classList.toggle('active', chipEl.dataset.q === q);
+  });
+
+  if (searchTimer) clearTimeout(searchTimer);
+  out.hidden = true;
+  loading.hidden = false;
+
+  searchTimer = setTimeout(() => {
+    const { data } = matchAiAnswer(q);
+    out.innerHTML = `
+      <div class="ai-ov-header">
+        <span class="ai-ov-badge"><span class="sparkle-icon" aria-hidden="true">✦</span> AI 摘要</span>
+        <span class="ai-ov-meta">檢索自臺北市都更法規與文資保存知識庫</span>
+      </div>
+      <div class="ai-ov-lead">
+        <strong>${data.leadTitle}</strong>
+        <span>${data.leadBody}</span>
+      </div>
+      <div class="ai-ov-grid">
+        ${data.cases.map((c) => `
+          <div class="ai-case-card">
+            <div class="ai-case-top">
+              <span class="ai-case-title">${c.title}</span>
+              <span class="ai-case-tag ${c.tagCls || ''}">${c.tag}</span>
+            </div>
+            <p class="ai-case-body">${c.body}</p>
+          </div>
+        `).join('')}
+      </div>
+      <div class="ai-action-box">
+        <span>${data.actionText}</span>
+        <button type="button" id="ai-apply-btn" class="ai-action-btn">${data.actionBtn}</button>
+      </div>
+      <div class="ai-sources" aria-label="法規依據與來源">
+        <span class="ai-sources-label">法規依據：</span>
+        ${data.sources.map((s) => `<span class="ai-cite">${esc(s)}</span>`).join('')}
+      </div>
+    `;
+    loading.hidden = true;
+    out.hidden = false;
+
+    const applyBtn = $('ai-apply-btn');
+    if (applyBtn && typeof data.onAction === 'function') {
+      applyBtn.addEventListener('click', data.onAction);
+    }
+    questDone('探索更多卡片');
+  }, 500);
+}
+
+function initSmartSearch() {
+  const form = $('ai-search-form');
+  if (!form) return;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    runSmartSearch();
+  });
+  document.querySelectorAll('.g-query-chip').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      runSmartSearch(btn.dataset.q);
+    });
+  });
 }
 
 /* ------------------------------------------------------------ events & URL params */
@@ -833,6 +1042,7 @@ async function init() {
 
   renderMethod();
   initQuest();
+  initSmartSearch();
   setDefaultsFromPrice(false);
   setAfterDefault();
   compute();
