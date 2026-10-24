@@ -110,8 +110,8 @@
   </details>
 </main>
 <script src="../design-kit/kit.js"></script>
-<script src="../design-kit/quest.js"></script>
 <script>
+const Quest = window.Quest || { done() {}, init() {} };
 const W = 800, G = 410, DX = 46, DY = 30, FH = 34;
 const B = [
   { x: 24, w: 132, f: 5 }, { x: 156, w: 118, f: 4 }, { x: 274, w: 146, f: 5 },
