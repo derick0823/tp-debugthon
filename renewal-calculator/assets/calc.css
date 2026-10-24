@@ -1,0 +1,253 @@
+/*
+ * calc.css  Styles for the renewal calculator (MVP variant A).
+ * Picture first: the hero draws two homes sized by floor area, money is drawn as bars,
+ * consent as a dot grid. Everything that moves uses a CSS transition (no libraries).
+ * Palette follows solutions/prototype/assets/common.css.
+ */
+
+:root {
+  --bg: #f9faf8;
+  --surface: #ffffff;
+  --surface-2: #eef1ee;
+  --border: #d5dad6;
+  --fg: #1a1f22;
+  --fg-2: #4b555b;
+  --fg-muted: #6b767d;
+  --accent: #1f5f8b;
+  --accent-fg: #ffffff;
+  --accent-soft: #dbe8f2;
+  --now: #8a9399;
+  --now-soft: #d9dedb;
+  --new: #1f5f8b;
+  --new-soft: #c9dcea;
+  --gain: #17632f;
+  --gain-bg: #dcefe1;
+  --loss: #a3301a;
+  --loss-bg: #fbe0da;
+  --warn-bg: #fbe9c6;
+  --warn-fg: #6a4300;
+  --shadow: 0 1px 2px rgba(20, 30, 40, 0.06), 0 4px 14px rgba(20, 30, 40, 0.06);
+  --font: 'Noto Sans TC', 'Microsoft JhengHei', 'PingFang TC', system-ui, sans-serif;
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14181a; --surface: #1c2124; --surface-2: #242b2f; --border: #353e43;
+    --fg: #e8ecea; --fg-2: #b9c2c6; --fg-muted: #8f9a9f;
+    --accent: #7db5dd; --accent-fg: #0d1a24; --accent-soft: #1f3445;
+    --now: #8f9a9f; --now-soft: #353e43; --new: #7db5dd; --new-soft: #24405a;
+    --gain: #9ad7aa; --gain-bg: #1b3324; --loss: #f2a593; --loss-bg: #3d1f18;
+    --warn-bg: #3a2e14; --warn-fg: #f1cf8a; --shadow: none;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14181a; --surface: #1c2124; --surface-2: #242b2f; --border: #353e43;
+  --fg: #e8ecea; --fg-2: #b9c2c6; --fg-muted: #8f9a9f;
+  --accent: #7db5dd; --accent-fg: #0d1a24; --accent-soft: #1f3445;
+  --now: #8f9a9f; --now-soft: #353e43; --new: #7db5dd; --new-soft: #24405a;
+  --gain: #9ad7aa; --gain-bg: #1b3324; --loss: #f2a593; --loss-bg: #3d1f18;
+  --warn-bg: #3a2e14; --warn-fg: #f1cf8a; --shadow: none;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 17px; line-height: 1.65; }
+.wrap { max-width: 720px; margin: 0 auto; padding: 0 16px; }
+
+.top { padding-top: 20px; }
+.kicker { margin: 0; color: var(--fg-muted); font-size: 15px; }
+h1 { margin: 2px 0 4px; font-size: 32px; line-height: 1.25; font-weight: 900; }
+.lede { margin: 0; color: var(--fg-2); font-size: 18px; }
+h2 { margin: 0 0 12px; font-size: 22px; display: flex; align-items: center; gap: 8px; }
+h2 .n { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: var(--accent-fg); font-size: 18px; }
+h3.sub { margin: 18px 0 8px; font-size: 18px; color: var(--fg-2); }
+h3.sub:first-of-type { margin-top: 0; }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin: 14px 0; box-shadow: var(--shadow); }
+
+/* ---------------------------------------------------------------- hero */
+.hero { padding: 12px 12px 14px; }
+#hero { width: 100%; height: auto; display: block; }
+#hero .ground { stroke: var(--border); stroke-width: 2; }
+#hero .house { transform-box: fill-box; transform-origin: 50% 100%; transition: transform .5s var(--ease); }
+#hero .now .roof { fill: var(--now); }
+#hero .now .body { fill: var(--now-soft); stroke: var(--now); stroke-width: 2; }
+#hero .new .roof { fill: var(--new); }
+#hero .new .body { fill: var(--new-soft); stroke: var(--new); stroke-width: 2; }
+#hero .win { fill: var(--surface); stroke: currentColor; stroke-width: 1; opacity: .9; }
+#hero .now { color: var(--now); }
+#hero .new { color: var(--new); }
+#hero .door { fill: var(--now); }
+#hero .arrow { stroke: var(--fg-muted); stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+#hero .cap { fill: var(--fg-2); font-size: 16px; text-anchor: middle; font-family: var(--font); }
+.hero-nums { display: grid; grid-template-columns: 1fr 1fr; text-align: center; margin-top: 2px; }
+.hero-nums b { display: block; font-size: 34px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.hero-nums div:first-child b { color: var(--fg-2); }
+.hero-nums div:last-child b { color: var(--new); }
+.hero-nums span { font-size: 17px; color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+
+.verdict { margin-top: 12px; border-radius: 8px; padding: 10px 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; transition: background-color .3s, color .3s; }
+.verdict .big { font-size: 34px; font-weight: 900; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.verdict .t { font-size: 17px; line-height: 1.45; flex: 1 1 12em; }
+.verdict.good { background: var(--gain-bg); color: var(--gain); }
+.verdict.mid { background: var(--warn-bg); color: var(--warn-fg); }
+.verdict.bad { background: var(--loss-bg); color: var(--loss); }
+.afford { margin: 8px 0 0; font-size: 17px; line-height: 1.5; color: var(--fg-2); }
+.afford .src { display: block; }
+
+/* ---------------------------------------------------------------- steps */
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0; }
+.steps a { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 4px; min-height: 92px; justify-content: center; border-radius: 12px; background: var(--surface); border: 2px solid var(--border); color: var(--fg); text-decoration: none; font-size: 17px; font-weight: 700; position: relative; }
+.steps a b { position: absolute; top: 6px; left: 10px; font-size: 15px; color: var(--fg-muted); }
+.steps .ico svg { width: 36px; height: 36px; stroke: var(--accent); fill: none; stroke-width: 2; stroke-linecap: round; }
+.steps a:first-child .ico svg { fill: var(--accent); stroke: none; }
+.steps a.done { border-color: var(--accent); background: var(--accent-soft); }
+
+/* ---------------------------------------------------------------- inputs */
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-bottom: 6px; }
+.field { display: flex; flex-direction: column; gap: 2px; flex: 1 1 120px; min-width: 0; font-size: 15px; color: var(--fg-2); }
+.field.grow { flex: 3 1 200px; }
+input[type="text"], input[type="number"], select { font: inherit; font-size: 18px; color: var(--fg); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; width: 100%; min-width: 0; }
+input:focus-visible, select:focus-visible, button:focus-visible, summary:focus-visible, .steps a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn { font: inherit; font-weight: 700; background: var(--accent); color: var(--accent-fg); border: 0; border-radius: 8px; padding: 12px 22px; font-size: 18px; cursor: pointer; }
+.status { margin: 4px 0 0; font-size: 16px; color: var(--fg-2); min-height: 1em; }
+.status.err { color: var(--loss); }
+.suggest { list-style: none; margin: 6px 0 0; padding: 0; border: 1px solid var(--border); border-radius: 6px; max-height: 220px; overflow-y: auto; }
+.suggest li + li { border-top: 1px solid var(--border); }
+.suggest button { all: unset; display: block; width: 100%; box-sizing: border-box; padding: 8px 10px; cursor: pointer; }
+.suggest button:hover, .suggest button:focus-visible { background: var(--accent-soft); }
+.check { display: flex; gap: 10px; align-items: center; font-size: 17px; margin: 6px 0; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--surface-2); font-size: 16px; }
+.chip svg { width: 18px; height: 18px; stroke: var(--fg-2); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.chip.est { background: var(--warn-bg); color: var(--warn-fg); }
+.chip.est svg { stroke: var(--warn-fg); }
+.flag { border-radius: 8px; padding: 10px 12px; margin: 10px 0 0; background: var(--loss-bg); color: var(--loss); font-size: 16px; }
+.flag a { color: inherit; }
+
+.slider { margin: 14px 0; }
+.slider label { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; font-size: 19px; }
+.slider output { font-size: 30px; font-variant-numeric: tabular-nums; color: var(--accent); }
+.slider input[type="range"] { width: 100%; accent-color: var(--accent); height: 36px; }
+.say { margin: 4px 0 0; font-size: 17px; color: var(--fg-2); }
+
+.seg { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+.seg label { position: relative; }
+.seg input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.seg span { display: inline-block; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--border); font-size: 16px; background: var(--surface); }
+.seg input:checked + span { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.seg input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.seg input:disabled + span { opacity: .45; }
+
+details.more { margin-top: 6px; }
+details.more > summary { cursor: pointer; font-size: 15px; color: var(--accent); list-style-position: inside; }
+details.method > summary { font-size: 17px; font-weight: 700; }
+.src { margin: 4px 0 0; font-size: 15px; color: var(--fg-muted); line-height: 1.55; overflow-wrap: anywhere; }
+.src ol, .src ul { padding-left: 18px; margin: 6px 0; }
+
+/* ---------------------------------------------------------------- bars */
+.bars { display: grid; gap: 10px; }
+.bar { display: grid; grid-template-columns: 3em 1fr; gap: 4px 8px; align-items: center; }
+.bar .lab { font-size: 16px; color: var(--fg-2); }
+.bar .track { position: relative; height: 34px; background: var(--surface-2); border-radius: 6px; overflow: visible; }
+.bar .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 6px; transition: width .5s var(--ease), background-color .3s; min-width: 2px; }
+.bar .fill.now { background: var(--now); }
+.bar .fill.new { background: var(--new); }
+.bar .range { position: absolute; top: 50%; height: 2px; background: var(--fg); opacity: .55; transition: left .5s var(--ease), width .5s var(--ease); }
+.bar .range::before, .bar .range::after { content: ''; position: absolute; top: -5px; width: 2px; height: 12px; background: inherit; }
+.bar .range::before { left: 0; }
+.bar .range::after { right: 0; }
+.bar .mark { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--fg); transition: left .5s var(--ease); }
+.bar .val { grid-column: 2; font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: -2px; }
+.bar .val small { font-size: 15px; font-weight: 400; color: var(--fg-muted); }
+
+/* diverging bars around zero: the "flip" chart and the difference bar */
+.flip { display: grid; gap: 10px; }
+.dv { display: grid; grid-template-columns: 6em 1fr; gap: 2px 8px; align-items: center; }
+.dv .lab small { font-size: 15px; }
+.dv .lab { font-size: 17px; color: var(--fg-2); line-height: 1.3; }
+.dv .axis { position: relative; height: 36px; }
+.dv .axis::before { content: ''; position: absolute; left: 50%; top: -4px; bottom: -4px; width: 2px; background: var(--fg-muted); }
+.dv .fill { position: absolute; top: 2px; bottom: 2px; border-radius: 4px; transition: left .5s var(--ease), width .5s var(--ease), background-color .3s; }
+.dv .fill.pos { background: var(--gain); }
+.dv .fill.neg { background: var(--loss); }
+.dv .val { grid-column: 1 / -1; font-size: 26px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+.dv .val.pos { color: var(--gain); }
+.dv .val.neg { color: var(--loss); }
+.dv .val small { display: block; font-size: 15px; font-weight: 400; color: var(--fg-muted); }
+
+/* ---------------------------------------------------------------- 100-square grid (burden) */
+.grid100 { display: grid; grid-template-columns: repeat(20, 1fr); gap: 3px; margin: 8px 0 2px; max-width: 420px; }
+.grid100 span { aspect-ratio: 1; border-radius: 3px; background: var(--new); transition: background-color .3s; transition-delay: calc(var(--i, 0) * 4ms); }
+.grid100 span.burden { background: var(--warn-fg); }
+.k-meter { margin-top: 30px; }
+.k-meter > u::after { font-size: 15px; color: var(--fg); }
+.consent-vis { display: grid; grid-template-columns: minmax(0, 220px) 1fr; gap: 12px; align-items: center; margin: 10px 0; }
+.consent-vis .k-people { max-width: 220px; }
+@media (max-width: 420px) { .consent-vis { grid-template-columns: 1fr; } }
+
+/* ---------------------------------------------------------------- consent dots */
+.dots { display: flex; flex-wrap: wrap; gap: 4px; margin: 10px 0 4px; }
+.dot { width: 22px; height: 22px; border-radius: 50%; background: var(--surface-2); border: 2px solid var(--border); transition: background-color .35s, border-color .35s; }
+.dot.need { background: var(--accent); border-color: var(--accent); }
+.dots.many .dot { width: 12px; height: 12px; border-width: 1px; }
+
+/* ---------------------------------------------------------------- decision-tree questions */
+.qs { display: grid; gap: 10px; margin: 8px 0; }
+.q .ql { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+.q .seg { margin: 2px 0 0; }
+.q input[type="number"] { max-width: 10em; }
+.nc.off { opacity: .55; }
+#tree-path li { margin: 4px 0; }
+
+/* ---------------------------------------------------------------- next-step cards */
+.cards { display: grid; gap: 10px; margin-top: 8px; }
+.nc { display: grid; grid-template-columns: 40px 1fr; gap: 0 10px; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+.nc .ic { width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); display: grid; place-items: center; }
+.nc .ic svg { width: 24px; height: 24px; stroke: var(--accent); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.nc h3 { margin: 0; font-size: 18px; }
+.nc .money { margin: 2px 0 0; font-size: 17px; font-weight: 700; color: var(--accent); }
+.nc .tag { display: inline-block; font-size: 15px; padding: 0 8px; border-radius: 999px; background: var(--warn-bg); color: var(--warn-fg); margin-left: 6px; vertical-align: 2px; }
+.nc details { grid-column: 1 / -1; }
+.nc details p { margin: 4px 0; font-size: 15px; color: var(--fg-2); }
+.nc a { color: var(--accent); overflow-wrap: anywhere; }
+
+.foot { padding: 4px 16px 32px; font-size: 16px; color: var(--fg-2); }
+
+@media (min-width: 640px) {
+  .cards { grid-template-columns: 1fr 1fr; }
+  h1 { font-size: 38px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+
+.big-n { display: block; font-size: 36px; font-weight: 800; line-height: 1.2; color: var(--new); font-variant-numeric: tabular-nums; }
+.k-meter > u.end::after { left: auto; right: 0; transform: none; }
+.k-meter > u.start::after { left: 0; transform: none; }
+
+/* ---------------------------------------------------------------- formula flow (怎麼算的) */
+.flow { display: flex; align-items: stretch; gap: 0; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 2px 12px; -webkit-overflow-scrolling: touch; }
+.flow .fc { flex: 0 0 236px; scroll-snap-align: start; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+.flow .fc.result { background: var(--accent-soft); border-color: var(--accent); }
+.flow .fc .pn { font-size: 16px; font-weight: 700; color: var(--fg-2); }
+.flow .fc .pv { font-size: 34px; font-weight: 900; line-height: 1.15; font-variant-numeric: tabular-nums; color: var(--fg); }
+.flow .fc .pv small { font-size: 17px; font-weight: 700; margin-left: 2px; }
+.flow .fc .pv.pos { color: var(--gain); }
+.flow .fc .pv.neg { color: var(--loss); }
+.flow .fc .eq { font-size: 16px; color: var(--fg-2); font-variant-numeric: tabular-nums; }
+.flow .fc input[type="range"] { width: 100%; accent-color: var(--accent); height: 32px; }
+.flow .fc input[type="number"] { font-size: 18px; }
+.flow .fc .ev { font-size: 15px; color: var(--fg-muted); margin-top: auto; }
+.flow .op { flex: 0 0 auto; align-self: center; font-size: 40px; font-weight: 900; color: var(--accent); padding: 0 8px; line-height: 1; }
+.flow:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* colour key next to the burden sentence (same colours as the 100-square grid) */
+.sw { display: inline-block; width: 14px; height: 14px; border-radius: 3px; margin: 0 4px 0 6px; vertical-align: -1px; background: var(--new); }
+.sw.burden { background: var(--warn-fg); }
+html:root:not([data-theme="never"]) .sw.burden { background: #4a403d; }

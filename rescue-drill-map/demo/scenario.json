@@ -1,0 +1,75 @@
+{
+ "url": "/mvp-variants/rescue-drill-map/",
+ "viewport": [
+  1280,
+  720
+ ],
+ "settle_ms": 2500,
+ "steps": [
+  {
+   "do": "caption",
+   "text": "救災演練地圖：37 個候選里，窄巷、液化、高齡一起看"
+  },
+  {
+   "do": "wait",
+   "ms": 1500
+  },
+  {
+   "do": "click",
+   "sel": "#rows button.row:nth-child(2)",
+   "wait": 2200
+  },
+  {
+   "do": "caption",
+   "text": "點一個里：每 100 人有幾位 80 歲以上，五條長條相對全市"
+  },
+  {
+   "do": "select",
+   "sel": "#town",
+   "value": "萬華區",
+   "wait": 1200
+  },
+  {
+   "do": "click",
+   "sel": "#rows button.row:nth-child(1)",
+   "wait": 2200
+  },
+  {
+   "do": "caption",
+   "text": "右邊是給里長的演練檢核表，勾完可以列印"
+  },
+  {
+   "do": "scroll_to",
+   "sel": "ul.check",
+   "wait": 1000
+  },
+  {
+   "do": "click",
+   "sel": "ul.check li:nth-child(1) input",
+   "wait": 900
+  },
+  {
+   "do": "click",
+   "sel": "ul.check li:nth-child(2) input",
+   "wait": 1500
+  },
+  {
+   "do": "caption",
+   "text": "收容所在哪、窄巷離消防栓多遠，也一起列。"
+  },
+  {
+   "do": "scroll_to",
+   "sel": "ul.check li:has-text('震後去哪裡')",
+   "wait": 2000
+  },
+  {
+   "do": "scroll_to",
+   "sel": "ul.check li:has-text('消防栓')",
+   "wait": 2500
+  },
+  {
+   "do": "wait",
+   "ms": 1000
+  }
+ ]
+}
